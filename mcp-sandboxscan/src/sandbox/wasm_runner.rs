@@ -61,6 +61,7 @@ impl WasmtimeSandbox {
         wasm_path: &Path,
         args: &[String],
         env: &HashMap<String, String>,
+        max_output_size: usize,
     ) -> Result<WasmExecResult> {
         let wasm_bytes = fs::read(wasm_path)?;
         // create a wasmtime Module from binary, engine is the environment for compilation
@@ -135,11 +136,26 @@ impl WasmtimeSandbox {
         let stdout_bytes = stdout.try_into_inner().unwrap().into_inner();
         let stderr_bytes = stderr.try_into_inner().unwrap().into_inner();
 
+        // truncate outputs if larger than max_output_size
+        let stdout_bytes = if stdout_bytes.len() > max_output_size {
+            stdout_bytes[..max_output_size].to_vec()
+        } else {
+            stdout_bytes
+        };
+
+        let stderr_bytes = if stderr_bytes.len() > max_output_size {
+            stderr_bytes[..max_output_size].to_vec()
+        } else {
+            stderr_bytes
+        };
+        
+        let duration_ms = start.elapsed().as_millis();
+
         Ok(WasmExecResult {
             stdout: String::from_utf8_lossy(&stdout_bytes).to_string(),
             stderr: String::from_utf8_lossy(&stderr_bytes).to_string(),
             exit_code,
+            duration_ms,
         })
     }
 }
-    /// }
