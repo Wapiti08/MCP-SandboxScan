@@ -2,6 +2,21 @@
 A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools
 
 
+## What it detects (MVP)
+- Prompt sinks: stdout `PROMPT:` lines, JSON `prompt/messages`
+- External sources: env vars, file contents under `/data`, HTTP fetch intents in output
+- External-to-prompt flows: string-level snippet matches between sources and sinks
+
+## Run
+```bash
+cargo run -- \
+  --wasm ./examples/tool.wasm \
+  --data-dir ./data \
+  --env API_KEY=secret \
+  --env MODEL=gpt-4
+```
+
+
 ## Structure
 
 - main.rs: entrypoint of scanner
