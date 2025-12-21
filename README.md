@@ -15,7 +15,10 @@ cargo run -- \
   --env API_KEY=secret \
   --env MODEL=gpt-4
 ```
-
+## For Unit Test
+```
+cargo test
+```
 
 ## Structure
 

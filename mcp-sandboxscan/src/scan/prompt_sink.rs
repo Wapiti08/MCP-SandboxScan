@@ -64,3 +64,47 @@ pub fn extract_prompt_sinks(stdout: &str) -> Vec<PromptSink> {
     sinks
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn detects_stdout_prompt() {
+        let stdout = "INFO\nPROMPT: summarize this\nDONE";
+
+        let sinks = extract_prompt_sinks(stdout);
+        assert_eq!(sinks.len(), 1);
+
+        match &sinks[0] {
+            PromptSink::StdoutPrompt(line) => {
+                assert!(line.contains("summarize"));
+            }
+            _ => panic!("expected StdoutPrompt"),
+        }
+
+    }
+
+    #[test]
+    fn detects_json_prompt() {
+        // avoid raw string being parsed as r#"..."#, # -> allow " itself
+        let stdout = r#"{"prompt":"translate text"}"#;
+
+        let sinks = extract_prompt_sinks(stdout);
+        assert_eq!(sinks.len(), 1);
+        // keep ownership
+        match &sinks[0] {
+            PromptSink::JsonPrompt {value, ..} => {
+                assert_eq!(value, "translate text");
+            }
+            _ => panic!("expected JsonPrompt"),
+        }
+    }
+
+    #[test]
+    fn ignores_non_prompt_output() {
+        let stdout = "INFO: hello world";
+
+        let sinks = extract_prompt_sinks(stdout);
+        assert!(sinks.is_empty());
+    }
+}
