@@ -29,5 +29,17 @@ impl TaintSource {
 
 #[cfg(test)]
 mod tests {
-    use 
+    use super::*;
+
+    #[test]
+    fn env_source_content() {
+        let src = TaintSource::EnvVar {
+            key: "API_KEY".to_string(),
+            value: "SECRET".to_string(),
+        };
+
+        assert_eq!(src.content(), "SECRET");
+        assert!(src.short_id().starts_with("env:"));
+    }
+
 }

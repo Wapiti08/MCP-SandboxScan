@@ -73,3 +73,47 @@ pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMa
 
     flows
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::scan::prompt_sink::PromptSink;
+    use crate::taint::source::TaintSource;
+
+    #[test]
+    fn detects_external_to_prompt_flow() {
+        let sources = vec![
+            TaintSource::EnvVar {
+                key: "API_KEY".to_string(),
+                value: "SECRET_TOKEN".to_string(),
+            }
+        ];
+
+        let sinks = vec![
+            PromptSink::StdoutPrompt(
+                "PROMPT: use SECRET_TOKEN to authenticate".to_string()
+            )
+        ];
+
+        let flows = detect_flows(&sources, &sinks);
+        assert_eq!(flows.len(), 1);
+        assert!(flows[0].snippet.contains("SECRET"));
+    }
+
+    #[test]
+    fn no_false_positive_when_not_present() {
+        let sources = vec![
+            TaintSource::EnvVar {
+                key: "API_KEY".to_string(),
+                value: "SECRET_TOKEN".to_string(),
+            }
+        ];
+
+        let sinks = vec![
+            PromptSink::StdoutPrompt("PROMPT: hello world".to_string())
+        ];
+
+        let flows = detect_flows(&sources, &sinks);
+        assert!(flows.is_empty());
+    }
+}
