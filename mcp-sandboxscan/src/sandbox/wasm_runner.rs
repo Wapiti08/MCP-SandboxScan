@@ -3,7 +3,7 @@ use std::path::Path;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
-use wasi_common::pipe::{ReadPipe, WritePipe};
+use wasi_common::pipe::WritePipe;
 use wasmtime::{Engine, Linker, Module, Store};
 use wasmtime_wasi::{
     Dir,

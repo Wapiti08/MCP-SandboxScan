@@ -5,7 +5,7 @@ use std::path::Path;
 use anyhow::{Context, Result};
 
 use crate::sandbox::wasm_runner::WasmRunner;
-use crate::sandbox::wasm_hooks::{collect_file_sources, collect_env_sources, collect_http_intents};
+use crate::sandbox::wasi_hooks::{collect_file_sources, collect_env_sources, collect_http_intents};
 use crate::scan::prompt_sink::collect_prompt_sinks;
 use crate::scan::report::{ScanReport, Summary};
 use crate::taint::flow::detect_flows;
