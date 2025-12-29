@@ -11,7 +11,7 @@ use crate::taint::source::TaintSource;
 pub struct ScanReport {
     pub exec: WasmExecResult,
 
-    pub sources: Vec<TraintSource>,
+    pub sources: Vec<TaintSource>,
     pub sinks: Vec<PromptSink>,
     pub flows: Vec<FlowMatch>,
 

@@ -3,6 +3,7 @@ use std::path::Path;
 use std::fs;
 
 use mcp_sandboxscan::sandbox::wasm_runner::WasmRunner;
+use mcp_sandboxscan::sandbox::wasi::preview1::WasiPreview1;
 
 /// Basic sanity check:
 /// a benign MCP tool can be executed under WASI
@@ -17,7 +18,10 @@ fn test_benign_wasm_exec() {
     let runner = WasmRunner::default();
     let env = HashMap::new();
 
-    let result = runner.run(&wasm_bytes, None, &env, 4096)
+    let runtime = WasiPreview1::new(env.clone(), None, 4096);
+
+    let result = runner
+        .run(&wasm_bytes, &runtime)
         .expect("execution failed");
 
     assert_eq!(
@@ -46,8 +50,11 @@ fn test_fs_violation_observable() {
 
     let runner = WasmRunner::default();
     let env = HashMap::new();
+    
+    let runtime = WasiPreview1::new(env.clone(), None, 4096);
 
-    let result = runner.run(&wasm_bytes, None, &env, 4096)
+    let result = runner
+        .run(&wasm_bytes, &runtime)
         .expect("execution failed");
 
     // not equal

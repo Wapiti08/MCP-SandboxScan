@@ -7,6 +7,11 @@ A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools
 - External sources: env vars, file contents under `/data`, HTTP fetch intents in output
 - External-to-prompt flows: string-level snippet matches between sources and sinks
 
+## Dependency
+```
+cargo add cap_std
+```
+
 ## Run
 ```bash
 cargo run -- \
@@ -15,9 +20,9 @@ cargo run -- \
   --env API_KEY=secret \
   --env MODEL=gpt-4
 ```
-## For Unit Test
+## For Unit Test (files under tests)
 ```
-cargo test
+cargo test xxx
 ```
 
 ## Structure

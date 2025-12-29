@@ -69,7 +69,7 @@ pub fn collect_http_intents(stdout: &str, stderr: &str) -> Vec<TaintSource> {
                 if let Some(rest) = trimmed.strip_prefix(prefix) {
                     let url = rest.trim().to_string();
                     if !url.is_empty() {
-                        out.push(TaintSource::HttpFetchIntent { 
+                        out.push(TaintSource::HttpFetch { 
                             url,
                             content: "<intent-only>".to_string(),
                             });

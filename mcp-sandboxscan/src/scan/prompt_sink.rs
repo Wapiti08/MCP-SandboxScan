@@ -34,7 +34,7 @@ pub fn extract_prompt_sinks(stdout: &str) -> Vec<PromptSink> {
             continue;
         }
         // 2) JSON line with prompt/messages
-        if let Ok(v) = serde_json::from_str::<Value>(traimmed){
+        if let Ok(v) = serde_json::from_str::<Value>(trimmed){
             // prompt
             if let Some(p) = v.get("prompt").and_then(|x| x.as_str()) {
                 sinks.push(PromptSink::JsonPrompt {
@@ -47,7 +47,7 @@ pub fn extract_prompt_sinks(stdout: &str) -> Vec<PromptSink> {
             if let Some(arr) = v.get("messages").and_then(|x| x.as_array()) {
                 let mut combined = String::new();
                 for m in arr {
-                    if Some(c) = m.get("content").and_then(|x| x.as_str()) {
+                    if let Some(c) = m.get("content").and_then(|x| x.as_str()) {
                         combined.push_str(c);
                         combined.push('\n');
                     }
@@ -76,7 +76,7 @@ mod tests {
         assert_eq!(sinks.len(), 1);
 
         match &sinks[0] {
-            PromptSink::StdoutPrompt(line) => {
+            PromptSink::StdoutPrompt { line } => {
                 assert!(line.contains("summarize"));
             }
             _ => panic!("expected StdoutPrompt"),

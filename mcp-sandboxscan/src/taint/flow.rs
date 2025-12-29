@@ -52,8 +52,9 @@ pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMa
         for sink in sinks {
             let sink_text = sink.as_text();
 
+            for snip in &snippets {
             // any matched snippet -> flow
-            if snip.len() >= 12 && sink_text.contains(snip) {
+            if snip.len() >= 12 && sink_text.contains(snip.as_str()) {
                 flows.push(FlowMatch {
                     source_id: src.short_id(),
                     sink_type: match sink {
@@ -64,6 +65,7 @@ pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMa
                     confidence: "high".to_string(), // MVP
                 });
                 break;
+                }
             }
         }
     }
@@ -90,9 +92,9 @@ mod tests {
         ];
 
         let sinks = vec![
-            PromptSink::StdoutPrompt(
-                "PROMPT: use SECRET_TOKEN to authenticate".to_string()
-            )
+            PromptSink::StdoutPrompt{
+                line: "PROMPT: use SECRET_TOKEN to authenticate".to_string(),
+            }
         ];
 
         let flows = detect_flows(&sources, &sinks);
@@ -110,7 +112,9 @@ mod tests {
         ];
 
         let sinks = vec![
-            PromptSink::StdoutPrompt("PROMPT: hello world".to_string())
+            PromptSink::StdoutPrompt {
+                line: "PROMPT: hello world".to_string(),
+            }
         ];
 
         let flows = detect_flows(&sources, &sinks);
