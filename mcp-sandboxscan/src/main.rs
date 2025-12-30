@@ -4,5 +4,5 @@ mod scan;
 mod taint;
 
 fn main() -> anyhow::Result<()> {
-    cli::main::entry();
+    cli::main::entry()
 }

@@ -21,6 +21,11 @@ fn make_snipppets(s: &str) -> Vec<String> {
     let bytes = s.as_bytes();
     let mut out = vec![];
 
+    // short strings also participate match
+    if bytes.len() >= 4 {
+        out.push(s.to_string());
+    }
+
     let lens = [16usize, 24, 32];
     // reverse reference to extract real lengths
     // keep values in lens
@@ -44,7 +49,7 @@ fn make_snipppets(s: &str) -> Vec<String> {
 
 pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMatch> {
     let mut flows = vec![];
-
+    let min_len = 4;
     for src in sources {
         let content = src.content();
         let snippets = make_snipppets(content);
@@ -54,7 +59,7 @@ pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMa
 
             for snip in &snippets {
             // any matched snippet -> flow
-            if snip.len() >= 12 && sink_text.contains(snip.as_str()) {
+            if snip.len() >= min_len && sink_text.contains(snip.as_str()) {
                 flows.push(FlowMatch {
                     source_id: src.short_id(),
                     sink_type: match sink {

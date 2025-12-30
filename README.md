@@ -10,20 +10,40 @@ A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools
 ## Dependency
 ```
 cargo add cap_std
+# build tool.wasm
+rustup target add wasm32-wasip1 || true
+
 ```
 
-## Run
-```bash
-cargo run -- \
-  --wasm ./examples/tool.wasm \
-  --data-dir ./data \
-  --env API_KEY=secret \
-  --env MODEL=gpt-4
+## Demo
 ```
+## give one example for evil_prompt_tool
+cd fixtures/evil_prompt_tool
+## compile main.rs -> tool.wasm
+rustc main.rs -O --target wasm32-wasip1 -o tool.wasm
+
+## go to root folder
+cd ../..
+cargo run --bin demo -- fixtures/evil_prompt_tool/tool.wasm
+
+## for other demos, after compiling tool.wasm, go through the same process
+cargo run --bin demo -- fixtures/benign_tool/tool.wasm
+cargo run --bin demo -- fixtures/fs_violation_tool/tool.wasm
+```
+
 ## For Unit Test (files under tests)
 ```
 cargo test xxx
 ```
+
+## Run
+```bash
+cargo run --bin mcp-sandboxscan -- \
+  --wasm ./fixtures/evil_prompt_tool/tool.wasm \
+  --env USER_INPUT=hello \
+  --env API_KEY=secret
+```
+
 
 ## Structure
 

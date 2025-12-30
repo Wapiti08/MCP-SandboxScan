@@ -39,7 +39,7 @@ mod tests {
         };
 
         assert_eq!(src.content(), "SECRET");
-        assert!(src.short_id().starts_with("env:"));
+        assert!(src.short_id().starts_with("EnvVar: "));
     }
 
 }
