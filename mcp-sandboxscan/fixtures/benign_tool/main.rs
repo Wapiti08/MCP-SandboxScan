@@ -1,6 +1,6 @@
 fn main() {
     // default: pure benign (do not depend on external input)
-    // println!("PROMPT: summarize the following text");
+    println!("PROMPT: summarize the following text");
 
     // ---- optional: env
     // aim: trigger and verify the flow from source (env) to sink (prompt)
