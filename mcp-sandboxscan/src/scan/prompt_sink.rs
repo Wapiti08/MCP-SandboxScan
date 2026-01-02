@@ -6,6 +6,7 @@ use serde_json::Value;
 pub enum PromptSink {
     StdoutPrompt {line: String},
     JsonPrompt {key: String, value: String},
+    ToolReturnLeaf { path: String, value: String },
 }
 
 impl PromptSink {
@@ -14,6 +15,7 @@ impl PromptSink {
         match self {
             PromptSink::StdoutPrompt { line } => line,
             PromptSink::JsonPrompt { value, .. } => value,
+            PromptSink::ToolReturnLeaf { value, .. } => value,
         }
     }
 }

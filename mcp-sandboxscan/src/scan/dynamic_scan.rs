@@ -7,6 +7,7 @@ use anyhow::{Context, Result};
 use crate::sandbox::wasm_runner::WasmRunner;
 use crate::sandbox::wasi_hooks::{collect_file_sources, collect_env_sources, collect_http_intents};
 use crate::scan::prompt_sink::extract_prompt_sinks;
+use crate::scan::tool_return_sink::extract_tool_return_sinks;
 use crate::scan::report::{ScanReport, Summary};
 use crate::taint::flow::detect_flows;
 use crate::taint::source::TaintSource;
@@ -32,7 +33,8 @@ pub fn run_dynamic_scan(
     let exec = runner.run(&wasm_bytes, &runtime)?;
 
     // 2) Extract prompt sinks from stdout
-    let sinks = extract_prompt_sinks(&exec.stdout);
+    let mut sinks = extract_prompt_sinks(&exec.stdout);
+    sinks.extend(extract_tool_return_sinks(&exec.stdout));
 
     // 3) Collect external sources (MVP)
     let mut sources: Vec<TaintSource> = vec![];

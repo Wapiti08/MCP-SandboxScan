@@ -65,6 +65,7 @@ pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMa
                     sink_type: match sink {
                         PromptSink::StdoutPrompt { .. } => "StdoutPrompt".to_string(),
                         PromptSink::JsonPrompt { .. } => "JsonPrompt".to_string(),
+                        PromptSink::ToolReturnLeaf { .. } => "ToolReturnLeaf".to_string(),
                     },
                     snippet: snip.clone(),
                     confidence: "high".to_string(), // MVP
