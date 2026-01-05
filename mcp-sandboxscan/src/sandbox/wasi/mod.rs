@@ -1,7 +1,6 @@
 pub mod preview1;
 use anyhow::Result;
 use wasmtime::Linker;
-use wasmtime_wasi::WasiView;
 
 /// WASI runtime adapter abstraction.
 /// This isolates ABI differences (preview1 / preview2).

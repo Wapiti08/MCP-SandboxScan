@@ -9,4 +9,3 @@ fn main() {
         Err(e) => eprintln!("READ_ERR {}: {}", path, e),
     }
 }
-}

@@ -22,6 +22,13 @@ fn main() -> Result<()> {
     env.insert("USER_INPUT".to_string(), "hello".to_string());
     env.insert("FILE_TO_READ".to_string(), "secret.txt".to_string());
 
+    // allow overriding/injecting from host environment for benchmarking
+    for k in ["DEMO_SECRET", "MODE", "USER_INPUT", "FILE_TO_READ", "API_KEY"] {
+        if let Ok(v) = std::env::var(k) {
+            env.insert(k.to_string(), v);
+        }
+    }
+
     let report = run_dynamic_scan(
         &wasm,
         data_dir.as_deref(),

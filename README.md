@@ -29,6 +29,28 @@ cargo run --bin demo -- fixtures/evil_prompt_tool/tool.wasm
 ## for other demos, after compiling tool.wasm, go through the same process
 cargo run --bin demo -- fixtures/benign_tool/tool.wasm
 cargo run --bin demo -- fixtures/fs_violation_tool/tool.wasm
+
+## ========= dynamic and static comparison =========
+chmod +x demo/run_static_vs_dynamic.sh 
+DATA_DIR="$(pwd)/data" ./demo/run_static_vs_dynamic.sh
+
+
+## ========== microbench ============
+cd fixtures/tool_return_microbench
+rustup target add wasm32-wasip1
+cargo build --release --target wasm32-wasip1
+
+# cp generate wasm to the current folder
+cp target/wasm32-wasip1/release/tool_return_microbench.wasm tool.wasm
+# run the following command to trigger desired behavior - for plain mode
+DEMO_SECRET="SEKRET_0123456789abcdef0123456789abcdef" \
+MODE="plain" \
+cargo run --bin demo -- fixtures/tool_return_microbench/tool.wasm
+
+## to run all benchmark
+chmod +x demo/run_microbench.sh
+./demo/run_microbench.sh
+
 ```
 
 ## For Unit Test (files under tests)
