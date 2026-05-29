@@ -66,24 +66,50 @@ cargo run --bin mcp-sandboxscan -- \
   --env API_KEY=secret
 ```
 
+## Structure (core modules under src)
 
-## Structure
+- cli: entrypoint of command, parse parameters and running mode
 
-- main.rs: entrypoint of scanner
+    - main.rs: entrypoint of scanner
 
-- sandbox
+- subject: describe tested MCP server
+
+    - language.rs   # Rust/Go/Python/TypeScript
+    - capability.rs # fs/ env/ network / subprocess/ database
+    - manifest.rs  # 
+
+- adapter: multi-language adapter, try to convert subject to executable artifact
+
+    - rust_wasi.rs: Rust -> wasm32-wasip1
+    - go_wasi.rs: Go -> WASI/TinyGo
+    - python_wasi.rs: Python + runtime/shim
+    - typescript_wasi.rs: Node/JS runtime or javy/componentize
+    - unsupported.rs: the reasons for not supported
+
+
+- sandbox: execute artifacts and collect stdout/stderr/exit code/etc
 
     - exec_result.rs: execution result (stdout/stderr/exit/sources)
     - wasi_hooks.rs:  source collection of env/file/http intent
     - wasm_runner.rs: wasm sandbox
 
-- scan:
+- collect: data collection layer, collect source/behavior from environment and process
+
+
+- scan: extract sink from execution results and generate check report
     
     - dynamic_scan.rs: orchestrator from execute to scan to report
     - prompt_sink.rs: prompt/messages/stdout sink
     - report.rs 
 
-- taint:
+- taint: taint analysis layer
 
     - flow.rs    source to sink at string-level
     - source.rs   define source
+
+- attack: attack simulation layer, define and run attack scenarios
+
+    - scenario.rs: prompt injection / env leak / file exfiltration
+    - runner.rs: run attack for subject
+
+- study: experiment design for evaluation

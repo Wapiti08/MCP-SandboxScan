@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Result};
 use wasmtime::{Engine, Instance, Linker, Module, Store, Error};
 
 use wasmtime_wasi::I32Exit;
@@ -51,7 +51,7 @@ impl WasmRunner {
     ) -> Result<WasmExecResult> {
         // 1) compile wasm bytes into Module (Module can be reused)
         let module = Module::from_binary(&self.engine, wasm_bytes)
-            .context("failed to compile wasm")?;
+            .map_err(|err| anyhow!("failed to compile wasm: {err}"))?;
 
         // 2) build wasi context from runtime
         let ctx = runtime.build_ctx()?;
@@ -66,7 +66,7 @@ impl WasmRunner {
 
         let instance = linker
             .instantiate(&mut store, &module)
-            .context("failed to instantiate wasm")?;
+            .map_err(|err| anyhow!("failed to instantiate wasm: {err}"))?;
 
         let exit_code = self.execute::<R>(&mut store, &instance)?;
         // 7) take out collect IO and time counter from runtime
@@ -89,7 +89,7 @@ impl WasmRunner {
     ) -> Result<i32> {
         let start = instance
             .get_typed_func::<(), ()>(&mut *store, "_start")
-            .context("missing _start")?;
+            .map_err(|err| anyhow!("missing _start: {err}"))?;
 
         let result = start.call(&mut *store, ());
         Ok(decode_exit(result))

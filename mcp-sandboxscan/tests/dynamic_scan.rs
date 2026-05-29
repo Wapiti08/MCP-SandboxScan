@@ -1,5 +1,5 @@
 use std::path::Path;
-use mcp_sandboxscan::scan::dynamic_scan::run_dynamic_scan;
+use mcp_sandboxscan::scan::dynamic::run_dynamic_scan;
 
 #[test]
 fn test_evil_prompt_detected() {

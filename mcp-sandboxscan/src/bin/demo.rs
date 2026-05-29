@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::{Path, PathBuf}};
 
 use anyhow::Result;
 
-use mcp_sandboxscan::scan::dynamic_scan::run_dynamic_scan;
+use mcp_sandboxscan::scan::dynamic::run_dynamic_scan;
 
 fn main() -> Result<()> {
     let wasm = std::env::args().nth(1)

@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use anyhow::{Result, bail, Context};
+use anyhow::{bail, Context, Result};
 use clap::Parser;
 
 // absolute path to the sandboxscan data directory
-use crate::scan::dynamic_scan::run_dynamic_scan;
+use crate::scan::dynamic::run_dynamic_scan;
 
 // define CLI arguments
 #[derive(Parser, Debug)]
@@ -60,11 +60,11 @@ pub fn entry() -> Result<()> {
         args.data_dir.as_ref().map(|v| v.as_path()),
         &env,
         args.max_output_size,
-    ).with_context(|| format!("Failed to run dynamic scan on {}", args.wasm.display()))?;
+    )
+    .with_context(|| format!("Failed to run dynamic scan on {}", args.wasm.display()))?;
 
     // JSON output
-    let json = serde_json::to_string_pretty(&report)
-        .context("Failed to serialize report to JSON")?;
+    let json = serde_json::to_string_pretty(&report).context("Failed to serialize report to JSON")?;
 
     println!("{}", json);
 

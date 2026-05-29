@@ -1,0 +1,13 @@
+name = "rust-env-leak"
+language = "rust"
+source_dir = "fixtures/tool_return_secret_tool"
+entrypoint = "main.rs"
+capabilities = ["env", "stdio"]
+
+[build]
+command = "rustc"
+args = ["main.rs", "-O", "--target", "wasm32-wasip1", "-o", "tool.wasm"]
+
+[run]
+command = "tool.wasm"
+args = []

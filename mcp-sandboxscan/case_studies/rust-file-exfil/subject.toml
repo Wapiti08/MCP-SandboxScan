@@ -1,0 +1,13 @@
+name = "rust-file-exfil"
+language = "rust"
+source_dir = "fixtures/tool_return_file_exfil"
+entrypoint = "main.rs"
+capabilities = ["file-read", "stdio"]
+
+[build]
+command = "rustc"
+args = ["main.rs", "-O", "--target", "wasm32-wasip1", "-o", "tool.wasm"]
+
+[run]
+command = "tool.wasm"
+args = []
