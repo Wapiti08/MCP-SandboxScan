@@ -1,0 +1,95 @@
+use std::path::{Path, PathBuf};
+use anyhow::{Context,Result};
+
+use std::process::Command;
+
+use crate::adapter::{AdaptationReport, AdaptationStatus, Adapter, BuildArtifact};
+use crate::subject::{Language, SubjectManifest};
+// implement rustwasi from Adapter
+
+pub struct RustWasiAdapter;
+
+impl Adapter for RustWasiAdapter {
+    // ‘static --- lifecyle mark --- live for whole process
+    fn name(&self) -> &'static str{
+        "rust-wasi"
+    }
+
+    fn adapt(&self, subject: &SubjectManifest) -> Result<AdaptationReport> {
+        if subject.language != Language::Rust {
+            return Ok(AdaptationReport { 
+                // avoid change on ownership
+                subject_name: subject.name.clone(), 
+                language: subject.language.clone(), 
+                status: AdaptationStatus::Unsupported, 
+                artifact: None, 
+                // dynamic array for potential mulitple reasons
+                notes: vec![], 
+                blockers: vec!["RustWasiAdapter only supports Rust subjects".to_string()],
+                });
+        }
+
+        // use build for following code if successfully - better than if here
+        let Some(build) = &subject.build else {
+            return Ok(AdaptationReport {
+                subject_name: subject.name.clone(), 
+                language: subject.language.clone(), 
+                status: AdaptationStatus::Failed,
+                artifact: None,
+                notes: vec![],
+                blockers: vec!["missing build spec".to_string()],
+            });
+        };
+
+        let status = Command::new(&build.command)
+            .args(&build.args)
+            .current_dir(&subject.source_dir)
+            .status()
+            .with_context(
+                || {
+                    format!(
+                        "failed to run build command `{}` in {}",
+                        build.command,
+                        subject.source_dir.display()
+                    )
+                })?;
+
+        if !status.success() {
+            return Ok(AdaptationReport {
+                subject_name: subject.name.clone(),
+                language: subject.language.clone(),
+                status: AdaptationStatus::Failed,
+                artifact: None,
+                notes: vec![],
+                blockers: vec![format!("build command exited with status {status}")],
+            });
+        }
+
+        let wasm_path = infer_wasm_output_path(&subject.source_dir, &build.args);
+    
+        Ok(AdaptationReport {
+            subject_name: subject.name.clone(),
+            language: subject.language.clone(),
+            status: AdaptationStatus::DirectWasm,
+            artifact: Some(BuildArtifact::Wasm { wasm_path }),
+            notes: vec!["compiled with Rust WASI build command".to_string()],
+            blockers: vec![],
+        })
+    }
+}
+
+
+fn infer_wasm_output_path(source_dir: &Path, args: &[String]) ->PathBuf {
+    // extract args parameters with sliding window 2, || - fn closure
+    let output = args
+        .windows(2)
+        .find_map(|pair| (pair[0]=="-o").then(|| PathBuf::from(&pair[1])))
+        .unwrap_or_else(|| PathBuf::from("tool.wasm"));
+    
+    if output.is_absolute() {
+        output
+    } else {
+        source_dir.join(output)
+    }
+
+}
