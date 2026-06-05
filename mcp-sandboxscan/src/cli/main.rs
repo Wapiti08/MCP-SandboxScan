@@ -3,6 +3,9 @@ use std::path::PathBuf;
 
 use anyhow::{bail, Context, Result};
 use clap::Parser;
+use crate::pipeline::scan_subject;
+use crate::subject::SubjectManifest;
+use crate::study::run_subject_matrix;
 
 // absolute path to the sandboxscan data directory
 use crate::scan::dynamic::run_dynamic_scan;
@@ -12,9 +15,17 @@ use crate::scan::dynamic::run_dynamic_scan;
 #[command(name = "mcp-sandboxscan")]
 #[command(about = "MCP-SandboxScan: WASM sandbox + dynamic taint-style flow detection", long_about = None)]
 pub struct Args {
-    /// path to target WASm module
-    #[arg(long)]
-    pub wasm: PathBuf,
+    /// path to target WASM module
+    #[arg(long, conflicts_with_all = ["subject", "study"])]
+    pub wasm: Option<PathBuf>,
+
+    /// Path to subject.toml describing a case study subject.
+    #[arg(long, conflicts_with_all = ["wasm", "study"])]
+    pub subject: Option<PathBuf>,
+
+    /// Paths to subject.toml files for a multi-case study matrix.
+    #[arg(long, num_args = 1.., conflicts_with_all = ["wasm", "subject"])]
+    pub study: Vec<PathBuf>,
 
     /// Optional directory to preopen as /data inside WASI
     #[arg(long)]
@@ -43,10 +54,10 @@ fn parse_key_val(s: &str) -> std::result::Result<(String, String), String> {
 pub fn entry() -> Result<()> {
     let args = Args::parse();
 
-    if !args.wasm.exists() {
-        // return the error with reason
-        bail!("WASM not found: {}", args.wasm.display());
+    if args.wasm.is_none() && args.subject.is_none() && args.study.is_empty() {
+        bail!("expected one of --wasm, --subject, or --study");
     }
+    
     if let Some(d) = &args.data_dir {
         if !d.exists() {
             bail!("data_dir not found: {}", d.display());
@@ -55,17 +66,62 @@ pub fn entry() -> Result<()> {
 
     let env: HashMap<String, String> = args.env.into_iter().collect();
 
-    let report = run_dynamic_scan(
-        &args.wasm,
-        args.data_dir.as_ref().map(|v| v.as_path()),
-        &env,
-        args.max_output_size,
-    )
-    .with_context(|| format!("Failed to run dynamic scan on {}", args.wasm.display()))?;
-
-    // JSON output
-    let json = serde_json::to_string_pretty(&report).context("Failed to serialize report to JSON")?;
-
+    let json = if !args.study.is_empty() {
+        for subject_path in &args.study {
+            if !subject_path.exists() {
+                bail!("study subject not found: {}", subject_path.display());
+            }
+        }
+    
+        let matrix = run_subject_matrix(
+            &args.study,
+            &env,
+            args.data_dir.as_ref().map(|v| v.as_path()),
+            args.max_output_size,
+        );
+    
+        serde_json::to_string_pretty(&matrix)
+            .context("Failed to serialize study matrix to JSON")?
+    } else if let Some(subject_path) = &args.subject {
+        if !subject_path.exists() {
+            bail!("subject not found: {}", subject_path.display());
+        }
+    
+        let raw = std::fs::read_to_string(subject_path)
+            .with_context(|| format!("Failed to read subject {}", subject_path.display()))?;
+    
+        let subject: SubjectManifest = toml::from_str(&raw)
+            .with_context(|| format!("Failed to parse subject {}", subject_path.display()))?;
+    
+        let report = scan_subject(
+            &subject,
+            &env,
+            args.data_dir.as_ref().map(|v| v.as_path()),
+            args.max_output_size,
+        )
+        .with_context(|| format!("Failed to scan subject {}", subject.name))?;
+    
+        serde_json::to_string_pretty(&report)
+            .context("Failed to serialize scan report to JSON")?
+    } else if let Some(wasm_path) = &args.wasm {
+        if !wasm_path.exists() {
+            bail!("WASM not found: {}", wasm_path.display());
+        }
+    
+        let report = run_dynamic_scan(
+            wasm_path,
+            args.data_dir.as_ref().map(|v| v.as_path()),
+            &env,
+            args.max_output_size,
+        )
+        .with_context(|| format!("Failed to run dynamic scan on {}", wasm_path.display()))?;
+    
+        serde_json::to_string_pretty(&report)
+            .context("Failed to serialize scan report to JSON")?
+    } else {
+        unreachable!("validated that one mode is present");
+    };
+    
     println!("{}", json);
 
     Ok(())

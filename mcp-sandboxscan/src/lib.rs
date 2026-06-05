@@ -1,6 +1,8 @@
-pub mod cli;
 pub mod adapter;
+pub mod cli;
+pub mod pipeline;
 pub mod sandbox;
 pub mod scan;
+pub mod study;
 pub mod subject;
 pub mod taint;

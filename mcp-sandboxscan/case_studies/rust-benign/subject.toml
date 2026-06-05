@@ -1,0 +1,13 @@
+name = "rust-benign"
+language = "rust"
+source_dir = "fixtures/benign_tool"
+entrypoint = "main.rs"
+capabilities = ["stdio"]
+
+[build]
+command = "rustc"
+args = ["main.rs", "-O", "--target", "wasm32-wasip1", "-o", "tool.wasm"]
+
+[run]
+command = "tool.wasm"
+args = []

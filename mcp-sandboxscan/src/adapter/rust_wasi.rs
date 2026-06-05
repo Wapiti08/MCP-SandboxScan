@@ -93,3 +93,23 @@ fn infer_wasm_output_path(source_dir: &Path, args: &[String]) ->PathBuf {
     }
 
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn adapts_rust_env_leak_to_wasm() {
+        let raw = std::fs::read_to_string("case_studies/rust-env-leak/subject.toml")
+            .expect("read subject.toml");
+        let subject: SubjectManifest = toml::from_str(&raw)
+            .expect("parse subject.toml");
+        let adapter = RustWasiAdapter;
+        let report = adapter.adapt(&subject).expect("adapt subject");
+        assert!(matches!(report.status, AdaptationStatus::DirectWasm));
+        let Some(BuildArtifact::Wasm { wasm_path }) = report.artifact else {
+            panic!("expected wasm artifact");
+        };
+        assert!(wasm_path.exists(), "wasm not found: {}", wasm_path.display());
+    }
+}
