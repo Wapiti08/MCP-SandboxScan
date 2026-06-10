@@ -11,7 +11,9 @@ pub struct SubjectManifest {
     pub language: Language,
     pub source_dir: PathBuf,
     pub entrypoint: Option<String>,
+    // build configuration
     pub build: Option<BuildSpec>,
+    // run configuration
     pub run: Option<RunSpec>,
     #[serde(default)]
     pub capabilities: Vec<Capability>,

@@ -7,6 +7,7 @@ pub enum PromptSink {
     StdoutPrompt {line: String},
     JsonPrompt {key: String, value: String},
     ToolReturnLeaf { path: String, value: String },
+    McpToolResultText { path: String, value: String },
 }
 
 impl PromptSink {
@@ -16,6 +17,7 @@ impl PromptSink {
             PromptSink::StdoutPrompt { line } => line,
             PromptSink::JsonPrompt { value, .. } => value,
             PromptSink::ToolReturnLeaf { value, .. } => value,
+            PromptSink::McpToolResultText { value, .. } => value,
         }
     }
 }

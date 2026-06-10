@@ -1,0 +1,13 @@
+name = "rust-mcp-filesystem"
+language = "rust"
+source_dir = "external/rust-mcp-filesystem"
+entrypoint = "src/main.rs"
+capabilities = ["stdio", "mcp-protocol", "file-read", "file-write"]
+
+[build]
+command = "cargo"
+args = ["build", "--release"]
+
+[run]
+command = "target/release/rust-mcp-filesystem"
+args = []

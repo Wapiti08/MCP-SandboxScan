@@ -86,6 +86,10 @@ cargo run --bin mcp-sandboxscan -- \
     - typescript_wasi.rs: Node/JS runtime or javy/componentize
     - unsupported.rs: the reasons for not supported
 
+- mcp: This layer speaks or represents the MCP protocol.
+
+    It handles initialize, notifications/initialized, tools/list, tools/call, resources/read, prompts/get
+
 
 - sandbox: execute artifacts and collect stdout/stderr/exit code/etc
 
@@ -93,7 +97,8 @@ cargo run --bin mcp-sandboxscan -- \
     - wasi_hooks.rs:  source collection of env/file/http intent
     - wasm_runner.rs: wasm sandbox
 
-- collect: data collection layer, collect source/behavior from environment and process
+- collect: data collection layer, collect source/behavior from environment and process, this layer normalizes observations into security-relevant facts.
+
 
 
 - scan: extract sink from execution results and generate check report
