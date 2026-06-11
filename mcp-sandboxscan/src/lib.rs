@@ -1,6 +1,7 @@
 pub mod adapter;
 pub mod cli;
 pub mod mcp;
+pub mod monitor;
 pub mod pipeline;
 pub mod sandbox;
 pub mod scan;

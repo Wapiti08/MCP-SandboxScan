@@ -12,6 +12,7 @@ use crate::scan::report::{ScanReport, Summary};
 use crate::taint::flow::detect_flows;
 use crate::taint::source::TaintSource;
 use crate::sandbox::wasi::preview1::WasiPreview1;
+use crate::monitor::event::{flow_events, sink_events, source_inventory_events};
 
 
 pub fn run_dynamic_scan(
@@ -44,6 +45,12 @@ pub fn run_dynamic_scan(
 
     // 4) Detect flows (string-level)
     let flows = detect_flows(&sources, &sinks);
+
+    let mut events = Vec::new();
+    events.extend(runtime.take_monitor_events());
+    events.extend(source_inventory_events(&sources));
+    events.extend(sink_events(&sinks));
+    events.extend(flow_events(&flows));
     
     let summary = Summary {
         num_sources: sources.len(),
@@ -55,6 +62,7 @@ pub fn run_dynamic_scan(
     Ok(ScanReport {
         exec: exec.into(),
         mcp_transcript: None,
+        events,
         sources,
         sinks,
         flows,

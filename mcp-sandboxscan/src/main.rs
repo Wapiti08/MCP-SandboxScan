@@ -7,6 +7,7 @@ mod subject;
 mod taint;
 mod study;
 mod mcp;
+mod monitor;
 
 fn main() -> anyhow::Result<()> {
     cli::main::entry()

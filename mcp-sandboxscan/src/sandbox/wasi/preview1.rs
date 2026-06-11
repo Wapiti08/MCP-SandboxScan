@@ -4,7 +4,10 @@ use std::sync::Mutex;
 use std::time::Instant;
 
 use anyhow::Result;
+use serde_json::json;
 use wasmtime::Linker;
+
+use crate::monitor::event::{MonitorEvent, MonitorEventKind};
 
 use wasmtime_wasi::filesystem::{DirPerms, FilePerms};
 use wasmtime_wasi::p1::{self, WasiP1Ctx};
@@ -22,6 +25,7 @@ pub struct WasiPreview1 {
     stdout: MemoryOutputPipe,
     stderr: MemoryOutputPipe,
     start: Mutex<Option<Instant>>,
+    monitor_events: Mutex<Vec<MonitorEvent>>,
 }
 
 impl WasiPreview1 {
@@ -37,7 +41,12 @@ impl WasiPreview1 {
             stdout: MemoryOutputPipe::new(max_output_bytes),
             stderr: MemoryOutputPipe::new(max_output_bytes),
             start: Mutex::new(None),
+            monitor_events: Mutex::new(Vec::new()),
         }
+    }
+
+    pub fn take_monitor_events(&self) -> Vec<MonitorEvent> {
+        std::mem::take(&mut *self.monitor_events.lock().unwrap())
     }
 }
 
@@ -46,13 +55,46 @@ impl WasiRuntime for WasiPreview1 {
 
     fn build_ctx(&self) -> anyhow::Result<Self::Ctx> {
         *self.start.lock().unwrap() = Some(Instant::now());
+        let mut monitor_events = self.monitor_events.lock().unwrap();
+        monitor_events.clear();
 
         let mut builder = WasiCtxBuilder::new();
         builder.stdout(self.stdout.clone());
+        monitor_events.push(MonitorEvent {
+            kind: MonitorEventKind::CapabilityGranted,
+            actor: "wasi-runtime".to_string(),
+            target: Some("stdout".to_string()),
+            evidence: json!({
+                "capability": "stdio",
+                "stream": "stdout",
+                "max_output_bytes": self.max_output_bytes
+            }),
+        });
+
         builder.stderr(self.stderr.clone());
+        monitor_events.push(MonitorEvent {
+            kind: MonitorEventKind::CapabilityGranted,
+            actor: "wasi-runtime".to_string(),
+            target: Some("stderr".to_string()),
+            evidence: json!({
+                "capability": "stdio",
+                "stream": "stderr",
+                "max_output_bytes": self.max_output_bytes
+            }),
+        });
 
         for (k, v) in &self.env {
             builder.env(k, v);
+            monitor_events.push(MonitorEvent {
+                kind: MonitorEventKind::CapabilityGranted,
+                actor: "wasi-runtime".to_string(),
+                target: Some(k.clone()),
+                evidence: json!({
+                    "capability": "env",
+                    "key": k,
+                    "value_len": v.len()
+                }),
+            });
         }
     
         if let Some(dir) = &self.data_dir {
@@ -62,6 +104,18 @@ impl WasiRuntime for WasiPreview1 {
                 DirPerms::all(),
                 FilePerms::all(),
             )?;
+            monitor_events.push(MonitorEvent {
+                kind: MonitorEventKind::CapabilityGranted,
+                actor: "wasi-runtime".to_string(),
+                target: Some("/data".to_string()),
+                evidence: json!({
+                    "capability": "filesystem-preopen",
+                    "guest_path": "/data",
+                    "host_path": dir,
+                    "dir_perms": "all",
+                    "file_perms": "all"
+                }),
+            });
         }
     
 
@@ -94,5 +148,44 @@ impl WasiRuntime for WasiPreview1 {
             stderr,
             duration_ms,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use std::fs;
+
+    use super::*;
+
+    #[test]
+    fn records_wasi_capability_grants() {
+        let data_dir = std::env::temp_dir().join(format!(
+            "mcp-sandboxscan-wasi-test-{}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&data_dir).unwrap();
+
+        let mut env = HashMap::new();
+        env.insert("DEMO_SECRET".to_string(), "secret-value".to_string());
+
+        let runtime = WasiPreview1::new(env, Some(data_dir.clone()), 1024);
+        runtime.build_ctx().unwrap();
+
+        let events = runtime.take_monitor_events();
+        fs::remove_dir_all(&data_dir).unwrap();
+
+        assert!(events.iter().any(|event| {
+            event.kind == MonitorEventKind::CapabilityGranted
+                && event.target.as_deref() == Some("DEMO_SECRET")
+        }));
+        assert!(events.iter().any(|event| {
+            event.kind == MonitorEventKind::CapabilityGranted
+                && event.target.as_deref() == Some("/data")
+        }));
+        assert!(events.iter().any(|event| {
+            event.kind == MonitorEventKind::CapabilityGranted
+                && event.target.as_deref() == Some("stdout")
+        }));
     }
 }
