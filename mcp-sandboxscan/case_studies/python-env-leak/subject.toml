@@ -1,0 +1,13 @@
+name = "python-env-leak"
+language = "python"
+source_dir = "fixtures/python_env_leak"
+entrypoint = "main.py"
+capabilities = ["env", "stdio"]
+
+[build]
+command = "cpython-wasi-bundle"
+args = ["main.py", "-o", "bundle"]
+
+[run]
+command = "main.py"
+args = []

@@ -13,7 +13,7 @@ A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools (paper
 - Two-layer evidence model:
   - execution evidence: backend, stdout/stderr, exit code, duration
   - MCP protocol evidence: transcript of client/server JSON-RPC messages
-  
+
 
 ## Structure (core modules under src)
 
@@ -45,10 +45,6 @@ A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools (paper
     - exec_result.rs: execution result (stdout/stderr/exit/sources)
     - wasi_hooks.rs:  source collection of env/file/http intent
     - wasm_runner.rs: wasm sandbox
-
-- collect: data collection layer, collect source/behavior from environment and process, this layer normalizes observations into security-relevant facts.
-
-
 
 - scan: extract sink from execution results and generate check report
     

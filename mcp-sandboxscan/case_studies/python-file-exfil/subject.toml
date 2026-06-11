@@ -1,0 +1,13 @@
+name = "python-file-exfil"
+language = "python"
+source_dir = "fixtures/python_file_exfil"
+entrypoint = "main.py"
+capabilities = ["file-read", "stdio"]
+
+[build]
+command = "cpython-wasi-bundle"
+args = ["main.py", "-o", "bundle"]
+
+[run]
+command = "main.py"
+args = []

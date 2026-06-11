@@ -4,7 +4,7 @@ use anyhow::{Context,Result};
 use std::process::Command;
 
 use crate::adapter::{AdaptationReport, AdaptationStatus, Adapter, BuildArtifact};
-use crate::subject::{Language, SubjectManifest};
+use crate::subject::{Capability, Language, SubjectManifest};
 // implement rustwasi from Adapter
 
 pub struct RustWasiAdapter;
@@ -16,6 +16,20 @@ impl Adapter for RustWasiAdapter {
     }
 
     fn adapt(&self, subject: &SubjectManifest) -> Result<AdaptationReport> {
+        if subject.capabilities.contains(&Capability::McpProtocol) {
+            return Ok(AdaptationReport {
+                subject_name: subject.name.clone(),
+                language: subject.language.clone(),
+                status: AdaptationStatus::Unsupported,
+                artifact: None,
+                notes: vec![],
+                blockers: vec![
+                    "RustWasiAdapter does not support mcp-protocol subjects; use NativeMcpAdapter"
+                        .to_string(),
+                ],
+            });
+        }
+
         if subject.language != Language::Rust {
             return Ok(AdaptationReport { 
                 // avoid change on ownership

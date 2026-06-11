@@ -11,3 +11,7 @@ args = ["build", "--release"]
 [run]
 command = "target/release/rust-mcp-filesystem"
 args = []
+
+[mcp]
+tool = "list_allowed_directories"
+arguments = {}

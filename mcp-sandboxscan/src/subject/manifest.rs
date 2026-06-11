@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 // load from parent folder
 use super::capability::Capability;
 use super::language::Language;
@@ -17,6 +18,14 @@ pub struct SubjectManifest {
     pub run: Option<RunSpec>,
     #[serde(default)]
     pub capabilities: Vec<Capability>,
+    pub mcp: Option<McpSpec>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct McpSpec {
+    pub tool: String,
+    #[serde(default)]
+    pub arguments: Value,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

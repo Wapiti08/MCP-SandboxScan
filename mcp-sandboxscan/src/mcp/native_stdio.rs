@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -16,6 +17,7 @@ pub struct NativeStdioMcpDriver {
     pub args: Vec<String>,
     pub current_dir: Option<PathBuf>,
     pub framing: StdioFraming,
+    pub env: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,12 +30,17 @@ impl McpDriver for NativeStdioMcpDriver {
     // analayse through child process
     fn call_tool(&self, plan: &McpCallPlan) -> Result<McpDriverResult> {
         let started = std::time::Instant::now();
-        let mut child = Command::new(&self.command)
-            .args(&self.args)
+        let mut cmd = Command::new(&self.command);
+        cmd.args(&self.args)
             .current_dir_opt(self.current_dir.as_ref())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::null())
+            .stderr(Stdio::null());
+        for (key, value) in &self.env {
+            cmd.env(key, value);
+        }
+
+        let mut child = cmd
             .spawn()
             .with_context(|| format!("failed to spawn MCP server `{}`", self.command))?;
 
@@ -204,9 +211,9 @@ fn record(transcript: &mut McpTranscript, direction: McpDirection, payload: &Val
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::scan::mcp_sink::extract_mcp_tool_result_sinks;
-    use crate::scan::mcp_scan::scan_mcp_driver_result;
+    use crate::pipeline::{ensure_rust_mcp_filesystem_repo, scan_subject};
     use crate::scan::prompt_sink::PromptSink;
+    use crate::subject::SubjectManifest;
     use serde_json::json;
 
     #[test]
@@ -247,6 +254,7 @@ for line in sys.stdin:
             args: vec!["-u".to_string(), "-c".to_string(), script.to_string()],
             current_dir: None,
             framing: StdioFraming::Newline,
+            env: HashMap::new(),
         };
         let plan = McpCallPlan {
             tool_name: "echo".to_string(),
@@ -273,55 +281,27 @@ for line in sys.stdin:
     #[test]
     fn native_stdio_driver_calls_real_rust_mcp_filesystem() {
         let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let server_dir = manifest_dir.join("external/rust-mcp-filesystem");
-        let server_bin = server_dir
-            .join("target/release/rust-mcp-filesystem")
-            .to_string_lossy()
-            .to_string();
+        ensure_rust_mcp_filesystem_repo(&manifest_dir);
 
-        if !PathBuf::from(&server_bin).exists() {
-            std::process::Command::new("cargo")
-                .args(["build", "--release"])
-                .current_dir(&server_dir)
-                .status()
-                .expect("build rust-mcp-filesystem");
-        }
+        let raw = std::fs::read_to_string("case_studies/rust-mcp-filesystem/subject.toml")
+            .expect("read subject manifest");
+        let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject manifest");
 
-        let allowed_dir = manifest_dir.join("data");
-        std::fs::create_dir_all(&allowed_dir).expect("create allowed data dir");
+        let data_dir = manifest_dir.join("data");
+        std::fs::create_dir_all(&data_dir).expect("create allowed data dir");
 
-        let driver = NativeStdioMcpDriver {
-            command: server_bin,
-            args: vec![allowed_dir.to_string_lossy().to_string()],
-            current_dir: Some(server_dir),
-            framing: StdioFraming::Newline,
-        };
-        let plan = McpCallPlan {
-            tool_name: "list_allowed_directories".to_string(),
-            arguments: json!({}),
-        };
+        let result =
+            scan_subject(&subject, &HashMap::new(), Some(&data_dir), 4096).expect("scan subject");
 
-        let result = driver
-            .call_tool(&plan)
-            .expect("call real rust-mcp-filesystem tool");
-
-        let text = result.tool_result_payload["content"][0]["text"]
-            .as_str()
-            .expect("text content");
-
-        assert!(text.contains("Allowed directories"));
-        assert!(text.contains(&allowed_dir.to_string_lossy().to_string()));
-        let sinks = extract_mcp_tool_result_sinks(&result.tool_result_payload);
-        assert_eq!(sinks.len(), 1);
-        assert!(matches!(sinks[0], PromptSink::McpToolResultText { .. }));
-
-        let report = scan_mcp_driver_result(result, vec![]);
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&report).expect("serialize MCP scan report")
-        );
-        assert_eq!(report.summary.num_sinks, 1);
-        assert_eq!(report.summary.num_flows, 0);
-        assert_eq!(report.mcp_transcript.as_ref().unwrap().events.len(), 5);
+        assert_eq!(result.report.summary.num_sinks, 1);
+        assert_eq!(result.report.summary.num_flows, 0);
+        assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
+        assert!(matches!(
+            result.report.sinks[0],
+            PromptSink::McpToolResultText { .. }
+        ));
+        assert!(result.report.sinks[0]
+            .as_text()
+            .contains("Allowed directories"));
     }
 }

@@ -1,0 +1,13 @@
+name = "python-benign"
+language = "python"
+source_dir = "fixtures/python_benign_tool"
+entrypoint = "main.py"
+capabilities = ["stdio"]
+
+[build]
+command = "cpython-wasi-bundle"
+args = ["main.py", "-o", "bundle"]
+
+[run]
+command = "main.py"
+args = []

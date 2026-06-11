@@ -1,4 +1,5 @@
 pub mod go_wasi;
+pub mod native_mcp;
 pub mod python_wasi;
 pub mod rust_wasi;
 pub mod typescript_wasi;
@@ -16,6 +17,11 @@ pub enum BuildArtifact {
     Wasm {
         wasm_path: PathBuf,
     },
+    PythonWasm {
+        interpreter_wasm: PathBuf,
+        work_dir: PathBuf,
+        argv: Vec<String>,
+    },
     NativeCommand {
         command: String,
         args: Vec<String>,
@@ -25,7 +31,7 @@ pub enum BuildArtifact {
     },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AdaptationStatus {
     DirectWasm,
     WasmWithShim,

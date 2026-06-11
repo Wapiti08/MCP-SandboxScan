@@ -20,6 +20,9 @@ use super::{WasiExecutionIO, WasiRuntime};
 pub struct WasiPreview1 {
     pub env: HashMap<String, String>,
     pub data_dir: Option<PathBuf>,
+    pub work_dir: Option<PathBuf>,
+    pub guest_root: Option<PathBuf>,
+    pub args: Vec<String>,
     pub max_output_bytes: usize,
 
     stdout: MemoryOutputPipe,
@@ -34,9 +37,23 @@ impl WasiPreview1 {
         data_dir: Option<PathBuf>,
         max_output_bytes: usize,
     ) -> Self {
+        Self::new_with_args(env, data_dir, None, None, Vec::new(), max_output_bytes)
+    }
+
+    pub fn new_with_args(
+        env: HashMap<String, String>,
+        data_dir: Option<PathBuf>,
+        work_dir: Option<PathBuf>,
+        guest_root: Option<PathBuf>,
+        args: Vec<String>,
+        max_output_bytes: usize,
+    ) -> Self {
         Self {
             env,
             data_dir,
+            work_dir,
+            guest_root,
+            args,
             max_output_bytes,
             stdout: MemoryOutputPipe::new(max_output_bytes),
             stderr: MemoryOutputPipe::new(max_output_bytes),
@@ -93,6 +110,42 @@ impl WasiRuntime for WasiPreview1 {
                     "capability": "env",
                     "key": k,
                     "value_len": v.len()
+                }),
+            });
+        }
+
+        for arg in &self.args {
+            builder.arg(arg);
+        }
+
+        if let Some(dir) = &self.guest_root {
+            builder.preopened_dir(dir, "/", DirPerms::all(), FilePerms::all())?;
+            monitor_events.push(MonitorEvent {
+                kind: MonitorEventKind::CapabilityGranted,
+                actor: "wasi-runtime".to_string(),
+                target: Some("/".to_string()),
+                evidence: json!({
+                    "capability": "filesystem-preopen",
+                    "guest_path": "/",
+                    "host_path": dir,
+                    "dir_perms": "all",
+                    "file_perms": "all"
+                }),
+            });
+        }
+
+        if let Some(dir) = &self.work_dir {
+            builder.preopened_dir(dir, "/work", DirPerms::all(), FilePerms::all())?;
+            monitor_events.push(MonitorEvent {
+                kind: MonitorEventKind::CapabilityGranted,
+                actor: "wasi-runtime".to_string(),
+                target: Some("/work".to_string()),
+                evidence: json!({
+                    "capability": "filesystem-preopen",
+                    "guest_path": "/work",
+                    "host_path": dir,
+                    "dir_perms": "all",
+                    "file_perms": "all"
                 }),
             });
         }

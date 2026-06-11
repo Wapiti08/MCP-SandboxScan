@@ -51,18 +51,18 @@ fn scan_subject_for_matrix(
     max_output_bytes: usize,
 ) -> StudyCaseResult {
     match load_subject(subject_path).and_then(|subject| {
-        let report = scan_subject(&subject, env, data_dir, max_output_bytes)?;
-        Ok((subject, report))
+        let result = scan_subject(&subject, env, data_dir, max_output_bytes)?;
+        Ok((subject, result))
     }) {
-        Ok((subject, report)) => StudyCaseResult {
+        Ok((subject, result)) => StudyCaseResult {
             subject_name: subject.name,
             subject_path: subject_path.to_path_buf(),
             language: subject.language,
-            wasm_status: WasmPortabilityStatus::DirectWasm,
-            num_sources: report.summary.num_sources,
-            num_sinks: report.summary.num_sinks,
-            num_flows: report.summary.num_flows,
-            has_external_to_prompt_flow: report.summary.has_external_to_prompt_flow,
+            wasm_status: result.adaptation_status.into(),
+            num_sources: result.report.summary.num_sources,
+            num_sinks: result.report.summary.num_sinks,
+            num_flows: result.report.summary.num_flows,
+            has_external_to_prompt_flow: result.report.summary.has_external_to_prompt_flow,
             error: None,
         },
         Err(err) => StudyCaseResult {
@@ -112,5 +112,87 @@ mod tests {
         assert_eq!(matrix.summary.detected_cases, 1);
         assert!(matrix.cases[0].has_external_to_prompt_flow);
         assert!(matrix.cases[0].num_flows > 0);
+    }
+
+    fn env_with_demo_secret() -> HashMap<String, String> {
+        let mut env = HashMap::new();
+        env.insert(
+            "DEMO_SECRET".to_string(),
+            "SEKRET_0123456789abcdef".to_string(),
+        );
+        env
+    }
+
+    fn six_case_subject_paths() -> Vec<PathBuf> {
+        vec![
+            PathBuf::from("case_studies/rust-benign/subject.toml"),
+            PathBuf::from("case_studies/rust-env-leak/subject.toml"),
+            PathBuf::from("case_studies/rust-file-exfil/subject.toml"),
+            PathBuf::from("case_studies/python-benign/subject.toml"),
+            PathBuf::from("case_studies/python-env-leak/subject.toml"),
+            PathBuf::from("case_studies/python-file-exfil/subject.toml"),
+        ]
+    }
+
+    #[test]
+    #[ignore = "requires CPython WASI runtime"]
+    fn matrix_runs_rust_python_six_case_study() {
+        let data_dir = std::env::temp_dir().join(format!(
+            "mcp-sandboxscan-matrix-test-{}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&data_dir).unwrap();
+        std::fs::write(data_dir.join("secret.txt"), "top-secret\n").unwrap();
+
+        let matrix = run_subject_matrix(
+            &six_case_subject_paths(),
+            &env_with_demo_secret(),
+            Some(&data_dir),
+            4096,
+        );
+        let _ = std::fs::remove_dir_all(&data_dir);
+
+        assert_eq!(matrix.summary.total_cases, 6);
+        assert_eq!(matrix.summary.scanned_cases, 6);
+        assert_eq!(matrix.summary.failed_cases, 0);
+        assert_eq!(matrix.summary.detected_cases, 2);
+        assert_eq!(matrix.summary.total_flows, 2);
+
+        let pairs = [
+            ("rust-benign", "python-benign"),
+            ("rust-env-leak", "python-env-leak"),
+            ("rust-file-exfil", "python-file-exfil"),
+        ];
+
+        for (rust_name, python_name) in pairs {
+            let rust_case = matrix
+                .cases
+                .iter()
+                .find(|case| case.subject_name == rust_name)
+                .unwrap_or_else(|| panic!("missing {rust_name}"));
+            let python_case = matrix
+                .cases
+                .iter()
+                .find(|case| case.subject_name == python_name)
+                .unwrap_or_else(|| panic!("missing {python_name}"));
+
+            assert_eq!(
+                rust_case.has_external_to_prompt_flow,
+                python_case.has_external_to_prompt_flow,
+                "{rust_name} vs {python_name}"
+            );
+            assert_eq!(rust_case.num_flows, python_case.num_flows, "{rust_name} vs {python_name}");
+            assert_eq!(rust_case.num_sinks, python_case.num_sinks, "{rust_name} vs {python_name}");
+            assert_eq!(
+                rust_case.wasm_status,
+                WasmPortabilityStatus::DirectWasm,
+                "{rust_name}"
+            );
+            assert_eq!(
+                python_case.wasm_status,
+                WasmPortabilityStatus::WasmWithShim,
+                "{python_name}"
+            );
+        }
     }
 }

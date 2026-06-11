@@ -4,4 +4,4 @@ pub mod manifest;
 
 pub use capability::Capability;
 pub use language::Language;
-pub use manifest::{BuildSpec, RunSpec, SubjectManifest};
+pub use manifest::{BuildSpec, McpSpec, RunSpec, SubjectManifest};

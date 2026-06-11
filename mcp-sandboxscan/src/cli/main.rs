@@ -93,7 +93,7 @@ pub fn entry() -> Result<()> {
         let subject: SubjectManifest = toml::from_str(&raw)
             .with_context(|| format!("Failed to parse subject {}", subject_path.display()))?;
     
-        let report = scan_subject(
+        let result = scan_subject(
             &subject,
             &env,
             args.data_dir.as_ref().map(|v| v.as_path()),
@@ -101,7 +101,7 @@ pub fn entry() -> Result<()> {
         )
         .with_context(|| format!("Failed to scan subject {}", subject.name))?;
     
-        serde_json::to_string_pretty(&report)
+        serde_json::to_string_pretty(&result.report)
             .context("Failed to serialize scan report to JSON")?
     } else if let Some(wasm_path) = &args.wasm {
         if !wasm_path.exists() {

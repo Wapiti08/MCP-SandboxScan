@@ -33,17 +33,58 @@ pub fn run_dynamic_scan(
     let runner = WasmRunner::default();
     let exec = runner.run(&wasm_bytes, &runtime)?;
 
-    // 2) Extract prompt sinks from stdout
+    build_scan_report(exec, env, data_dir, &runtime)
+}
+
+pub fn run_python_dynamic_scan(
+    interpreter_wasm: &Path,
+    work_dir: &Path,
+    argv: &[String],
+    data_dir: Option<&Path>,
+    env: &HashMap<String, String>,
+    max_output_bytes: usize,
+) -> Result<ScanReport> {
+    let wasm_bytes = fs::read(interpreter_wasm).with_context(|| {
+        format!(
+            "failed to read Python interpreter wasm {}",
+            interpreter_wasm.display()
+        )
+    })?;
+
+    let python_root = interpreter_wasm
+        .parent()
+        .map(|p| p.to_path_buf())
+        .filter(|p| !p.as_os_str().is_empty());
+
+    let runtime = WasiPreview1::new_with_args(
+        env.clone(),
+        data_dir.map(|p| p.to_path_buf()),
+        Some(work_dir.to_path_buf()),
+        python_root,
+        argv.to_vec(),
+        max_output_bytes,
+    );
+
+    let runner = WasmRunner::default();
+    let exec = runner.run(&wasm_bytes, &runtime)?;
+
+    build_scan_report(exec, env, data_dir, &runtime)
+}
+
+fn build_scan_report(
+    exec: crate::sandbox::exec_result::WasmExecResult,
+    env: &HashMap<String, String>,
+    data_dir: Option<&Path>,
+    runtime: &WasiPreview1,
+) -> Result<ScanReport> {
     let mut sinks = extract_prompt_sinks(&exec.stdout);
     sinks.extend(extract_tool_return_sinks(&exec.stdout));
 
-    // 3) Collect external sources (MVP)
     let mut sources: Vec<TaintSource> = vec![];
     sources.extend(collect_env_sources(env));
-    sources.extend(collect_file_sources(data_dir, 64 * 1024)?); // the file is max 64KB
+    sources.extend(collect_file_sources(data_dir, 64 * 1024)?);
     sources.extend(collect_http_intents(&exec.stdout, &exec.stderr));
 
-    // 4) Detect flows (string-level)
     let flows = detect_flows(&sources, &sinks);
 
     let mut events = Vec::new();
@@ -51,7 +92,7 @@ pub fn run_dynamic_scan(
     events.extend(source_inventory_events(&sources));
     events.extend(sink_events(&sinks));
     events.extend(flow_events(&flows));
-    
+
     let summary = Summary {
         num_sources: sources.len(),
         num_sinks: sinks.len(),
