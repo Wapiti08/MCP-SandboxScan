@@ -53,7 +53,8 @@ pub fn run_dynamic_scan(
     };
 
     Ok(ScanReport {
-        exec,
+        exec: exec.into(),
+        mcp_transcript: None,
         sources,
         sinks,
         flows,

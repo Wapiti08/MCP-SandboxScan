@@ -5,6 +5,8 @@ The interface to call and run real MCP
 */
 
 use super::transcript::McpTranscript;
+use crate::sandbox::exec_evidence::ExecutionEvidence;
+
 
 pub struct McpCallPlan {
     pub tool_name: String,
@@ -12,6 +14,7 @@ pub struct McpCallPlan {
 }
 
 pub struct McpDriverResult {
+    pub exec: ExecutionEvidence,
     pub transcript: McpTranscript,
     pub tool_result_payload: Value,
 }

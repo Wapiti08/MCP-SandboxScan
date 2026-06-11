@@ -37,7 +37,7 @@ fn main() -> Result<()> {
     )?;
 
     println!("== Exec ==");
-    println!("exit_code: {}", report.exec.exit_code);
+    println!("exit_code: {:?}", report.exec.exit_code);
     println!("duration_ms: {}", report.exec.duration_ms);
     println!("stdout:\n{}", report.exec.stdout);
     println!("stderr:\n{}", report.exec.stderr);

@@ -2,14 +2,18 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::sandbox::exec_result::WasmExecResult;
 use crate::scan::prompt_sink::PromptSink;
 use crate::taint::flow::FlowMatch;
 use crate::taint::source::TaintSource;
+use crate::mcp::transcript::McpTranscript;
+use crate::sandbox::exec_evidence::ExecutionEvidence;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScanReport {
-    pub exec: WasmExecResult,
+    pub exec: ExecutionEvidence,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mcp_transcript: Option<McpTranscript>,
 
     pub sources: Vec<TaintSource>,
     pub sinks: Vec<PromptSink>,

@@ -3,4 +3,4 @@ pub mod prompt_sink;
 pub mod report;
 pub mod tool_return_sink;
 pub mod mcp_sink;
-pub mod native_stdio;
+pub mod mcp_scan;
