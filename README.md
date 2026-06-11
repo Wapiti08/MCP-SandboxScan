@@ -1,11 +1,72 @@
 # MCP-SandboxScan
 A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools (paper coming soon)
 
+## Features
 
-## What it detects (MVP)
-- Prompt sinks: stdout `PROMPT:` lines, JSON `prompt/messages`
-- External sources: env vars, file contents under `/data`, HTTP fetch intents in output
-- External-to-prompt flows: string-level snippet matches between sources and sinks
+- WASM/WASI execution for sandbox-compatible MCP-like tools.
+- Source collection from environment variables, files under `/data`, and HTTP fetch intents.
+- LLM-facing sink extraction from stdout `PROMPT:` lines, JSON `prompt/messages`, tool-return JSON leaves, and MCP `tools/call` text results.
+- String-level external-to-sink flow detection.
+- Subject-based case study pipeline via `subject.toml`.
+- Multi-case study matrix generation with `--study`.
+- Real MCP stdio protocol smoke testing with `initialize`, `notifications/initialized`, and `tools/call`.
+- Two-layer evidence model:
+  - execution evidence: backend, stdout/stderr, exit code, duration
+  - MCP protocol evidence: transcript of client/server JSON-RPC messages
+  
+
+## Structure (core modules under src)
+
+- cli: entrypoint of command, parse parameters and running mode
+
+    - main.rs: entrypoint of scanner
+
+- subject: describe tested MCP server
+
+    - language.rs   # Rust/Go/Python/TypeScript
+    - capability.rs # fs/ env/ network / subprocess/ database
+    - manifest.rs  # 
+
+- adapter: multi-language adapter, try to convert subject to executable artifact
+
+    - rust_wasi.rs: Rust -> wasm32-wasip1
+    - go_wasi.rs: Go -> WASI/TinyGo
+    - python_wasi.rs: Python + runtime/shim
+    - typescript_wasi.rs: Node/JS runtime or javy/componentize
+    - unsupported.rs: the reasons for not supported
+
+- mcp: This layer speaks or represents the MCP protocol.
+
+    It handles initialize, notifications/initialized, tools/list, tools/call, resources/read, prompts/get
+
+
+- sandbox: execute artifacts and collect stdout/stderr/exit code/etc
+
+    - exec_result.rs: execution result (stdout/stderr/exit/sources)
+    - wasi_hooks.rs:  source collection of env/file/http intent
+    - wasm_runner.rs: wasm sandbox
+
+- collect: data collection layer, collect source/behavior from environment and process, this layer normalizes observations into security-relevant facts.
+
+
+
+- scan: extract sink from execution results and generate check report
+    
+    - dynamic_scan.rs: orchestrator from execute to scan to report
+    - prompt_sink.rs: prompt/messages/stdout sink
+    - report.rs 
+
+- taint: taint analysis layer
+
+    - flow.rs    source to sink at string-level
+    - source.rs   define source
+
+- attack: attack simulation layer, define and run attack scenarios
+
+    - scenario.rs: prompt injection / env leak / file exfiltration
+    - runner.rs: run attack for subject
+
+- study: experiment design for evaluation
 
 ## Dependency
 ```
@@ -66,55 +127,69 @@ cargo run --bin mcp-sandboxscan -- \
   --env API_KEY=secret
 ```
 
-## Structure (core modules under src)
+## Real Rust MCP Server
 
-- cli: entrypoint of command, parse parameters and running mode
+The current real MCP smoke test uses `rust-mcp-filesystem` under:
 
-    - main.rs: entrypoint of scanner
+```text
+mcp-sandboxscan/external/rust-mcp-filesystem
+```
 
-- subject: describe tested MCP server
+If the external server is not present yet:
 
-    - language.rs   # Rust/Go/Python/TypeScript
-    - capability.rs # fs/ env/ network / subprocess/ database
-    - manifest.rs  # 
+```bash
+cd mcp-sandboxscan
+mkdir -p external
+git clone https://github.com/rust-mcp-stack/rust-mcp-filesystem external/rust-mcp-filesystem
+```
 
-- adapter: multi-language adapter, try to convert subject to executable artifact
+Build the real Rust MCP server:
 
-    - rust_wasi.rs: Rust -> wasm32-wasip1
-    - go_wasi.rs: Go -> WASI/TinyGo
-    - python_wasi.rs: Python + runtime/shim
-    - typescript_wasi.rs: Node/JS runtime or javy/componentize
-    - unsupported.rs: the reasons for not supported
+```bash
+cd mcp-sandboxscan/external/rust-mcp-filesystem
+cargo build --release
+```
 
-- mcp: This layer speaks or represents the MCP protocol.
+Run the real MCP stdio smoke test and print the JSON report:
 
-    It handles initialize, notifications/initialized, tools/list, tools/call, resources/read, prompts/get
+```bash
+cd mcp-sandboxscan
+cargo test --lib mcp::native_stdio::tests::native_stdio_driver_calls_real_rust_mcp_filesystem -- --nocapture
+```
 
+This test runs:
 
-- sandbox: execute artifacts and collect stdout/stderr/exit code/etc
+```text
+rust-mcp-filesystem
+  -> initialize
+  -> notifications/initialized
+  -> tools/call list_allowed_directories
+  -> MCP tool result sink extraction
+  -> ScanReport JSON output
+```
 
-    - exec_result.rs: execution result (stdout/stderr/exit/sources)
-    - wasi_hooks.rs:  source collection of env/file/http intent
-    - wasm_runner.rs: wasm sandbox
+Expected report shape:
 
-- collect: data collection layer, collect source/behavior from environment and process, this layer normalizes observations into security-relevant facts.
+```json
+{
+  "exec": {
+    "backend": "native-stdio",
+    "exit_code": null
+  },
+  "mcp_transcript": {
+    "events": []
+  },
+  "sinks": [
+    {
+      "type": "McpToolResultText"
+    }
+  ],
+  "summary": {
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}
+```
 
-
-
-- scan: extract sink from execution results and generate check report
-    
-    - dynamic_scan.rs: orchestrator from execute to scan to report
-    - prompt_sink.rs: prompt/messages/stdout sink
-    - report.rs 
-
-- taint: taint analysis layer
-
-    - flow.rs    source to sink at string-level
-    - source.rs   define source
-
-- attack: attack simulation layer, define and run attack scenarios
-
-    - scenario.rs: prompt injection / env leak / file exfiltration
-    - runner.rs: run attack for subject
-
-- study: experiment design for evaluation
+Note: this path is native MCP protocol testing, not WASM sandbox execution. It validates MCP-level monitoring and report generation for a real Rust MCP server.
