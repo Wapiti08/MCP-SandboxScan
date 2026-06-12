@@ -1,5 +1,5 @@
 # MCP-SandboxScan
-A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools (paper coming A dynamic security analysis framework for MCP tools and servers, combining WASM/WASI sandboxed execution, native MCP protocol monitoring, and source-to-sink data-flow detection.
+A dynamic security analysis framework for MCP tools and servers, combining WASM/WASI sandboxed execution, native MCP protocol monitoring, and source-to-sink data-flow detection.
 
 MCP-SandboxScan executes or interacts with MCP implementations, collects runtime and protocol evidence, and detects potentially unsafe flows from external inputs—including environment variables, files, and network responses—to LLM-visible outputs.
 
