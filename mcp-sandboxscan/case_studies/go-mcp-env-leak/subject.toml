@@ -1,0 +1,17 @@
+name = "go-mcp-env-leak"
+language = "go"
+source_dir = "fixtures/go_mcp_env_leak"
+entrypoint = "main.go"
+capabilities = ["env", "stdio", "mcp-protocol"]
+
+[build]
+command = "go"
+args = ["build", "-o", "server", "."]
+
+[run]
+command = "./server"
+args = []
+
+[mcp]
+tool = "get_status"
+arguments = {}

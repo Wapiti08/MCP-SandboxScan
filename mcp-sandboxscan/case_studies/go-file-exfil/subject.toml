@@ -1,0 +1,13 @@
+name = "go-file-exfil"
+language = "go"
+source_dir = "fixtures/go_file_exfil_tool"
+entrypoint = "main.go"
+capabilities = ["file-read", "stdio"]
+
+[build]
+command = "bash"
+args = ["-c", "GOOS=wasip1 GOARCH=wasm go build -o tool.wasm ."]
+
+[run]
+command = "tool.wasm"
+args = []

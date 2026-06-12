@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use crate::pipeline::ensure_rust_mcp_filesystem_repo;
+use crate::pipeline::fixtures::ensure_rust_mcp_filesystem_repo;
 
 use super::helpers::{assert_basic_mcp_driver_result, scan_case};
 

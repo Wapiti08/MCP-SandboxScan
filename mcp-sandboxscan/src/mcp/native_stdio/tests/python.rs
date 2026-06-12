@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use crate::pipeline::{
+use crate::pipeline::fixtures::{
     ensure_fastmcp_examples, ensure_python_fastmcp_venv, ensure_python_venv,
 };
 

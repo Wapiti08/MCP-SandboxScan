@@ -1,5 +1,7 @@
 # MCP-SandboxScan
-A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools (paper coming soon)
+A WASM-based Secure Execution and Hybrid Analysis Framework for MCP Tools (paper coming A dynamic security analysis framework for MCP tools and servers, combining WASM/WASI sandboxed execution, native MCP protocol monitoring, and source-to-sink data-flow detection.
+
+MCP-SandboxScan executes or interacts with MCP implementations, collects runtime and protocol evidence, and detects potentially unsafe flows from external inputs—including environment variables, files, and network responses—to LLM-visible outputs.
 
 ## Features
 
@@ -70,6 +72,15 @@ cargo add cap_std
 # build tool.wasm
 rustup target add wasm32-wasip1 || true
 
+# Go (native MCP + WASI case studies)
+go version   # >= 1.21 for wasip1 cross-compile; >= 1.23 for go-sdk MCP fixtures
+
+# Optional TinyGo alternative for WASI builds
+./scripts/check-tinygo.sh
+
+# Python (WASI + PyPI native MCP case studies)
+python3 --version   # >= 3.10 recommended
+python3 -m venv /tmp/venv-check && rm -rf /tmp/venv-check   # ensure venv module works
 ```
 
 ## Demo
@@ -189,3 +200,132 @@ Expected report shape:
 ```
 
 Note: this path is native MCP protocol testing, not WASM sandbox execution. It validates MCP-level monitoring and report generation for a real Rust MCP server.
+
+## Go Ecosystem Case Studies
+
+Go support uses the same capability-driven pipeline as Python and Rust:
+
+- **WASI tools** (`go-benign`, `go-env-leak`, `go-file-exfil`, `go-c2-beacon`): `GoWasiAdapter` builds `GOOS=wasip1 GOARCH=wasm` artifacts and runs them in `WasiPreview1`.
+- **Native MCP stdio** (`go-mcp-echo`, `go-mcp-env-leak`, `go-mcp-c2-beacon`): `mcp-protocol` capability routes to `NativeMcpAdapter`; servers use [modelcontextprotocol/go-sdk](https://github.com/modelcontextprotocol/go-sdk).
+
+Build a Go WASI subject:
+
+```bash
+cd mcp-sandboxscan
+cargo run --bin mcp-sandboxscan -- --subject case_studies/go-env-leak/subject.toml --env DEMO_SECRET=SEKRET_0123456789abcdef
+```
+
+Run Go native MCP integration tests:
+
+```bash
+cd mcp-sandboxscan
+cargo test --lib mcp::native_stdio::tests::go:: -- --nocapture
+cargo test --lib pipeline::tests::scans_go_mcp_echo_subject -- --nocapture
+cargo test --lib pipeline::tests::scans_go_env_leak_subject -- --nocapture
+```
+
+WASI builds default to:
+
+```bash
+GOOS=wasip1 GOARCH=wasm go build -o tool.wasm .
+```
+
+TinyGo (`tinygo build -target wasip1 -o tool.wasm .`) is optional; see `scripts/check-tinygo.sh`.
+
+## Python / PyPI Ecosystem Case Studies
+
+Python support mirrors Rust and Go with two execution paths:
+
+- **WASI tools** (`python-benign`, `python-env-leak`, `python-file-exfil`): `PythonWasiAdapter` bundles scripts with the CPython WASI runtime and runs them in `WasiPreview1`.
+- **Native MCP stdio via PyPI** (`python-mcp-server-fetch`, `python-fastmcp-*`): `mcp-protocol` capability routes to `NativeMcpAdapter`; each subject creates a local `.venv` and `pip install`s wheels from PyPI (`fastmcp`, `mcp-server-fetch`, etc.).
+
+### CPython WASI runtime (WASI path)
+
+WASI subjects need a `python.wasm` interpreter. Fetch the default build:
+
+```bash
+cd mcp-sandboxscan
+./scripts/fetch-cpython-wasi.sh
+```
+
+Or point to an existing runtime:
+
+```bash
+export MCP_SANDBOXSCAN_PYTHON_WASM=/path/to/python.wasm
+```
+
+Run a Python WASI subject:
+
+```bash
+cd mcp-sandboxscan
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/python-env-leak/subject.toml \
+  --env DEMO_SECRET=SEKRET_0123456789abcdef
+
+# file-exfil needs a mounted data directory
+mkdir -p data && echo "top-secret" > data/secret.txt
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/python-file-exfil/subject.toml \
+  --data-dir ./data
+```
+
+Rust vs Python portability matrix (6 subjects):
+
+```bash
+cd mcp-sandboxscan
+chmod +x demo/run_rust_python_matrix.sh
+DATA_DIR="$(pwd)/data" ./demo/run_rust_python_matrix.sh
+```
+
+### PyPI native MCP servers
+
+PyPI-based subjects install dependencies into `fixtures/<name>/.venv` or `external/fastmcp/examples/.venv` on first run. Venv directories are gitignored.
+
+| Case study | PyPI package | Role |
+|------------|--------------|------|
+| `python-mcp-server-fetch` | `mcp-server-fetch` | Network fetch tool; egress proxy records blocked outbound |
+| `python-fastmcp-echo` | `fastmcp` | Benign echo tool |
+| `python-fastmcp-env-leak` | `fastmcp` | Env secret leaks into tool result |
+| `python-fastmcp-c2-beacon` | `fastmcp` | C2 beacon via HTTP; egress intercepted |
+| `python-fastmcp-upstream-echo` | `fastmcp` | Upstream [PrefectHQ/fastmcp](https://github.com/PrefectHQ/fastmcp) `examples/simple_echo.py` |
+
+Run a PyPI MCP subject (build step runs `pip install` automatically):
+
+```bash
+cd mcp-sandboxscan
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/python-fastmcp-echo/subject.toml
+
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/python-fastmcp-env-leak/subject.toml \
+  --env DEMO_SECRET=SEKRET_0123456789abcdef
+
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/python-mcp-server-fetch/subject.toml
+```
+
+Upstream FastMCP examples (fetched once into `external/fastmcp/examples/`):
+
+```bash
+cd mcp-sandboxscan
+./scripts/fetch-fastmcp-examples.sh
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/python-fastmcp-upstream-echo/subject.toml
+```
+
+Run Python / PyPI integration tests:
+
+```bash
+cd mcp-sandboxscan
+cargo test --lib mcp::native_stdio::tests::python:: -- --nocapture
+cargo test --lib pipeline::tests::scans_python_mcp_server_fetch_subject -- --nocapture
+cargo test --lib pipeline::tests::scans_python_fastmcp_echo_subject -- --nocapture
+cargo test --lib pipeline::tests::scans_python_fastmcp_env_leak_subject -- --nocapture
+cargo test --lib pipeline::tests::scans_python_fastmcp_c2_beacon_subject -- --nocapture
+cargo test --lib pipeline::tests::scans_python_fastmcp_upstream_echo_subject -- --nocapture
+
+# WASI subjects (requires CPython WASI runtime)
+cargo test --lib pipeline::tests::scans_python_env_leak_subject -- --nocapture --ignored
+```
+
+Note: the PyPI path is native MCP protocol testing (stdio JSON-RPC), not WASM sandbox execution. It validates MCP-level monitoring, egress proxying, and report generation for real Python MCP servers installed from PyPI.

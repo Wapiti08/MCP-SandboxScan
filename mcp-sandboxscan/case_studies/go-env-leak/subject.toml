@@ -1,0 +1,13 @@
+name = "go-env-leak"
+language = "go"
+source_dir = "fixtures/go_env_leak_tool"
+entrypoint = "main.go"
+capabilities = ["env", "stdio"]
+
+[build]
+command = "bash"
+args = ["-c", "GOOS=wasip1 GOARCH=wasm go build -o tool.wasm ."]
+
+[run]
+command = "tool.wasm"
+args = []

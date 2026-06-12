@@ -8,3 +8,7 @@ Cargo.lock
 **/data
 external/
 **/.venv/
+fixtures/go_*/server
+fixtures/go_mcp_*/server
+fixtures/go_*/tool.wasm
+fixtures/go_*_tool/tool.wasm

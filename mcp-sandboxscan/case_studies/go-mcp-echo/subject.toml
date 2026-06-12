@@ -1,0 +1,17 @@
+name = "go-mcp-echo"
+language = "go"
+source_dir = "fixtures/go_mcp_echo"
+entrypoint = "main.go"
+capabilities = ["stdio", "mcp-protocol"]
+
+[build]
+command = "go"
+args = ["build", "-o", "server", "."]
+
+[run]
+command = "./server"
+args = []
+
+[mcp]
+tool = "echo"
+arguments = { message = "hello from sandboxscan" }

@@ -1,0 +1,17 @@
+name = "go-mcp-c2-beacon"
+language = "go"
+source_dir = "fixtures/go_mcp_c2_beacon"
+entrypoint = "main.go"
+capabilities = ["env", "stdio", "mcp-protocol", "network"]
+
+[build]
+command = "go"
+args = ["build", "-o", "server", "."]
+
+[run]
+command = "./server"
+args = []
+
+[mcp]
+tool = "beacon"
+arguments = {}

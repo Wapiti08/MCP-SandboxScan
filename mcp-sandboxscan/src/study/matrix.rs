@@ -195,4 +195,76 @@ mod tests {
             );
         }
     }
+
+    fn go_wasi_subject_paths() -> Vec<PathBuf> {
+        vec![
+            PathBuf::from("case_studies/go-benign/subject.toml"),
+            PathBuf::from("case_studies/go-env-leak/subject.toml"),
+            PathBuf::from("case_studies/go-file-exfil/subject.toml"),
+        ]
+    }
+
+    #[test]
+    #[ignore = "requires Go toolchain for wasip1 cross-compile"]
+    fn matrix_runs_rust_go_wasi_parity() {
+        let data_dir = std::env::temp_dir().join(format!(
+            "mcp-sandboxscan-go-matrix-test-{}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&data_dir).unwrap();
+        std::fs::write(data_dir.join("secret.txt"), "top-secret\n").unwrap();
+
+        let rust_paths = vec![
+            PathBuf::from("case_studies/rust-benign/subject.toml"),
+            PathBuf::from("case_studies/rust-env-leak/subject.toml"),
+            PathBuf::from("case_studies/rust-file-exfil/subject.toml"),
+        ];
+        let rust_matrix = run_subject_matrix(
+            &rust_paths,
+            &env_with_demo_secret(),
+            Some(&data_dir),
+            4096,
+        );
+        let go_matrix = run_subject_matrix(
+            &go_wasi_subject_paths(),
+            &env_with_demo_secret(),
+            Some(&data_dir),
+            4096,
+        );
+        let _ = std::fs::remove_dir_all(&data_dir);
+
+        assert_eq!(go_matrix.summary.failed_cases, 0);
+
+        let pairs = [
+            ("rust-benign", "go-benign"),
+            ("rust-env-leak", "go-env-leak"),
+            ("rust-file-exfil", "go-file-exfil"),
+        ];
+
+        for (rust_name, go_name) in pairs {
+            let rust_case = rust_matrix
+                .cases
+                .iter()
+                .find(|case| case.subject_name == rust_name)
+                .unwrap_or_else(|| panic!("missing {rust_name}"));
+            let go_case = go_matrix
+                .cases
+                .iter()
+                .find(|case| case.subject_name == go_name)
+                .unwrap_or_else(|| panic!("missing {go_name}"));
+
+            assert_eq!(
+                rust_case.has_external_to_prompt_flow,
+                go_case.has_external_to_prompt_flow,
+                "{rust_name} vs {go_name}"
+            );
+            assert_eq!(rust_case.num_flows, go_case.num_flows, "{rust_name} vs {go_name}");
+            assert_eq!(rust_case.num_sinks, go_case.num_sinks, "{rust_name} vs {go_name}");
+            assert_eq!(
+                go_case.wasm_status,
+                WasmPortabilityStatus::DirectWasm,
+                "{go_name}"
+            );
+        }
+    }
 }
