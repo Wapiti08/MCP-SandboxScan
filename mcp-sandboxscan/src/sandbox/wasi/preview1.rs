@@ -1,17 +1,22 @@
 use std::collections::HashMap;
+use std::future::Future;
+use std::net::SocketAddr;
 use std::path::PathBuf;
-use std::sync::Mutex;
+use std::pin::Pin;
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 use anyhow::Result;
 use serde_json::json;
 use wasmtime::Linker;
 
+use crate::collect::NetworkCollector;
 use crate::monitor::event::{MonitorEvent, MonitorEventKind};
 
 use wasmtime_wasi::filesystem::{DirPerms, FilePerms};
 use wasmtime_wasi::p1::{self, WasiP1Ctx};
 use wasmtime_wasi::p2::pipe::MemoryOutputPipe;
+use wasmtime_wasi::sockets::SocketAddrUse;
 use wasmtime_wasi::WasiCtxBuilder;
 
 use super::{WasiExecutionIO, WasiRuntime};
@@ -29,6 +34,7 @@ pub struct WasiPreview1 {
     stderr: MemoryOutputPipe,
     start: Mutex<Option<Instant>>,
     monitor_events: Mutex<Vec<MonitorEvent>>,
+    network_collector: Arc<NetworkCollector>,
 }
 
 impl WasiPreview1 {
@@ -59,11 +65,16 @@ impl WasiPreview1 {
             stderr: MemoryOutputPipe::new(max_output_bytes),
             start: Mutex::new(None),
             monitor_events: Mutex::new(Vec::new()),
+            network_collector: Arc::new(NetworkCollector::new()),
         }
     }
 
     pub fn take_monitor_events(&self) -> Vec<MonitorEvent> {
         std::mem::take(&mut *self.monitor_events.lock().unwrap())
+    }
+
+    pub fn network_collector(&self) -> Arc<NetworkCollector> {
+        Arc::clone(&self.network_collector)
     }
 }
 
@@ -170,7 +181,28 @@ impl WasiRuntime for WasiPreview1 {
                 }),
             });
         }
-    
+
+        let network_collector = Arc::clone(&self.network_collector);
+        builder.allow_tcp(true);
+        builder.allow_udp(true);
+        builder.socket_addr_check(move |addr: SocketAddr, use_case: SocketAddrUse| {
+            let collector = Arc::clone(&network_collector);
+            let allowed = false;
+            collector.record_socket_attempt(addr, use_case, allowed);
+            Box::pin(async move { allowed })
+                as Pin<Box<dyn Future<Output = bool> + Send + Sync>>
+        });
+        monitor_events.push(MonitorEvent {
+            kind: MonitorEventKind::CapabilityGranted,
+            actor: "wasi-runtime".to_string(),
+            target: Some("network-monitor".to_string()),
+            evidence: json!({
+                "capability": "network-monitor",
+                "policy": "deny-by-default",
+                "tcp": true,
+                "udp": true
+            }),
+        });
 
         Ok(builder.build_p1())
     }
@@ -239,6 +271,10 @@ mod tests {
         assert!(events.iter().any(|event| {
             event.kind == MonitorEventKind::CapabilityGranted
                 && event.target.as_deref() == Some("stdout")
+        }));
+        assert!(events.iter().any(|event| {
+            event.kind == MonitorEventKind::CapabilityGranted
+                && event.target.as_deref() == Some("network-monitor")
         }));
     }
 }

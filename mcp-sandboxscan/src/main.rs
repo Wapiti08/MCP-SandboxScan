@@ -1,5 +1,6 @@
 mod adapter;
 mod cli;
+mod collect;
 mod pipeline;
 mod sandbox;
 mod scan;

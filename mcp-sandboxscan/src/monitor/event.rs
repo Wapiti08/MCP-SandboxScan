@@ -21,6 +21,9 @@ pub enum MonitorEventKind {
     FileRead,
     FileWrite,
     NetworkRequest,
+    NetworkConnectAttempt,
+    NetworkConnectAllowed,
+    NetworkConnectDenied,
     ProcessSpawn,
     McpInitialize,
     McpToolsList,
@@ -93,6 +96,23 @@ pub fn source_inventory_events(sources: &[TaintSource]) -> Vec<MonitorEvent> {
                 evidence: json!({
                     "source_id": source.short_id(),
                     "content_len": content.len()
+                }),
+            },
+            TaintSource::NetworkConnect {
+                host,
+                port,
+                protocol,
+                content,
+            } => MonitorEvent {
+                kind: MonitorEventKind::NetworkConnectAttempt,
+                actor: "scanner".to_string(),
+                target: Some(format!("{protocol}://{host}:{port}")),
+                evidence: json!({
+                    "source_id": source.short_id(),
+                    "content_len": content.len(),
+                    "protocol": protocol,
+                    "host": host,
+                    "port": port
                 }),
             },
         })

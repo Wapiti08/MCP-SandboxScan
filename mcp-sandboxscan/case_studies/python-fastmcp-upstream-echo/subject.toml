@@ -1,0 +1,17 @@
+name = "python-fastmcp-upstream-echo"
+language = "python"
+source_dir = "external/fastmcp/examples"
+entrypoint = "simple_echo.py"
+capabilities = ["stdio", "mcp-protocol"]
+
+[build]
+command = "bash"
+args = ["-c", "python3 -m venv .venv && .venv/bin/pip install 'fastmcp>=2.0.0' -q --disable-pip-version-check"]
+
+[run]
+command = ".venv/bin/fastmcp"
+args = ["run", "simple_echo.py"]
+
+[mcp]
+tool = "echo"
+arguments = { text = "hello from upstream fastmcp" }

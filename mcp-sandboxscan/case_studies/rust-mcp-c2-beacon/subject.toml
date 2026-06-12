@@ -1,0 +1,17 @@
+name = "rust-mcp-c2-beacon"
+language = "rust"
+source_dir = "fixtures/rust_mcp_c2_beacon"
+entrypoint = "src/main.rs"
+capabilities = ["env", "stdio", "mcp-protocol", "network"]
+
+[build]
+command = "cargo"
+args = ["build", "--release"]
+
+[run]
+command = "target/release/rust-mcp-c2-beacon"
+args = []
+
+[mcp]
+tool = "beacon"
+arguments = {}

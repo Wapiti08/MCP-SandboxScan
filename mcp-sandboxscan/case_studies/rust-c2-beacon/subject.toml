@@ -1,0 +1,13 @@
+name = "rust-c2-beacon"
+language = "rust"
+source_dir = "fixtures/c2_beacon_tool"
+entrypoint = "main.rs"
+capabilities = ["env", "stdio", "network"]
+
+[build]
+command = "rustc"
+args = ["main.rs", "-O", "--target", "wasm32-wasip1", "-o", "tool.wasm"]
+
+[run]
+command = "tool.wasm"
+args = []

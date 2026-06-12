@@ -5,7 +5,8 @@ use std::path::Path;
 use anyhow::{Context, Result};
 
 use crate::sandbox::wasm_runner::WasmRunner;
-use crate::sandbox::wasi_hooks::{collect_file_sources, collect_env_sources, collect_http_intents};
+use crate::collect::observations_from_http_intents;
+use crate::sandbox::wasi_hooks::{collect_env_sources, collect_file_sources};
 use crate::scan::prompt_sink::extract_prompt_sinks;
 use crate::scan::tool_return_sink::extract_tool_return_sinks;
 use crate::scan::report::{ScanReport, Summary};
@@ -83,12 +84,18 @@ fn build_scan_report(
     let mut sources: Vec<TaintSource> = vec![];
     sources.extend(collect_env_sources(env));
     sources.extend(collect_file_sources(data_dir, 64 * 1024)?);
-    sources.extend(collect_http_intents(&exec.stdout, &exec.stderr));
+
+    let network_collector = runtime.network_collector();
+    for obs in observations_from_http_intents(&exec.stdout, &exec.stderr) {
+        network_collector.record(obs);
+    }
+    sources.extend(network_collector.as_taint_sources());
 
     let flows = detect_flows(&sources, &sinks);
 
     let mut events = Vec::new();
     events.extend(runtime.take_monitor_events());
+    events.extend(network_collector.as_monitor_events());
     events.extend(source_inventory_events(&sources));
     events.extend(sink_events(&sinks));
     events.extend(flow_events(&flows));

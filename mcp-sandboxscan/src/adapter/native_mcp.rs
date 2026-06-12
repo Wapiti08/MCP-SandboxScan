@@ -93,6 +93,51 @@ mod tests {
     use super::*;
 
     #[test]
+    fn adapts_python_mcp_server_fetch_manifest() {
+        let raw = std::fs::read_to_string("case_studies/python-mcp-server-fetch/subject.toml")
+            .expect("read subject.toml");
+        let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
+        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+
+        assert!(matches!(report.status, AdaptationStatus::NativeOnly));
+        let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
+            panic!("expected NativeCommand artifact");
+        };
+        assert_eq!(command, ".venv/bin/python");
+        assert_eq!(args, vec!["-u", "-m", "mcp_server_fetch"]);
+    }
+
+    #[test]
+    fn adapts_python_fastmcp_echo_manifest() {
+        let raw = std::fs::read_to_string("case_studies/python-fastmcp-echo/subject.toml")
+            .expect("read subject.toml");
+        let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
+        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+
+        assert!(matches!(report.status, AdaptationStatus::NativeOnly));
+        let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
+            panic!("expected NativeCommand artifact");
+        };
+        assert_eq!(command, ".venv/bin/python");
+        assert_eq!(args, vec!["-u", "server.py"]);
+    }
+
+    #[test]
+    fn adapts_rust_mcp_c2_beacon_manifest() {
+        let raw = std::fs::read_to_string("case_studies/rust-mcp-c2-beacon/subject.toml")
+            .expect("read subject.toml");
+        let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
+        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+
+        assert!(matches!(report.status, AdaptationStatus::NativeOnly));
+        let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
+            panic!("expected NativeCommand artifact");
+        };
+        assert_eq!(command, "target/release/rust-mcp-c2-beacon");
+        assert!(args.is_empty());
+    }
+
+    #[test]
     fn adapts_rust_mcp_filesystem_manifest() {
         let raw = std::fs::read_to_string("case_studies/rust-mcp-filesystem/subject.toml")
             .expect("read subject.toml");
