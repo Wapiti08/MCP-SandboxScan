@@ -1,8 +1,9 @@
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 use crate::adapter::AdaptationStatus;
 use crate::monitor::event::MonitorEventKind;
-use crate::pipeline::fixtures::ensure_go_build;
+use crate::pipeline::fixtures::{ensure_go_build, ensure_go_sdk_examples};
 use crate::pipeline::scan_subject;
 use crate::subject::SubjectManifest;
 use crate::taint::source::TaintSource;
@@ -133,4 +134,26 @@ fn scans_go_mcp_c2_beacon_subject() {
             || event.kind == MonitorEventKind::NetworkConnectAttempt
     }));
     assert!(result.report.sinks[0].as_text().contains("beacon"));
+}
+
+#[test]
+fn scans_go_mcp_upstream_hello_subject() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    ensure_go_sdk_examples(&manifest_dir);
+
+    let raw = std::fs::read_to_string("case_studies/go-mcp-upstream-hello/subject.toml")
+        .expect("read subject manifest");
+    let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject manifest");
+    ensure_go_build(&subject, "upstream-hello-server");
+
+    let result = scan_subject(&subject, &HashMap::new(), None, 4096).expect("scan subject");
+
+    assert_eq!(result.adaptation_status, AdaptationStatus::NativeOnly);
+    assert_eq!(result.report.summary.num_sinks, 1);
+    assert_eq!(result.report.summary.num_flows, 0);
+    assert!(result.report.mcp_transcript.is_some());
+    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
+    assert!(result.report.sinks[0]
+        .as_text()
+        .contains("Hi hello from upstream go-sdk"));
 }

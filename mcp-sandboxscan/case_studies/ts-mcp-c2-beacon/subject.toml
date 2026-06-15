@@ -1,0 +1,17 @@
+name = "ts-mcp-c2-beacon"
+language = "type-script"
+source_dir = "fixtures/ts_mcp_c2_beacon"
+entrypoint = "server.js"
+capabilities = ["env", "stdio", "mcp-protocol", "network"]
+
+[build]
+command = "bash"
+args = ["-c", "npm install -q --no-fund --no-audit"]
+
+[run]
+command = "node"
+args = ["server.js"]
+
+[mcp]
+tool = "beacon"
+arguments = {}

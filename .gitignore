@@ -12,3 +12,4 @@ fixtures/go_*/server
 fixtures/go_mcp_*/server
 fixtures/go_*/tool.wasm
 fixtures/go_*_tool/tool.wasm
+**/node_modules/

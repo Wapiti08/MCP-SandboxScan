@@ -1,0 +1,17 @@
+name = "go-mcp-upstream-hello"
+language = "go"
+source_dir = "external/go-sdk"
+entrypoint = "examples/server/hello/main.go"
+capabilities = ["stdio", "mcp-protocol"]
+
+[build]
+command = "go"
+args = ["build", "-o", "upstream-hello-server", "./examples/server/hello"]
+
+[run]
+command = "./upstream-hello-server"
+args = []
+
+[mcp]
+tool = "greet"
+arguments = { name = "hello from upstream go-sdk" }

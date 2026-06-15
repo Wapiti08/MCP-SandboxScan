@@ -1,0 +1,18 @@
+name = "ts-mcp-echo"
+language = "type-script"
+source_dir = "fixtures/ts_mcp_echo"
+entrypoint = "server.js"
+capabilities = ["stdio", "mcp-protocol"]
+
+[build]
+command = "bash"
+args = ["-c", "npm install -q --no-fund --no-audit"]
+
+
+[run]
+command = "node"
+args = ["server.js"]
+
+[mcp]
+tool = "echo"
+arguments = { message = "hello from sandboxscan" }

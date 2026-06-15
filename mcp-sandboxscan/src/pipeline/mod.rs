@@ -1,8 +1,9 @@
 pub mod fixtures;
 
 pub use fixtures::{
-    ensure_fastmcp_examples, ensure_go_build, ensure_python_fastmcp_venv, ensure_python_venv,
-    ensure_rust_mcp_filesystem_repo,
+    ensure_fastmcp_examples, ensure_go_build, ensure_go_sdk_examples, ensure_npm_install,
+    ensure_python_fastmcp_venv, ensure_python_venv, ensure_rust_mcp_filesystem_repo,
+    ensure_typescript_sdk_examples,
 };
 
 use std::collections::HashMap;

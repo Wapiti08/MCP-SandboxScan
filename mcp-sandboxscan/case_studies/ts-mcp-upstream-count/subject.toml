@@ -1,0 +1,17 @@
+name = "ts-mcp-upstream-count"
+language = "type-script"
+source_dir = "external/typescript-sdk"
+entrypoint = "src/examples/server/progressExample.ts"
+capabilities = ["stdio", "mcp-protocol"]
+
+[build]
+command = "bash"
+args = ["-c", "npm install -q --no-fund --no-audit"]
+
+[run]
+command = "npx"
+args = ["tsx", "src/examples/server/progressExample.ts"]
+
+[mcp]
+tool = "count"
+arguments = { n = 3 }

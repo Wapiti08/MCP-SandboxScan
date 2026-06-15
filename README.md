@@ -67,21 +67,105 @@ MCP-SandboxScan executes or interacts with MCP implementations, collects runtime
 - study: experiment design for evaluation
 
 ## Dependency
+
+Core scanner (always required):
+
+```bash
+rustc --version          # stable Rust toolchain
+cargo --version
+rustup target add wasm32-wasip1   # Rust WASI case studies and fixtures
 ```
-cargo add cap_std
-# build tool.wasm
-rustup target add wasm32-wasip1 || true
 
-# Go (native MCP + WASI case studies)
-go version   # >= 1.21 for wasip1 cross-compile; >= 1.23 for go-sdk MCP fixtures
+| Ecosystem | Required for | Install / verify |
+|-----------|--------------|------------------|
+| **Rust** | WASI tools, `rust-mcp-filesystem` | `rustup target add wasm32-wasip1` |
+| **Go** | WASI + native MCP (`go-sdk`) | `go version` — ≥ 1.21 (wasip1); ≥ 1.23 (go-sdk fixtures) |
+| **Python** | WASI + PyPI MCP (`fastmcp`, etc.) | `python3 --version` — ≥ 3.10; `python3 -m venv` must work |
+| **Node.js / npm** | TypeScript native MCP + Javy | `node --version` — ≥ 18; `npm --version` |
+| **Javy** | TypeScript WASI (`javy build`) | see below |
+| **TinyGo** | optional Go WASI backend | `./scripts/check-tinygo.sh` |
 
-# Optional TinyGo alternative for WASI builds
+### Go
+
+```bash
+go version   # >= 1.21 for wasip1; >= 1.23 for go-sdk MCP fixtures
+```
+
+WASI builds default to `GOOS=wasip1 GOARCH=wasm go build -o tool.wasm .`. TinyGo is optional:
+
+```bash
+cd mcp-sandboxscan
 ./scripts/check-tinygo.sh
-
-# Python (WASI + PyPI native MCP case studies)
-python3 --version   # >= 3.10 recommended
-python3 -m venv /tmp/venv-check && rm -rf /tmp/venv-check   # ensure venv module works
 ```
+
+### Python
+
+```bash
+python3 --version                    # >= 3.10 recommended
+python3 -m venv /tmp/venv-check      # ensure venv module works
+rm -rf /tmp/venv-check
+```
+
+WASI subjects need a CPython `python.wasm` runtime (fetched once):
+
+```bash
+cd mcp-sandboxscan
+./scripts/fetch-cpython-wasi.sh
+# or: export MCP_SANDBOXSCAN_PYTHON_WASM=/path/to/python.wasm
+```
+
+PyPI MCP subjects run `pip install` into per-fixture `.venv` on first build; no global `pip install` required.
+
+### TypeScript / npm
+
+Native MCP fixtures (`ts-mcp-*`) need Node and npm. Dependencies install into `fixtures/<name>/node_modules` on first run.
+
+```bash
+node --version   # >= 18 recommended
+npm --version
+```
+
+Upstream typescript-sdk examples (optional):
+
+```bash
+cd mcp-sandboxscan
+./scripts/fetch-typescript-sdk-examples.sh
+```
+
+### Javy (TypeScript WASI)
+
+TypeScript WASI case studies compile JS to `tool.wasm` with Javy:
+
+```bash
+npm install -g javy-cli
+javy --version
+```
+
+Or use the repo check script:
+
+```bash
+cd mcp-sandboxscan
+./scripts/check-javy.sh
+```
+
+Build command used by subjects:
+
+```bash
+javy build -o tool.wasm main.js
+```
+
+### External assets (fetched on demand)
+
+These are not global installs; scripts clone or download into `mcp-sandboxscan/external/` when you run upstream case studies or tests:
+
+| Script | Purpose |
+|--------|---------|
+| `./scripts/fetch-cpython-wasi.sh` | CPython WASI `python.wasm` |
+| `./scripts/fetch-go-sdk-examples.sh` | go-sdk `examples/server/hello` |
+| `./scripts/fetch-fastmcp-examples.sh` | PrefectHQ/fastmcp examples |
+| `./scripts/fetch-typescript-sdk-examples.sh` | modelcontextprotocol/typescript-sdk |
+
+Rust `rust-mcp-filesystem` is cloned manually; see [Real Rust MCP Server](#real-rust-mcp-server).
 
 ## Demo
 ```
@@ -207,6 +291,7 @@ Go support uses the same capability-driven pipeline as Python and Rust:
 
 - **WASI tools** (`go-benign`, `go-env-leak`, `go-file-exfil`, `go-c2-beacon`): `GoWasiAdapter` builds `GOOS=wasip1 GOARCH=wasm` artifacts and runs them in `WasiPreview1`.
 - **Native MCP stdio** (`go-mcp-echo`, `go-mcp-env-leak`, `go-mcp-c2-beacon`): `mcp-protocol` capability routes to `NativeMcpAdapter`; servers use [modelcontextprotocol/go-sdk](https://github.com/modelcontextprotocol/go-sdk).
+- **Upstream go-sdk** (`go-mcp-upstream-hello`): official `examples/server/hello` from go-sdk `v1.1.0` under `external/go-sdk`.
 
 Build a Go WASI subject:
 
@@ -220,8 +305,24 @@ Run Go native MCP integration tests:
 ```bash
 cd mcp-sandboxscan
 cargo test --lib mcp::native_stdio::tests::go:: -- --nocapture
-cargo test --lib pipeline::tests::scans_go_mcp_echo_subject -- --nocapture
-cargo test --lib pipeline::tests::scans_go_env_leak_subject -- --nocapture
+cargo test --lib scans_go_mcp_ -- --nocapture
+```
+
+Upstream go-sdk hello example (fetched once into `external/go-sdk/`):
+
+```bash
+cd mcp-sandboxscan
+./scripts/fetch-go-sdk-examples.sh
+cargo run --bin mcp-sandboxscan -- \
+  --subject case_studies/go-mcp-upstream-hello/subject.toml
+```
+
+Run upstream go-sdk tests:
+
+```bash
+cd mcp-sandboxscan
+cargo test --lib driver_calls_upstream_go_sdk_hello -- --nocapture
+cargo test --lib scans_go_mcp_upstream_hello_subject -- --nocapture
 ```
 
 WASI builds default to:

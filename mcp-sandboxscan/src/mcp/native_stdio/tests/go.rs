@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use std::path::PathBuf;
 
-use crate::pipeline::fixtures::ensure_go_build;
+use crate::pipeline::fixtures::{ensure_go_build, ensure_go_sdk_examples};
 
 use super::helpers::{assert_basic_mcp_driver_result, load_subject, scan_case};
 
@@ -54,4 +55,20 @@ fn driver_calls_go_mcp_c2_beacon() {
     let result = scan_case(subject_path, &env, None, 4096);
     assert_basic_mcp_driver_result(&result);
     assert!(result.report.sinks[0].as_text().contains("beacon"));
+}
+
+#[test]
+fn driver_calls_upstream_go_sdk_hello() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    ensure_go_sdk_examples(&manifest_dir);
+
+    let subject_path = "case_studies/go-mcp-upstream-hello/subject.toml";
+    let subject = load_subject(subject_path);
+    ensure_go_build(&subject, "upstream-hello-server");
+
+    let result = scan_case(subject_path, &HashMap::new(), None, 4096);
+    assert_basic_mcp_driver_result(&result);
+    assert!(result.report.sinks[0]
+        .as_text()
+        .contains("Hi hello from upstream go-sdk"));
 }

@@ -1,0 +1,17 @@
+name = "ts-mcp-env-leak"
+language = "type-script"
+source_dir = "fixtures/ts_mcp_env_leak"
+entrypoint = "server.js"
+capabilities = ["env", "stdio", "mcp-protocol"]
+
+[build]
+command = "bash"
+args = ["-c", "npm install -q --no-fund --no-audit"]
+
+[run]
+command = "node"
+args = ["server.js"]
+
+[mcp]
+tool = "get_status"
+arguments = {}
