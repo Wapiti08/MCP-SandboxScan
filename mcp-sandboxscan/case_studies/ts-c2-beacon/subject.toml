@@ -1,0 +1,14 @@
+name = "ts-c2-beacon"
+language = "type-script"
+source_dir = "fixtures/ts_c2_beacon_tool"
+entrypoint = "main.js"
+capabilities = ["env", "stdio", "network"]
+
+[build]
+command = "bash"
+args = ["-c", "javy compile -o tool.wasm main.js"]
+
+[run]
+command = "tool.wasm"
+args = []
+

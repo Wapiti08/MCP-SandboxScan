@@ -82,7 +82,7 @@ rustup target add wasm32-wasip1   # Rust WASI case studies and fixtures
 | **Go** | WASI + native MCP (`go-sdk`) | `go version` — ≥ 1.21 (wasip1); ≥ 1.23 (go-sdk fixtures) |
 | **Python** | WASI + PyPI MCP (`fastmcp`, etc.) | `python3 --version` — ≥ 3.10; `python3 -m venv` must work |
 | **Node.js / npm** | TypeScript native MCP + Javy | `node --version` — ≥ 18; `npm --version` |
-| **Javy** | TypeScript WASI (`javy build`) | see below |
+| **Javy** | TypeScript WASI (`javy compile`) | see below |
 | **TinyGo** | optional Go WASI backend | `./scripts/check-tinygo.sh` |
 
 ### Go
@@ -137,8 +137,8 @@ cd mcp-sandboxscan
 TypeScript WASI case studies compile JS to `tool.wasm` with Javy:
 
 ```bash
-npm install -g javy-cli
-javy --version
+brew install javy
+javy --version   # e.g. javy-v3.x
 ```
 
 Or use the repo check script:
@@ -151,8 +151,25 @@ cd mcp-sandboxscan
 Build command used by subjects:
 
 ```bash
-javy build -o tool.wasm main.js
+javy compile -o tool.wasm main.js
 ```
+
+Notes:
+
+- Javy does not expose `process.env` or WASI file APIs to JS. For TypeScript WASI subjects in this repo,
+  the scanner injects a small JSON object via **stdin** so the JS tool can simulate reading env vars and
+  `/data/secret.txt`.
+- The injected JSON shape is:
+
+```json
+{"env":{"DEMO_SECRET":"..."}, "files":{"/data/secret.txt":"..."}}
+```
+
+- TypeScript WASI case studies live under:
+  - `case_studies/ts-benign`
+  - `case_studies/ts-env-leak`
+  - `case_studies/ts-file-exfil`
+  - `case_studies/ts-c2-beacon`
 
 ### External assets (fetched on demand)
 

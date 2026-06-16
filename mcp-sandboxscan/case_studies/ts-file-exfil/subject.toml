@@ -1,0 +1,14 @@
+name = "ts-file-exfil"
+language = "type-script"
+source_dir = "fixtures/ts_file_exfil_tool"
+entrypoint = "main.js"
+capabilities = ["file-read", "stdio"]
+
+[build]
+command = "bash"
+args = ["-c", "javy compile -o tool.wasm main.js"]
+
+[run]
+command = "tool.wasm"
+args = []
+

@@ -33,6 +33,7 @@ fn main() -> Result<()> {
         &wasm,
         data_dir.as_deref(),
         &env,
+        None,
         4096,
     )?;
 

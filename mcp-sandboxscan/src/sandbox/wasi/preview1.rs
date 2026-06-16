@@ -15,7 +15,7 @@ use crate::monitor::event::{MonitorEvent, MonitorEventKind};
 
 use wasmtime_wasi::filesystem::{DirPerms, FilePerms};
 use wasmtime_wasi::p1::{self, WasiP1Ctx};
-use wasmtime_wasi::p2::pipe::MemoryOutputPipe;
+use wasmtime_wasi::p2::pipe::{MemoryInputPipe, MemoryOutputPipe};
 use wasmtime_wasi::sockets::SocketAddrUse;
 use wasmtime_wasi::WasiCtxBuilder;
 
@@ -29,6 +29,7 @@ pub struct WasiPreview1 {
     pub guest_root: Option<PathBuf>,
     pub args: Vec<String>,
     pub max_output_bytes: usize,
+    pub stdin_input: Option<Vec<u8>>,
 
     stdout: MemoryOutputPipe,
     stderr: MemoryOutputPipe,
@@ -61,6 +62,7 @@ impl WasiPreview1 {
             guest_root,
             args,
             max_output_bytes,
+            stdin_input: None,
             stdout: MemoryOutputPipe::new(max_output_bytes),
             stderr: MemoryOutputPipe::new(max_output_bytes),
             start: Mutex::new(None),
@@ -87,6 +89,21 @@ impl WasiRuntime for WasiPreview1 {
         monitor_events.clear();
 
         let mut builder = WasiCtxBuilder::new();
+
+        if let Some(bytes) = &self.stdin_input {
+            builder.stdin(MemoryInputPipe::new(bytes.clone()));
+            monitor_events.push(MonitorEvent {
+                kind: MonitorEventKind::CapabilityGranted,
+                actor: "wasi-runtime".to_string(),
+                target: Some("stdin".to_string()),
+                evidence: json!({
+                    "capability": "stdio",
+                    "stream": "stdin",
+                    "bytes_len": bytes.len()
+                }),
+            });
+        }
+
         builder.stdout(self.stdout.clone());
         monitor_events.push(MonitorEvent {
             kind: MonitorEventKind::CapabilityGranted,

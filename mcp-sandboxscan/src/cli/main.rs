@@ -112,6 +112,7 @@ pub fn entry() -> Result<()> {
             wasm_path,
             args.data_dir.as_ref().map(|v| v.as_path()),
             &env,
+            None,
             args.max_output_size,
         )
         .with_context(|| format!("Failed to run dynamic scan on {}", wasm_path.display()))?;

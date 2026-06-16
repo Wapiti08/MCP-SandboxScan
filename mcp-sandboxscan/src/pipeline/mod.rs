@@ -1,5 +1,6 @@
 pub mod fixtures;
 
+#[allow(unused_imports)]
 pub use fixtures::{
     ensure_fastmcp_examples, ensure_go_build, ensure_go_sdk_examples, ensure_npm_install,
     ensure_python_fastmcp_venv, ensure_python_venv, ensure_rust_mcp_filesystem_repo,
@@ -14,12 +15,42 @@ use anyhow::{bail, Context, Result};
 use crate::adapter::go_wasi::GoWasiAdapter;
 use crate::adapter::native_mcp::NativeMcpAdapter;
 use crate::adapter::python_wasi::PythonWasiAdapter;
+use crate::adapter::typescript_wasi::TypeScriptWasiAdapter;
 use crate::adapter::rust_wasi::RustWasiAdapter;
 use crate::adapter::{AdaptationStatus, Adapter, BuildArtifact};
 use crate::scan::dynamic::{run_dynamic_scan, run_python_dynamic_scan};
 use crate::scan::native_mcp::run_native_mcp_scan;
 use crate::scan::report::ScanReport;
 use crate::subject::{Capability, Language, SubjectManifest};
+
+fn build_ts_wasi_stdin_payload(
+    subject: &SubjectManifest,
+    env: &HashMap<String, String>,
+    data_dir: Option<&Path>,
+) -> Option<Vec<u8>> {
+    if subject.language != Language::TypeScript && subject.language != Language::JavaScript {
+        return None;
+    }
+
+    let mut files = serde_json::Map::new();
+    if let Some(dir) = data_dir {
+        let secret = dir.join("secret.txt");
+        if secret.exists() {
+            if let Ok(content) = std::fs::read_to_string(&secret) {
+                files.insert(
+                    "/data/secret.txt".to_string(),
+                    serde_json::Value::String(content),
+                );
+            }
+        }
+    }
+
+    let payload = serde_json::json!({
+        "env": env,
+        "files": files,
+    });
+    Some(payload.to_string().into_bytes())
+}
 
 pub struct SubjectScanResult {
     pub report: ScanReport,
@@ -54,12 +85,10 @@ pub fn scan_subject(
             })?
         }
         AdaptationStatus::DirectWasm | AdaptationStatus::WasmWithShim => match adaptation.artifact {
-            Some(BuildArtifact::Wasm { wasm_path }) => run_dynamic_scan(
-                &wasm_path,
-                data_dir,
-                env,
-                max_output_bytes,
-            )
+            Some(BuildArtifact::Wasm { wasm_path }) => {
+                let stdin_input = build_ts_wasi_stdin_payload(subject, env, data_dir);
+                run_dynamic_scan(&wasm_path, data_dir, env, stdin_input, max_output_bytes)
+            }
             .with_context(|| format!("failed to scan wasm artifact {}", wasm_path.display()))?,
             Some(BuildArtifact::PythonWasm {
                 interpreter_wasm,
@@ -107,6 +136,9 @@ fn select_adapter(subject: &SubjectManifest) -> Result<Box<dyn Adapter>> {
         Language::Rust => Ok(Box::new(RustWasiAdapter)),
         Language::Python => Ok(Box::new(PythonWasiAdapter)),
         Language::Go => Ok(Box::new(GoWasiAdapter)),
+        Language::TypeScript | Language::JavaScript => {
+            Ok(Box::new(TypeScriptWasiAdapter))
+        }
         _ => bail!("no adapter implemented for language {:?}", subject.language),
     }
 }

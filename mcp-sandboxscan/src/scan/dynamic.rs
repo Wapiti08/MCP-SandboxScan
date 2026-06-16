@@ -20,16 +20,14 @@ pub fn run_dynamic_scan(
     wasm_path: &Path,
     data_dir: Option<&Path>,
     env: &HashMap<String, String>,
+    stdin_input: Option<Vec<u8>>,
     max_output_bytes: usize,
 ) -> Result<ScanReport> {
     let wasm_bytes = fs::read(wasm_path)
         .with_context(|| format!("failed to read wasm file {}", wasm_path.display()))?;
 
-    let runtime = WasiPreview1::new(
-        env.clone(),
-        data_dir.map(|p| p.to_path_buf()),
-        max_output_bytes,
-    );
+    let mut runtime = WasiPreview1::new(env.clone(), data_dir.map(|p| p.to_path_buf()), max_output_bytes);
+    runtime.stdin_input = stdin_input;
 
     let runner = WasmRunner::default();
     let exec = runner.run(&wasm_bytes, &runtime)?;
@@ -120,8 +118,6 @@ fn build_scan_report(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn smoke_test_flow_detection_logic() {
         assert!(true);
