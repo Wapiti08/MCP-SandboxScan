@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use crate::pipeline::{scan_subject, SubjectScanResult};
+use crate::pipeline::{SubjectScanResult, scan_subject};
 use crate::scan::prompt_sink::PromptSink;
 use crate::subject::SubjectManifest;
 
@@ -22,7 +22,10 @@ pub fn scan_case(
 
 pub fn assert_basic_mcp_driver_result(result: &SubjectScanResult) {
     assert_eq!(result.report.summary.num_sinks, 1);
-    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
+    assert_eq!(
+        result.report.mcp_transcript.as_ref().unwrap().events.len(),
+        5
+    );
     assert!(matches!(
         result.report.sinks[0],
         PromptSink::McpToolResultText { .. }

@@ -10,9 +10,7 @@ use crate::mcp::jsonrpc::{initialize_request, initialized_notification, tools_ca
 use crate::mcp::transcript::{McpDirection, McpTranscript};
 use crate::sandbox::exec_evidence::{ExecutionBackend, ExecutionEvidence};
 
-use super::protocol::{
-    read_response_with_id, record, send_message, CommandExt, StdioFraming,
-};
+use super::protocol::{CommandExt, StdioFraming, read_response_with_id, record, send_message};
 
 pub struct NativeStdioMcpDriver {
     pub command: String,
@@ -65,7 +63,11 @@ impl McpDriver for NativeStdioMcpDriver {
         record(&mut transcript, McpDirection::ClientToServer, &call);
 
         let call_response = read_response_with_id(&mut reader, 2, self.framing)?;
-        record(&mut transcript, McpDirection::ServerToClient, &call_response);
+        record(
+            &mut transcript,
+            McpDirection::ServerToClient,
+            &call_response,
+        );
 
         let tool_result_payload = call_response
             .get("result")

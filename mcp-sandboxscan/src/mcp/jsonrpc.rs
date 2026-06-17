@@ -1,11 +1,11 @@
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 /*
 generate MCP messages --- message builder from MCP client side
 */
 
 pub fn initialize_request(id: u64) -> Value {
-    // variables and expressions can be interpolated directly into the JSON value 
+    // variables and expressions can be interpolated directly into the JSON value
     json!({
         "jsonrpc": "2.0",
         "id": id,
@@ -37,7 +37,7 @@ pub fn tools_list_request(id: u64) -> Value {
         "params": {}
     })
 }
- 
+
 pub fn tools_call_request(id: u64, name: &str, arguments: Value) -> Value {
     json!({
         "jsonrpc": "2.0",

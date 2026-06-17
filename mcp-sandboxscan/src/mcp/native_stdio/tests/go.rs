@@ -13,9 +13,11 @@ fn driver_calls_go_mcp_echo() {
 
     let result = scan_case(subject_path, &HashMap::new(), None, 4096);
     assert_basic_mcp_driver_result(&result);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from sandboxscan"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from sandboxscan")
+    );
 }
 
 #[test]
@@ -33,11 +35,13 @@ fn driver_calls_go_mcp_env_leak() {
     let result = scan_case(subject_path, &env, None, 4096);
     assert_basic_mcp_driver_result(&result);
     assert!(result.report.summary.has_external_to_prompt_flow);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]
@@ -68,7 +72,9 @@ fn driver_calls_upstream_go_sdk_hello() {
 
     let result = scan_case(subject_path, &HashMap::new(), None, 4096);
     assert_basic_mcp_driver_result(&result);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("Hi hello from upstream go-sdk"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("Hi hello from upstream go-sdk")
+    );
 }

@@ -1,14 +1,14 @@
 mod adapter;
 mod cli;
 mod collect;
+mod mcp;
+mod monitor;
 mod pipeline;
 mod sandbox;
 mod scan;
+mod study;
 mod subject;
 mod taint;
-mod study;
-mod mcp;
-mod monitor;
 
 fn main() -> anyhow::Result<()> {
     cli::main::entry()

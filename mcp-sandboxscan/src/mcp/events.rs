@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use serde_json::json;
+use std::collections::HashMap;
 
 use crate::mcp::transcript::{McpDirection, McpTranscript};
 use crate::monitor::event::{MonitorEvent, MonitorEventKind};
@@ -24,37 +24,41 @@ pub fn monitor_events_from_transcript(transcript: &McpTranscript) -> Vec<Monitor
                     request_methods.insert(id, method.to_string());
                 }
 
-            let kind = match method {
-                "initialize" => Some(MonitorEventKind::McpInitialize),
-                "tools/list" => Some(MonitorEventKind::McpToolsList),
-                "tools/call" => Some(MonitorEventKind::McpToolCall),
-                "resources/read" => Some(MonitorEventKind::McpResourceRead),
-                "prompts/get" => Some(MonitorEventKind::McpPromptGet),
-                _ => None,
-            };
+                let kind = match method {
+                    "initialize" => Some(MonitorEventKind::McpInitialize),
+                    "tools/list" => Some(MonitorEventKind::McpToolsList),
+                    "tools/call" => Some(MonitorEventKind::McpToolCall),
+                    "resources/read" => Some(MonitorEventKind::McpResourceRead),
+                    "prompts/get" => Some(MonitorEventKind::McpPromptGet),
+                    _ => None,
+                };
 
-            if method == "tools/call" {
-                // refer to structure of tools/call: params.name
-                if let Some(id) = id {
-                    if let Some(tool_name) = event
-                        .payload
-                        .pointer("/params/name")
-                        .and_then(|v| v.as_str())
-                    {
-                        request_tools.insert(id, tool_name.to_string());
+                if method == "tools/call" {
+                    // refer to structure of tools/call: params.name
+                    if let Some(id) = id {
+                        if let Some(tool_name) = event
+                            .payload
+                            .pointer("/params/name")
+                            .and_then(|v| v.as_str())
+                        {
+                            request_tools.insert(id, tool_name.to_string());
+                        }
                     }
                 }
-            }
 
-            if let Some(kind) = kind {
-                events.push(MonitorEvent {
-                    kind,
-                    actor: "mcp-client".to_string(),
-                    target: event.payload.get("method").and_then(|v| v.as_str()).map(str::to_string),
-                    evidence: event.payload.clone(),
-                });
+                if let Some(kind) = kind {
+                    events.push(MonitorEvent {
+                        kind,
+                        actor: "mcp-client".to_string(),
+                        target: event
+                            .payload
+                            .get("method")
+                            .and_then(|v| v.as_str())
+                            .map(str::to_string),
+                        evidence: event.payload.clone(),
+                    });
+                }
             }
-        }
         }
         // server response events
         if matches!(event.direction, McpDirection::ServerToClient) {
@@ -75,4 +79,3 @@ pub fn monitor_events_from_transcript(transcript: &McpTranscript) -> Vec<Monitor
     }
     events
 }
-

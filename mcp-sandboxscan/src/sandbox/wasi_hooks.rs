@@ -19,7 +19,10 @@ pub fn collect_env_sources(env: &HashMap<String, String>) -> Vec<TaintSource> {
 }
 
 /// take file contents under /data as source may be read by outside WASI
-pub fn collect_file_sources(data_dir: Option<&Path>, max_bytes_per_file: usize) -> Result<Vec<TaintSource>> {
+pub fn collect_file_sources(
+    data_dir: Option<&Path>,
+    max_bytes_per_file: usize,
+) -> Result<Vec<TaintSource>> {
     // sources type can be inferred later
     let mut sources = vec![];
 
@@ -27,14 +30,17 @@ pub fn collect_file_sources(data_dir: Option<&Path>, max_bytes_per_file: usize) 
         return Ok(sources);
     };
 
-    for entry in WalkDir::new(root).into_iter().filter_map(|entry_result| entry_result.ok()) {
+    for entry in WalkDir::new(root)
+        .into_iter()
+        .filter_map(|entry_result| entry_result.ok())
+    {
         if !entry.file_type().is_file() {
             continue;
         }
 
         let path: PathBuf = entry.path().to_path_buf();
         let bytes = fs::read(&path).unwrap_or_default();
-        
+
         if bytes.is_empty() {
             continue;
         }
@@ -62,17 +68,17 @@ pub fn collect_file_sources(data_dir: Option<&Path>, max_bytes_per_file: usize) 
 pub fn collect_http_intents(stdout: &str, stderr: &str) -> Vec<TaintSource> {
     fn scan(s: &str) -> Vec<TaintSource> {
         // create out vec to save results
-        let mut out=vec![];
+        let mut out = vec![];
         for line in s.lines() {
             let trimmed = line.trim();
             for prefix in ["HTTP_FETCH:", "FETCH:", "HTTP:"] {
                 if let Some(rest) = trimmed.strip_prefix(prefix) {
                     let url = rest.trim().to_string();
                     if !url.is_empty() {
-                        out.push(TaintSource::HttpFetch { 
+                        out.push(TaintSource::HttpFetch {
                             url,
                             content: "<intent-only>".to_string(),
-                            });
+                        });
                     }
                 }
             }

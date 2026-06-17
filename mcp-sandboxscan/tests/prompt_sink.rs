@@ -1,4 +1,4 @@
-use mcp_sandboxscan::scan::prompt_sink::{extract_prompt_sinks, PromptSink};
+use mcp_sandboxscan::scan::prompt_sink::{PromptSink, extract_prompt_sinks};
 
 #[test]
 fn test_stdout_prompt_sink() {

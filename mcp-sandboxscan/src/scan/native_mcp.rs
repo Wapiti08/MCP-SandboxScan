@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 
 use crate::adapter::BuildArtifact;
 use crate::collect::NetworkCollector;
@@ -26,9 +26,10 @@ pub fn run_native_mcp_scan(
     let mcp = subject.mcp.as_ref().context("missing [mcp] spec")?;
 
     let mut run_args = args.clone();
-    let needs_data_dir_arg = subject.capabilities.iter().any(|cap| {
-        matches!(cap, Capability::FileRead | Capability::FileWrite)
-    });
+    let needs_data_dir_arg = subject
+        .capabilities
+        .iter()
+        .any(|cap| matches!(cap, Capability::FileRead | Capability::FileWrite));
     if run_args.is_empty() && needs_data_dir_arg {
         let dir = data_dir.with_context(|| {
             format!(

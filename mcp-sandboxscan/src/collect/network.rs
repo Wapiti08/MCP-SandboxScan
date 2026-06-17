@@ -80,7 +80,8 @@ impl NetworkCollector {
                     .url
                     .clone()
                     .or_else(|| {
-                        obs.remote_port.map(|port| format!("{}:{}", obs.remote_host, port))
+                        obs.remote_port
+                            .map(|port| format!("{}:{}", obs.remote_host, port))
                     })
                     .or(Some(obs.remote_host.clone()));
 
@@ -106,12 +107,7 @@ impl NetworkCollector {
             .collect()
     }
 
-    pub fn record_socket_attempt(
-        &self,
-        addr: SocketAddr,
-        use_case: SocketAddrUse,
-        allowed: bool,
-    ) {
+    pub fn record_socket_attempt(&self, addr: SocketAddr, use_case: SocketAddrUse, allowed: bool) {
         self.record(NetworkObservation {
             direction: NetworkDirection::Outbound,
             protocol: socket_use_protocol(use_case).to_string(),
@@ -273,8 +269,7 @@ mod tests {
         let collector = Arc::new(NetworkCollector::new());
         let port = collector.start_egress_proxy().expect("bind proxy");
 
-        let mut stream =
-            TcpStream::connect(format!("127.0.0.1:{port}")).expect("connect to proxy");
+        let mut stream = TcpStream::connect(format!("127.0.0.1:{port}")).expect("connect to proxy");
         stream
             .write_all(b"CONNECT c2.evil.example:443 HTTP/1.1\r\nHost: c2.evil.example:443\r\n\r\n")
             .expect("write CONNECT");

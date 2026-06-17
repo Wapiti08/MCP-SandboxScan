@@ -4,17 +4,16 @@ use std::path::Path;
 
 use anyhow::{Context, Result};
 
-use crate::sandbox::wasm_runner::WasmRunner;
 use crate::collect::observations_from_http_intents;
+use crate::monitor::event::{flow_events, sink_events, source_inventory_events};
+use crate::sandbox::wasi::preview1::WasiPreview1;
 use crate::sandbox::wasi_hooks::{collect_env_sources, collect_file_sources};
+use crate::sandbox::wasm_runner::WasmRunner;
 use crate::scan::prompt_sink::extract_prompt_sinks;
-use crate::scan::tool_return_sink::extract_tool_return_sinks;
 use crate::scan::report::{ScanReport, Summary};
+use crate::scan::tool_return_sink::extract_tool_return_sinks;
 use crate::taint::flow::detect_flows;
 use crate::taint::source::TaintSource;
-use crate::sandbox::wasi::preview1::WasiPreview1;
-use crate::monitor::event::{flow_events, sink_events, source_inventory_events};
-
 
 pub fn run_dynamic_scan(
     wasm_path: &Path,
@@ -26,7 +25,11 @@ pub fn run_dynamic_scan(
     let wasm_bytes = fs::read(wasm_path)
         .with_context(|| format!("failed to read wasm file {}", wasm_path.display()))?;
 
-    let mut runtime = WasiPreview1::new(env.clone(), data_dir.map(|p| p.to_path_buf()), max_output_bytes);
+    let mut runtime = WasiPreview1::new(
+        env.clone(),
+        data_dir.map(|p| p.to_path_buf()),
+        max_output_bytes,
+    );
     runtime.stdin_input = stdin_input;
 
     let runner = WasmRunner::default();
@@ -123,4 +126,3 @@ mod tests {
         assert!(true);
     }
 }
-

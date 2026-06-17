@@ -1,0 +1,51 @@
+{
+  "exec": {
+    "backend": "wasm",
+    "stdout": "TOOL_RETURN: {\"status\":\"ok\",\"message\":\"static benign result\"}\n",
+    "stderr": "",
+    "exit_code": 0,
+    "duration_ms": 2
+  },
+  "events": [
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "stdout",
+      "evidence": {
+        "capability": "stdio",
+        "max_output_bytes": 8192,
+        "stream": "stdout"
+      }
+    },
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "stderr",
+      "evidence": {
+        "capability": "stdio",
+        "max_output_bytes": 8192,
+        "stream": "stderr"
+      }
+    },
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "network-monitor",
+      "evidence": {
+        "capability": "network-monitor",
+        "policy": "deny-by-default",
+        "tcp": true,
+        "udp": true
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 0,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

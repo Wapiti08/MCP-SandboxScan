@@ -1,5 +1,5 @@
-use anyhow::{anyhow, Result};
-use wasmtime::{Engine, Instance, Linker, Module, Store, Error};
+use anyhow::{Result, anyhow};
+use wasmtime::{Engine, Error, Instance, Linker, Module, Store};
 
 use wasmtime_wasi::I32Exit;
 
@@ -34,7 +34,7 @@ fn error_to_exit_code(err: &Error) -> i32 {
 
 /// use result of _start as exit code
 /// - normal => 0
-/// - error => corresponding exit code 
+/// - error => corresponding exit code
 fn decode_exit(result: std::result::Result<(), Error>) -> i32 {
     match result {
         Ok(()) => 0,
@@ -44,11 +44,7 @@ fn decode_exit(result: std::result::Result<(), Error>) -> i32 {
 
 impl WasmRunner {
     /// run a wasm module, return collected result
-    pub fn run<R: WasiRuntime>(
-        &self,
-        wasm_bytes: &[u8],
-        runtime: &R,
-    ) -> Result<WasmExecResult> {
+    pub fn run<R: WasiRuntime>(&self, wasm_bytes: &[u8], runtime: &R) -> Result<WasmExecResult> {
         // 1) compile wasm bytes into Module (Module can be reused)
         let module = Module::from_binary(&self.engine, wasm_bytes)
             .map_err(|err| anyhow!("failed to compile wasm: {err}"))?;

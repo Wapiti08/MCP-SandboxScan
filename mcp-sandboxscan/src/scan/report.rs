@@ -2,13 +2,12 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::mcp::transcript::McpTranscript;
+use crate::monitor::event::MonitorEvent;
+use crate::sandbox::exec_evidence::ExecutionEvidence;
 use crate::scan::prompt_sink::PromptSink;
 use crate::taint::flow::FlowMatch;
 use crate::taint::source::TaintSource;
-use crate::mcp::transcript::McpTranscript;
-use crate::sandbox::exec_evidence::ExecutionEvidence;
-use crate::monitor::event::MonitorEvent;
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScanReport {
@@ -30,5 +29,3 @@ pub struct Summary {
     pub num_flows: usize,
     pub has_external_to_prompt_flow: bool,
 }
-
-

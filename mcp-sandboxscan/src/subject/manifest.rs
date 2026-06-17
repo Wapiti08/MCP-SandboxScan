@@ -50,8 +50,7 @@ mod tests {
     fn parse_rust_env_leak_manifest() {
         let raw = std::fs::read_to_string("case_studies/rust-env-leak/subject.toml")
             .expect("read subject.toml");
-        let manifest: SubjectManifest = toml::from_str(&raw)
-            .expect("parse subject.toml");
+        let manifest: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
         assert_eq!(manifest.name, "rust-env-leak");
         assert_eq!(manifest.language, Language::Rust);
         assert!(manifest.capabilities.contains(&Capability::Env));

@@ -1,5 +1,5 @@
 pub mod network;
 
 pub use network::{
-    observations_from_http_intents, NetworkCollector, NetworkDirection, NetworkObservation,
+    NetworkCollector, NetworkDirection, NetworkObservation, observations_from_http_intents,
 };

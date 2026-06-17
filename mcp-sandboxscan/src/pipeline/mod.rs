@@ -1,3 +1,4 @@
+pub mod case_study;
 pub mod fixtures;
 
 #[allow(unused_imports)]
@@ -10,13 +11,13 @@ pub use fixtures::{
 use std::collections::HashMap;
 use std::path::Path;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 
 use crate::adapter::go_wasi::GoWasiAdapter;
 use crate::adapter::native_mcp::NativeMcpAdapter;
 use crate::adapter::python_wasi::PythonWasiAdapter;
-use crate::adapter::typescript_wasi::TypeScriptWasiAdapter;
 use crate::adapter::rust_wasi::RustWasiAdapter;
+use crate::adapter::typescript_wasi::TypeScriptWasiAdapter;
 use crate::adapter::{AdaptationStatus, Adapter, BuildArtifact};
 use crate::scan::dynamic::{run_dynamic_scan, run_python_dynamic_scan};
 use crate::scan::native_mcp::run_native_mcp_scan;
@@ -84,35 +85,37 @@ pub fn scan_subject(
                 )
             })?
         }
-        AdaptationStatus::DirectWasm | AdaptationStatus::WasmWithShim => match adaptation.artifact {
-            Some(BuildArtifact::Wasm { wasm_path }) => {
-                let stdin_input = build_ts_wasi_stdin_payload(subject, env, data_dir);
-                run_dynamic_scan(&wasm_path, data_dir, env, stdin_input, max_output_bytes)
-            }
-            .with_context(|| format!("failed to scan wasm artifact {}", wasm_path.display()))?,
-            Some(BuildArtifact::PythonWasm {
-                interpreter_wasm,
-                work_dir,
-                argv,
-            }) => run_python_dynamic_scan(
-                &interpreter_wasm,
-                &work_dir,
-                &argv,
-                data_dir,
-                env,
-                max_output_bytes,
-            )
-            .with_context(|| {
-                format!(
-                    "failed to scan Python wasm artifact {}",
-                    interpreter_wasm.display()
+        AdaptationStatus::DirectWasm | AdaptationStatus::WasmWithShim => {
+            match adaptation.artifact {
+                Some(BuildArtifact::Wasm { wasm_path }) => {
+                    let stdin_input = build_ts_wasi_stdin_payload(subject, env, data_dir);
+                    run_dynamic_scan(&wasm_path, data_dir, env, stdin_input, max_output_bytes)
+                }
+                .with_context(|| format!("failed to scan wasm artifact {}", wasm_path.display()))?,
+                Some(BuildArtifact::PythonWasm {
+                    interpreter_wasm,
+                    work_dir,
+                    argv,
+                }) => run_python_dynamic_scan(
+                    &interpreter_wasm,
+                    &work_dir,
+                    &argv,
+                    data_dir,
+                    env,
+                    max_output_bytes,
                 )
-            })?,
-            _ => bail!(
-                "subject {} did not produce a wasm artifact",
-                adaptation.subject_name
-            ),
-        },
+                .with_context(|| {
+                    format!(
+                        "failed to scan Python wasm artifact {}",
+                        interpreter_wasm.display()
+                    )
+                })?,
+                _ => bail!(
+                    "subject {} did not produce a wasm artifact",
+                    adaptation.subject_name
+                ),
+            }
+        }
         _ => bail!(
             "subject {} cannot be scanned: status={:?}, blockers={:?}",
             adaptation.subject_name,
@@ -136,9 +139,7 @@ fn select_adapter(subject: &SubjectManifest) -> Result<Box<dyn Adapter>> {
         Language::Rust => Ok(Box::new(RustWasiAdapter)),
         Language::Python => Ok(Box::new(PythonWasiAdapter)),
         Language::Go => Ok(Box::new(GoWasiAdapter)),
-        Language::TypeScript | Language::JavaScript => {
-            Ok(Box::new(TypeScriptWasiAdapter))
-        }
+        Language::TypeScript | Language::JavaScript => Ok(Box::new(TypeScriptWasiAdapter)),
         _ => bail!("no adapter implemented for language {:?}", subject.language),
     }
 }

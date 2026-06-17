@@ -124,9 +124,9 @@ pub fn ensure_npm_install(subject: &SubjectManifest) {
     let zod_json_schema = subject
         .source_dir
         .join("node_modules/zod-to-json-schema/dist/esm/index.js");
-    let sdk_interfaces = subject.source_dir.join(
-        "node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js",
-    );
+    let sdk_interfaces = subject
+        .source_dir
+        .join("node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js");
 
     if sdk_marker.exists() && zod_json_schema.exists() && sdk_interfaces.exists() {
         return;
@@ -177,4 +177,3 @@ pub fn ensure_typescript_sdk_examples(manifest_dir: &Path) {
     assert!(status.success(), "fetch-typescript-sdk-examples.sh failed");
     assert!(marker.exists(), "typescript-sdk missing after fetch");
 }
-

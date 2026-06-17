@@ -4,8 +4,8 @@ use serde_json::Value;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum PromptSink {
-    StdoutPrompt {line: String},
-    JsonPrompt {key: String, value: String},
+    StdoutPrompt { line: String },
+    JsonPrompt { key: String, value: String },
     ToolReturnLeaf { path: String, value: String },
     McpToolResultText { path: String, value: String },
 }
@@ -22,7 +22,6 @@ impl PromptSink {
     }
 }
 
-
 /// Extract prompt sinks from stdout string
 pub fn extract_prompt_sinks(stdout: &str) -> Vec<PromptSink> {
     let mut sinks = vec![];
@@ -38,7 +37,7 @@ pub fn extract_prompt_sinks(stdout: &str) -> Vec<PromptSink> {
             continue;
         }
         // 2) JSON line with prompt/messages
-        if let Ok(v) = serde_json::from_str::<Value>(trimmed){
+        if let Ok(v) = serde_json::from_str::<Value>(trimmed) {
             // prompt
             if let Some(p) = v.get("prompt").and_then(|x| x.as_str()) {
                 sinks.push(PromptSink::JsonPrompt {
@@ -85,7 +84,6 @@ mod tests {
             }
             _ => panic!("expected StdoutPrompt"),
         }
-
     }
 
     #[test]
@@ -97,7 +95,7 @@ mod tests {
         assert_eq!(sinks.len(), 1);
         // keep ownership
         match &sinks[0] {
-            PromptSink::JsonPrompt {value, ..} => {
+            PromptSink::JsonPrompt { value, .. } => {
                 assert_eq!(value, "translate text");
             }
             _ => panic!("expected JsonPrompt"),

@@ -98,11 +98,13 @@ fn scans_rust_env_leak_subject() {
 
     assert!(result.report.summary.has_external_to_prompt_flow);
     assert!(result.report.summary.num_flows > 0);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]
@@ -117,13 +119,17 @@ fn scans_rust_mcp_filesystem_subject() {
     let data_dir = manifest_dir.join("data");
     std::fs::create_dir_all(&data_dir).expect("create data dir");
 
-    let result = scan_subject(&subject, &HashMap::new(), Some(&data_dir), 4096).expect("scan subject");
+    let result =
+        scan_subject(&subject, &HashMap::new(), Some(&data_dir), 4096).expect("scan subject");
 
     assert_eq!(result.adaptation_status, AdaptationStatus::NativeOnly);
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
+    assert_eq!(
+        result.report.mcp_transcript.as_ref().unwrap().events.len(),
+        5
+    );
 
     let text = result.report.sinks[0].as_text();
     let data_dir_text = data_dir.to_string_lossy().into_owned();

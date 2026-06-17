@@ -1,0 +1,114 @@
+{
+  "secret": "SEKRET_0123456789abcdef0123456789abcdef",
+  "raw_only_config": {
+    "min_len": 4,
+    "prefix_lens": [
+      16,
+      24,
+      32
+    ],
+    "suffix_lens": [
+      16,
+      24,
+      32
+    ],
+    "mid_window_len": 24,
+    "mid_window_enabled_threshold": 48,
+    "enable_separator_normalization": false,
+    "enable_sink_decoders": false,
+    "enable_rot13": false,
+    "min_decoder_token_len": 8
+  },
+  "default_config": {
+    "min_len": 4,
+    "prefix_lens": [
+      16,
+      24,
+      32
+    ],
+    "suffix_lens": [
+      16,
+      24,
+      32
+    ],
+    "mid_window_len": 24,
+    "mid_window_enabled_threshold": 48,
+    "enable_separator_normalization": true,
+    "enable_sink_decoders": true,
+    "enable_rot13": true,
+    "min_decoder_token_len": 8
+  },
+  "rows": [
+    {
+      "transform": "plain",
+      "raw_only_detected": true,
+      "default_detected": true,
+      "raw_only_strategies": [
+        "exact-substring"
+      ],
+      "default_strategies": [
+        "exact-substring",
+        "separator-normalized"
+      ]
+    },
+    {
+      "transform": "prefix+suffix",
+      "raw_only_detected": true,
+      "default_detected": true,
+      "raw_only_strategies": [
+        "exact-substring"
+      ],
+      "default_strategies": [
+        "exact-substring",
+        "separator-normalized"
+      ]
+    },
+    {
+      "transform": "rot13",
+      "raw_only_detected": false,
+      "default_detected": true,
+      "raw_only_strategies": [],
+      "default_strategies": [
+        "rot13-decoded"
+      ]
+    },
+    {
+      "transform": "hex",
+      "raw_only_detected": false,
+      "default_detected": true,
+      "raw_only_strategies": [],
+      "default_strategies": [
+        "hex-decoded"
+      ]
+    },
+    {
+      "transform": "base64",
+      "raw_only_detected": false,
+      "default_detected": true,
+      "raw_only_strategies": [],
+      "default_strategies": [
+        "base64-decoded"
+      ]
+    },
+    {
+      "transform": "chunked",
+      "raw_only_detected": false,
+      "default_detected": true,
+      "raw_only_strategies": [],
+      "default_strategies": [
+        "separator-normalized"
+      ]
+    },
+    {
+      "transform": "suffix-only",
+      "raw_only_detected": true,
+      "default_detected": true,
+      "raw_only_strategies": [
+        "exact-substring"
+      ],
+      "default_strategies": [
+        "exact-substring"
+      ]
+    }
+  ]
+}

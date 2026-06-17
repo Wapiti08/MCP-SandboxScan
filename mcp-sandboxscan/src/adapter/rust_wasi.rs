@@ -1,5 +1,5 @@
+use anyhow::{Context, Result};
 use std::path::{Path, PathBuf};
-use anyhow::{Context,Result};
 
 use std::process::Command;
 
@@ -11,7 +11,7 @@ pub struct RustWasiAdapter;
 
 impl Adapter for RustWasiAdapter {
     // ‘static --- lifecyle mark --- live for whole process
-    fn name(&self) -> &'static str{
+    fn name(&self) -> &'static str {
         "rust-wasi"
     }
 
@@ -31,23 +31,23 @@ impl Adapter for RustWasiAdapter {
         }
 
         if subject.language != Language::Rust {
-            return Ok(AdaptationReport { 
+            return Ok(AdaptationReport {
                 // avoid change on ownership
-                subject_name: subject.name.clone(), 
-                language: subject.language.clone(), 
-                status: AdaptationStatus::Unsupported, 
-                artifact: None, 
+                subject_name: subject.name.clone(),
+                language: subject.language.clone(),
+                status: AdaptationStatus::Unsupported,
+                artifact: None,
                 // dynamic array for potential mulitple reasons
-                notes: vec![], 
+                notes: vec![],
                 blockers: vec!["RustWasiAdapter only supports Rust subjects".to_string()],
-                });
+            });
         }
 
         // use build for following code if successfully - better than if here
         let Some(build) = &subject.build else {
             return Ok(AdaptationReport {
-                subject_name: subject.name.clone(), 
-                language: subject.language.clone(), 
+                subject_name: subject.name.clone(),
+                language: subject.language.clone(),
                 status: AdaptationStatus::Failed,
                 artifact: None,
                 notes: vec![],
@@ -59,14 +59,13 @@ impl Adapter for RustWasiAdapter {
             .args(&build.args)
             .current_dir(&subject.source_dir)
             .status()
-            .with_context(
-                || {
-                    format!(
-                        "failed to run build command `{}` in {}",
-                        build.command,
-                        subject.source_dir.display()
-                    )
-                })?;
+            .with_context(|| {
+                format!(
+                    "failed to run build command `{}` in {}",
+                    build.command,
+                    subject.source_dir.display()
+                )
+            })?;
 
         if !status.success() {
             return Ok(AdaptationReport {
@@ -80,7 +79,7 @@ impl Adapter for RustWasiAdapter {
         }
 
         let wasm_path = infer_wasm_output_path(&subject.source_dir, &build.args);
-    
+
         Ok(AdaptationReport {
             subject_name: subject.name.clone(),
             language: subject.language.clone(),
@@ -92,22 +91,19 @@ impl Adapter for RustWasiAdapter {
     }
 }
 
-
-fn infer_wasm_output_path(source_dir: &Path, args: &[String]) ->PathBuf {
+fn infer_wasm_output_path(source_dir: &Path, args: &[String]) -> PathBuf {
     // extract args parameters with sliding window 2, || - fn closure
     let output = args
         .windows(2)
-        .find_map(|pair| (pair[0]=="-o").then(|| PathBuf::from(&pair[1])))
+        .find_map(|pair| (pair[0] == "-o").then(|| PathBuf::from(&pair[1])))
         .unwrap_or_else(|| PathBuf::from("tool.wasm"));
-    
+
     if output.is_absolute() {
         output
     } else {
         source_dir.join(output)
     }
-
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -116,14 +112,17 @@ mod tests {
     fn adapts_rust_env_leak_to_wasm() {
         let raw = std::fs::read_to_string("case_studies/rust-env-leak/subject.toml")
             .expect("read subject.toml");
-        let subject: SubjectManifest = toml::from_str(&raw)
-            .expect("parse subject.toml");
+        let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
         let adapter = RustWasiAdapter;
         let report = adapter.adapt(&subject).expect("adapt subject");
         assert!(matches!(report.status, AdaptationStatus::DirectWasm));
         let Some(BuildArtifact::Wasm { wasm_path }) = report.artifact else {
             panic!("expected wasm artifact");
         };
-        assert!(wasm_path.exists(), "wasm not found: {}", wasm_path.display());
+        assert!(
+            wasm_path.exists(),
+            "wasm not found: {}",
+            wasm_path.display()
+        );
     }
 }

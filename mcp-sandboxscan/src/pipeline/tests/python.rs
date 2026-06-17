@@ -27,11 +27,13 @@ fn scans_python_env_leak_subject() {
 
     assert!(result.report.summary.has_external_to_prompt_flow);
     assert!(result.report.summary.num_flows > 0);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]
@@ -81,10 +83,15 @@ fn scans_python_fastmcp_upstream_echo_subject() {
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from upstream fastmcp"));
+    assert_eq!(
+        result.report.mcp_transcript.as_ref().unwrap().events.len(),
+        5
+    );
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from upstream fastmcp")
+    );
 }
 
 #[test]
@@ -100,10 +107,15 @@ fn scans_python_fastmcp_echo_subject() {
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from sandboxscan"));
+    assert_eq!(
+        result.report.mcp_transcript.as_ref().unwrap().events.len(),
+        5
+    );
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from sandboxscan")
+    );
 }
 
 #[test]
@@ -123,11 +135,13 @@ fn scans_python_fastmcp_env_leak_subject() {
 
     assert_eq!(result.adaptation_status, AdaptationStatus::NativeOnly);
     assert!(result.report.summary.has_external_to_prompt_flow);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]

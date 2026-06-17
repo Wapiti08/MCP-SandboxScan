@@ -4,6 +4,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
+use crate::pipeline::case_study::{default_env_for_subject, resolve_data_dir};
 use crate::pipeline::scan_subject;
 use crate::subject::{Language, SubjectManifest};
 
@@ -30,6 +31,7 @@ pub struct StudyCaseResult {
 }
 
 pub fn run_subject_matrix(
+    manifest_dir: &Path,
     subject_paths: &[PathBuf],
     env: &HashMap<String, String>,
     data_dir: Option<&Path>,
@@ -37,7 +39,15 @@ pub fn run_subject_matrix(
 ) -> StudyMatrix {
     let cases: Vec<StudyCaseResult> = subject_paths
         .iter()
-        .map(|subject_path| scan_subject_for_matrix(subject_path, env, data_dir, max_output_bytes))
+        .map(|subject_path| {
+            scan_subject_for_matrix(
+                manifest_dir,
+                subject_path,
+                env,
+                data_dir,
+                max_output_bytes,
+            )
+        })
         .collect();
     let summary = StudySummary::from_cases(&cases);
 
@@ -45,13 +55,21 @@ pub fn run_subject_matrix(
 }
 
 fn scan_subject_for_matrix(
+    manifest_dir: &Path,
     subject_path: &Path,
     env: &HashMap<String, String>,
     data_dir: Option<&Path>,
     max_output_bytes: usize,
 ) -> StudyCaseResult {
     match load_subject(subject_path).and_then(|subject| {
-        let result = scan_subject(&subject, env, data_dir, max_output_bytes)?;
+        let scan_env = default_env_for_subject(&subject, env);
+        let effective_data_dir = resolve_data_dir(manifest_dir, &subject, data_dir)?;
+        let result = scan_subject(
+            &subject,
+            &scan_env,
+            effective_data_dir.as_deref(),
+            max_output_bytes,
+        )?;
         Ok((subject, result))
     }) {
         Ok((subject, result)) => StudyCaseResult {
@@ -104,7 +122,8 @@ mod tests {
             "SEKRET_0123456789abcdef".to_string(),
         );
 
-        let matrix = run_subject_matrix(&subject_paths, &env, None, 4096);
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let matrix = run_subject_matrix(&manifest_dir, &subject_paths, &env, None, 4096);
 
         assert_eq!(matrix.summary.total_cases, 1);
         assert_eq!(matrix.summary.scanned_cases, 1);
@@ -144,7 +163,9 @@ mod tests {
         std::fs::create_dir_all(&data_dir).unwrap();
         std::fs::write(data_dir.join("secret.txt"), "top-secret\n").unwrap();
 
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let matrix = run_subject_matrix(
+            &manifest_dir,
             &six_case_subject_paths(),
             &env_with_demo_secret(),
             Some(&data_dir),
@@ -177,12 +198,17 @@ mod tests {
                 .unwrap_or_else(|| panic!("missing {python_name}"));
 
             assert_eq!(
-                rust_case.has_external_to_prompt_flow,
-                python_case.has_external_to_prompt_flow,
+                rust_case.has_external_to_prompt_flow, python_case.has_external_to_prompt_flow,
                 "{rust_name} vs {python_name}"
             );
-            assert_eq!(rust_case.num_flows, python_case.num_flows, "{rust_name} vs {python_name}");
-            assert_eq!(rust_case.num_sinks, python_case.num_sinks, "{rust_name} vs {python_name}");
+            assert_eq!(
+                rust_case.num_flows, python_case.num_flows,
+                "{rust_name} vs {python_name}"
+            );
+            assert_eq!(
+                rust_case.num_sinks, python_case.num_sinks,
+                "{rust_name} vs {python_name}"
+            );
             assert_eq!(
                 rust_case.wasm_status,
                 WasmPortabilityStatus::DirectWasm,
@@ -219,13 +245,16 @@ mod tests {
             PathBuf::from("case_studies/rust-env-leak/subject.toml"),
             PathBuf::from("case_studies/rust-file-exfil/subject.toml"),
         ];
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let rust_matrix = run_subject_matrix(
+            &manifest_dir,
             &rust_paths,
             &env_with_demo_secret(),
             Some(&data_dir),
             4096,
         );
         let go_matrix = run_subject_matrix(
+            &manifest_dir,
             &go_wasi_subject_paths(),
             &env_with_demo_secret(),
             Some(&data_dir),
@@ -254,12 +283,17 @@ mod tests {
                 .unwrap_or_else(|| panic!("missing {go_name}"));
 
             assert_eq!(
-                rust_case.has_external_to_prompt_flow,
-                go_case.has_external_to_prompt_flow,
+                rust_case.has_external_to_prompt_flow, go_case.has_external_to_prompt_flow,
                 "{rust_name} vs {go_name}"
             );
-            assert_eq!(rust_case.num_flows, go_case.num_flows, "{rust_name} vs {go_name}");
-            assert_eq!(rust_case.num_sinks, go_case.num_sinks, "{rust_name} vs {go_name}");
+            assert_eq!(
+                rust_case.num_flows, go_case.num_flows,
+                "{rust_name} vs {go_name}"
+            );
+            assert_eq!(
+                rust_case.num_sinks, go_case.num_sinks,
+                "{rust_name} vs {go_name}"
+            );
             assert_eq!(
                 go_case.wasm_status,
                 WasmPortabilityStatus::DirectWasm,

@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use anyhow::{bail, Context, Result};
-use clap::Parser;
+use crate::pipeline::case_study::{default_env_for_subject, resolve_data_dir};
 use crate::pipeline::scan_subject;
-use crate::subject::SubjectManifest;
 use crate::study::run_subject_matrix;
+use crate::subject::SubjectManifest;
+use anyhow::{Context, Result, bail};
+use clap::Parser;
 
 // absolute path to the sandboxscan data directory
 use crate::scan::dynamic::run_dynamic_scan;
@@ -57,7 +58,7 @@ pub fn entry() -> Result<()> {
     if args.wasm.is_none() && args.subject.is_none() && args.study.is_empty() {
         bail!("expected one of --wasm, --subject, or --study");
     }
-    
+
     if let Some(d) = &args.data_dir {
         if !d.exists() {
             bail!("data_dir not found: {}", d.display());
@@ -65,6 +66,7 @@ pub fn entry() -> Result<()> {
     }
 
     let env: HashMap<String, String> = args.env.into_iter().collect();
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
 
     let json = if !args.study.is_empty() {
         for subject_path in &args.study {
@@ -72,42 +74,46 @@ pub fn entry() -> Result<()> {
                 bail!("study subject not found: {}", subject_path.display());
             }
         }
-    
+
         let matrix = run_subject_matrix(
+            &manifest_dir,
             &args.study,
             &env,
             args.data_dir.as_ref().map(|v| v.as_path()),
             args.max_output_size,
         );
-    
-        serde_json::to_string_pretty(&matrix)
-            .context("Failed to serialize study matrix to JSON")?
+
+        serde_json::to_string_pretty(&matrix).context("Failed to serialize study matrix to JSON")?
     } else if let Some(subject_path) = &args.subject {
         if !subject_path.exists() {
             bail!("subject not found: {}", subject_path.display());
         }
-    
+
         let raw = std::fs::read_to_string(subject_path)
             .with_context(|| format!("Failed to read subject {}", subject_path.display()))?;
-    
+
         let subject: SubjectManifest = toml::from_str(&raw)
             .with_context(|| format!("Failed to parse subject {}", subject_path.display()))?;
-    
+
+        let scan_env = default_env_for_subject(&subject, &env);
+        let effective_data_dir =
+            resolve_data_dir(&manifest_dir, &subject, args.data_dir.as_ref().map(|v| v.as_path()))?;
+
         let result = scan_subject(
             &subject,
-            &env,
-            args.data_dir.as_ref().map(|v| v.as_path()),
+            &scan_env,
+            effective_data_dir.as_deref(),
             args.max_output_size,
         )
         .with_context(|| format!("Failed to scan subject {}", subject.name))?;
-    
+
         serde_json::to_string_pretty(&result.report)
             .context("Failed to serialize scan report to JSON")?
     } else if let Some(wasm_path) = &args.wasm {
         if !wasm_path.exists() {
             bail!("WASM not found: {}", wasm_path.display());
         }
-    
+
         let report = run_dynamic_scan(
             wasm_path,
             args.data_dir.as_ref().map(|v| v.as_path()),
@@ -116,13 +122,12 @@ pub fn entry() -> Result<()> {
             args.max_output_size,
         )
         .with_context(|| format!("Failed to run dynamic scan on {}", wasm_path.display()))?;
-    
-        serde_json::to_string_pretty(&report)
-            .context("Failed to serialize scan report to JSON")?
+
+        serde_json::to_string_pretty(&report).context("Failed to serialize scan report to JSON")?
     } else {
         unreachable!("validated that one mode is present");
     };
-    
+
     println!("{}", json);
 
     Ok(())

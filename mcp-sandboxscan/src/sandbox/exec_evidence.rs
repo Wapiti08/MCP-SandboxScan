@@ -1,6 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::sandbox::exec_result::WasmExecResult;
-
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExecutionEvidence {

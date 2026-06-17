@@ -3,7 +3,16 @@ name = "mcp-sandboxscan"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "mcp_compare"
+path = "src/bin/mcp_compare.rs"
+
+[[bin]]
+name = "evasion"
+path = "src/bin/evasion.rs"
+
 [dependencies]
+base64 = "0.22"
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }

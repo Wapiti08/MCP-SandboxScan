@@ -50,7 +50,6 @@ pub struct AdaptationReport {
     pub blockers: Vec<String>,
 }
 
-
 pub trait Adapter {
     fn name(&self) -> &'static str;
     fn adapt(&self, subject: &SubjectManifest) -> Result<AdaptationReport>;

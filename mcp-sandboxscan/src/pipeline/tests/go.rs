@@ -25,11 +25,13 @@ fn scans_go_env_leak_subject() {
     assert_eq!(result.adaptation_status, AdaptationStatus::DirectWasm);
     assert!(result.report.summary.has_external_to_prompt_flow);
     assert!(result.report.summary.num_flows > 0);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]
@@ -76,9 +78,11 @@ fn scans_go_mcp_echo_subject() {
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from sandboxscan"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from sandboxscan")
+    );
 }
 
 #[test]
@@ -98,11 +102,13 @@ fn scans_go_mcp_env_leak_subject() {
 
     assert_eq!(result.adaptation_status, AdaptationStatus::NativeOnly);
     assert!(result.report.summary.has_external_to_prompt_flow);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]
@@ -152,8 +158,13 @@ fn scans_go_mcp_upstream_hello_subject() {
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("Hi hello from upstream go-sdk"));
+    assert_eq!(
+        result.report.mcp_transcript.as_ref().unwrap().events.len(),
+        5
+    );
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("Hi hello from upstream go-sdk")
+    );
 }

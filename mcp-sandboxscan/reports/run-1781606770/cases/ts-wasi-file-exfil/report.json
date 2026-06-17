@@ -1,0 +1,143 @@
+{
+  "exec": {
+    "backend": "wasm",
+    "stdout": "{\"raw_result\":\"top-secret-0123456789\",\"source_path\":\"/data/secret.txt\"}\n",
+    "stderr": "",
+    "exit_code": 0,
+    "duration_ms": 2
+  },
+  "events": [
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "stdin",
+      "evidence": {
+        "bytes_len": 63,
+        "capability": "stdio",
+        "stream": "stdin"
+      }
+    },
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "stdout",
+      "evidence": {
+        "capability": "stdio",
+        "max_output_bytes": 8192,
+        "stream": "stdout"
+      }
+    },
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "stderr",
+      "evidence": {
+        "capability": "stdio",
+        "max_output_bytes": 8192,
+        "stream": "stderr"
+      }
+    },
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "/data",
+      "evidence": {
+        "capability": "filesystem-preopen",
+        "dir_perms": "all",
+        "file_perms": "all",
+        "guest_path": "/data",
+        "host_path": "reports/run-1781606770/data/ts-wasi-file-exfil"
+      }
+    },
+    {
+      "kind": "capability-granted",
+      "actor": "wasi-runtime",
+      "target": "network-monitor",
+      "evidence": {
+        "capability": "network-monitor",
+        "policy": "deny-by-default",
+        "tcp": true,
+        "udp": true
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "reports/run-1781606770/data/ts-wasi-file-exfil/secret.txt",
+      "evidence": {
+        "content_len": 21,
+        "source_id": "FileRead: reports/run-1781606770/data/ts-wasi-file-exfil/secret.txt"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.source_path",
+          "type": "ToolReturnLeaf",
+          "value": "/data/secret.txt"
+        },
+        "text_len": 16
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.raw_result",
+          "type": "ToolReturnLeaf",
+          "value": "top-secret-0123456789"
+        },
+        "text_len": 21
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "ToolReturnLeaf",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "ToolReturnLeaf",
+        "snippet": "top-secret-0123456789",
+        "source_id": "FileRead: reports/run-1781606770/data/ts-wasi-file-exfil/secret.txt"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "FileRead",
+      "path": "reports/run-1781606770/data/ts-wasi-file-exfil/secret.txt",
+      "content": "top-secret-0123456789"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.source_path",
+      "value": "/data/secret.txt"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.raw_result",
+      "value": "top-secret-0123456789"
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "FileRead: reports/run-1781606770/data/ts-wasi-file-exfil/secret.txt",
+      "sink_type": "ToolReturnLeaf",
+      "snippet": "top-secret-0123456789",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 1,
+    "num_sinks": 2,
+    "num_flows": 1,
+    "has_external_to_prompt_flow": true
+  }
+}

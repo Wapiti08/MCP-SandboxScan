@@ -1,10 +1,10 @@
 use crate::mcp::driver::McpDriverResult;
+use crate::mcp::events::monitor_events_from_transcript;
+use crate::monitor::event::{flow_events, sink_events, source_inventory_events};
 use crate::scan::mcp_sink::extract_mcp_tool_result_sinks;
 use crate::scan::report::{ScanReport, Summary};
 use crate::taint::flow::detect_flows;
 use crate::taint::source::TaintSource;
-use crate::mcp::events::monitor_events_from_transcript;
-use crate::monitor::event::{flow_events, sink_events, source_inventory_events};
 
 pub fn scan_mcp_driver_result(
     driver_result: McpDriverResult,

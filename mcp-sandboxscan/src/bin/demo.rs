@@ -1,16 +1,19 @@
-use std::{collections::HashMap, path::{Path, PathBuf}};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use anyhow::Result;
 
 use mcp_sandboxscan::scan::dynamic::run_dynamic_scan;
 
 fn main() -> Result<()> {
-    let wasm = std::env::args().nth(1)
-    .map(PathBuf::from)
-    .unwrap_or_else(|| {
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("fixtures/evil_prompt_tool/tool.wasm")
-    });
+    let wasm = std::env::args()
+        .nth(1)
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("fixtures/evil_prompt_tool/tool.wasm")
+        });
 
     if !wasm.exists() {
         anyhow::bail!("wasm not found: {}", wasm.display());
@@ -23,19 +26,19 @@ fn main() -> Result<()> {
     env.insert("FILE_TO_READ".to_string(), "secret.txt".to_string());
 
     // allow overriding/injecting from host environment for benchmarking
-    for k in ["DEMO_SECRET", "MODE", "USER_INPUT", "FILE_TO_READ", "API_KEY"] {
+    for k in [
+        "DEMO_SECRET",
+        "MODE",
+        "USER_INPUT",
+        "FILE_TO_READ",
+        "API_KEY",
+    ] {
         if let Ok(v) = std::env::var(k) {
             env.insert(k.to_string(), v);
         }
     }
 
-    let report = run_dynamic_scan(
-        &wasm,
-        data_dir.as_deref(),
-        &env,
-        None,
-        4096,
-    )?;
+    let report = run_dynamic_scan(&wasm, data_dir.as_deref(), &env, None, 4096)?;
 
     println!("== Exec ==");
     println!("exit_code: {:?}", report.exec.exit_code);

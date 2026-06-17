@@ -1,7 +1,7 @@
 use std::io::{BufRead, Write};
 use std::process::Command;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use serde_json::Value;
 
 use crate::mcp::transcript::{McpDirection, McpEvent, McpTranscript};

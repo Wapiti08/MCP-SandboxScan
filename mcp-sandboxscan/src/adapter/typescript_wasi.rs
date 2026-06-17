@@ -115,6 +115,10 @@ mod tests {
         let Some(BuildArtifact::Wasm { wasm_path }) = report.artifact else {
             panic!("expected wasm artifact");
         };
-        assert!(wasm_path.exists(), "wasm not found: {}", wasm_path.display());
+        assert!(
+            wasm_path.exists(),
+            "wasm not found: {}",
+            wasm_path.display()
+        );
     }
 }

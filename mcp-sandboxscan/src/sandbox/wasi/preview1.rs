@@ -13,11 +13,11 @@ use wasmtime::Linker;
 use crate::collect::NetworkCollector;
 use crate::monitor::event::{MonitorEvent, MonitorEventKind};
 
+use wasmtime_wasi::WasiCtxBuilder;
 use wasmtime_wasi::filesystem::{DirPerms, FilePerms};
 use wasmtime_wasi::p1::{self, WasiP1Ctx};
 use wasmtime_wasi::p2::pipe::{MemoryInputPipe, MemoryOutputPipe};
 use wasmtime_wasi::sockets::SocketAddrUse;
-use wasmtime_wasi::WasiCtxBuilder;
 
 use super::{WasiExecutionIO, WasiRuntime};
 
@@ -177,14 +177,9 @@ impl WasiRuntime for WasiPreview1 {
                 }),
             });
         }
-    
+
         if let Some(dir) = &self.data_dir {
-            builder.preopened_dir(
-                dir,
-                "/data",
-                DirPerms::all(),
-                FilePerms::all(),
-            )?;
+            builder.preopened_dir(dir, "/data", DirPerms::all(), FilePerms::all())?;
             monitor_events.push(MonitorEvent {
                 kind: MonitorEventKind::CapabilityGranted,
                 actor: "wasi-runtime".to_string(),
@@ -206,8 +201,7 @@ impl WasiRuntime for WasiPreview1 {
             let collector = Arc::clone(&network_collector);
             let allowed = false;
             collector.record_socket_attempt(addr, use_case, allowed);
-            Box::pin(async move { allowed })
-                as Pin<Box<dyn Future<Output = bool> + Send + Sync>>
+            Box::pin(async move { allowed }) as Pin<Box<dyn Future<Output = bool> + Send + Sync>>
         });
         monitor_events.push(MonitorEvent {
             kind: MonitorEventKind::CapabilityGranted,
@@ -262,10 +256,8 @@ mod tests {
 
     #[test]
     fn records_wasi_capability_grants() {
-        let data_dir = std::env::temp_dir().join(format!(
-            "mcp-sandboxscan-wasi-test-{}",
-            std::process::id()
-        ));
+        let data_dir =
+            std::env::temp_dir().join(format!("mcp-sandboxscan-wasi-test-{}", std::process::id()));
         fs::create_dir_all(&data_dir).unwrap();
 
         let mut env = HashMap::new();

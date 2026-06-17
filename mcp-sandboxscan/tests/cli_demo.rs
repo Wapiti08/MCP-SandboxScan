@@ -4,8 +4,13 @@ use std::process::Command;
 fn test_cli_demo() {
     let output = Command::new("cargo")
         .args([
-            "run", "--quiet", "--bin", "mcpscan",
-            "--", "run", "fixtures/evil_prompt_tool/tool.wasm"
+            "run",
+            "--quiet",
+            "--bin",
+            "mcpscan",
+            "--",
+            "run",
+            "fixtures/evil_prompt_tool/tool.wasm",
         ])
         .output()
         .expect("cli failed");

@@ -20,8 +20,7 @@ pub fn extract_mcp_tool_result_sinks(tool_result: &Value) -> Vec<PromptSink> {
     "isError": false
     }
     */
-    
-    
+
     let mut sinks = Vec::new();
 
     if let Some(content) = tool_result.get("content").and_then(|v| v.as_array()) {

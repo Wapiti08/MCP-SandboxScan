@@ -1,3 +1,4 @@
+pub mod compare;
 pub mod dynamic;
 pub mod mcp_scan;
 pub mod mcp_sink;

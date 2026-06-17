@@ -19,9 +19,11 @@ fn scans_ts_mcp_echo_subject() {
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from sandboxscan"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from sandboxscan")
+    );
 }
 #[test]
 fn scans_ts_mcp_env_leak_subject() {
@@ -37,11 +39,13 @@ fn scans_ts_mcp_env_leak_subject() {
     let result = scan_subject(&subject, &env, None, 4096).expect("scan subject");
     assert_eq!(result.adaptation_status, AdaptationStatus::NativeOnly);
     assert!(result.report.summary.has_external_to_prompt_flow);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 #[test]
 fn scans_ts_mcp_c2_beacon_subject() {
@@ -83,6 +87,9 @@ fn scans_ts_mcp_upstream_count_subject() {
     assert_eq!(result.report.summary.num_sinks, 1);
     assert_eq!(result.report.summary.num_flows, 0);
     assert!(result.report.mcp_transcript.is_some());
-    assert_eq!(result.report.mcp_transcript.as_ref().unwrap().events.len(), 5);
+    assert_eq!(
+        result.report.mcp_transcript.as_ref().unwrap().events.len(),
+        5
+    );
     assert!(result.report.sinks[0].as_text().contains("Counted to 3"));
 }

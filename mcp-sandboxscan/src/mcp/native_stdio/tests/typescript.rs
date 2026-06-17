@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use crate::pipeline::fixtures::{ensure_npm_install, ensure_typescript_sdk_examples};
 use super::helpers::{assert_basic_mcp_driver_result, load_subject, scan_case};
+use crate::pipeline::fixtures::{ensure_npm_install, ensure_typescript_sdk_examples};
 
 #[test]
 fn driver_calls_ts_mcp_echo() {
@@ -11,9 +11,11 @@ fn driver_calls_ts_mcp_echo() {
     ensure_npm_install(&subject);
     let result = scan_case(subject_path, &HashMap::new(), None, 4096);
     assert_basic_mcp_driver_result(&result);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from sandboxscan"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from sandboxscan")
+    );
 }
 
 #[test]
@@ -29,11 +31,13 @@ fn driver_calls_ts_mcp_env_leak() {
     let result = scan_case(subject_path, &env, None, 4096);
     assert_basic_mcp_driver_result(&result);
     assert!(result.report.summary.has_external_to_prompt_flow);
-    assert!(result
-        .report
-        .flows
-        .iter()
-        .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET"));
+    assert!(
+        result
+            .report
+            .flows
+            .iter()
+            .any(|flow| flow.source_id == "EnvVar: DEMO_SECRET")
+    );
 }
 
 #[test]

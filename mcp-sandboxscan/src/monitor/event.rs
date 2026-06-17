@@ -37,22 +37,25 @@ pub enum MonitorEventKind {
 
 pub fn sink_events(sinks: &[PromptSink]) -> Vec<MonitorEvent> {
     sinks
-    .iter()
-    .map(|sink| MonitorEvent {
-        kind: MonitorEventKind::SinkObserved,
-        actor: "scanner".to_string(),
-        target: Some(match sink {
-            PromptSink::StdoutPrompt { .. } => "stdout-prompt",
-            PromptSink::JsonPrompt { .. } => "json-prompt",
-            PromptSink::ToolReturnLeaf { .. } => "tool-return",
-            PromptSink::McpToolResultText { .. } => "mcp-tool-result",
-        }.to_string()),
-        evidence: json!({
-            "sink": sink,
-            "text_len": sink.as_text().len()
-        }),
-    })
-    .collect()
+        .iter()
+        .map(|sink| MonitorEvent {
+            kind: MonitorEventKind::SinkObserved,
+            actor: "scanner".to_string(),
+            target: Some(
+                match sink {
+                    PromptSink::StdoutPrompt { .. } => "stdout-prompt",
+                    PromptSink::JsonPrompt { .. } => "json-prompt",
+                    PromptSink::ToolReturnLeaf { .. } => "tool-return",
+                    PromptSink::McpToolResultText { .. } => "mcp-tool-result",
+                }
+                .to_string(),
+            ),
+            evidence: json!({
+                "sink": sink,
+                "text_len": sink.as_text().len()
+            }),
+        })
+        .collect()
 }
 
 pub fn flow_events(flows: &[FlowMatch]) -> Vec<MonitorEvent> {

@@ -1,5 +1,5 @@
-use serde_json::Value;
 use crate::scan::prompt_sink::PromptSink;
+use serde_json::Value;
 
 pub fn extract_tool_return_sinks(stdout: &str) -> Vec<PromptSink> {
     let mut out = Vec::new();
@@ -15,7 +15,7 @@ pub fn extract_tool_return_sinks(stdout: &str) -> Vec<PromptSink> {
             Err(_) => continue,
         };
 
-        // avoid picking up prompt/messages again 
+        // avoid picking up prompt/messages again
         if v.get("prompt").is_some() || v.get("messages").is_some() {
             continue;
         }
@@ -32,12 +32,12 @@ fn collect_string_leaves(v: &Value, path: String, out: &mut Vec<PromptSink>) {
     match v {
         Value::String(s) => {
             if is_candidate_leaf(&path, s) {
-                out.push(PromptSink::ToolReturnLeaf { 
-                    path, 
-                    value: s.to_string(), 
+                out.push(PromptSink::ToolReturnLeaf {
+                    path,
+                    value: s.to_string(),
                 });
             }
-        } 
+        }
         Value::Array(arr) => {
             for (i, item) in arr.iter().enumerate() {
                 collect_string_leaves(item, format!("{}[{}]", path, i), out);

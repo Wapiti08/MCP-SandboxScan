@@ -28,9 +28,11 @@ fn driver_calls_upstream_fastmcp_echo() {
 
     let result = scan_case(subject_path, &HashMap::new(), None, 4096);
     assert_basic_mcp_driver_result(&result);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from upstream fastmcp"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from upstream fastmcp")
+    );
 }
 
 #[test]
@@ -41,7 +43,9 @@ fn driver_calls_fixture_fastmcp_echo() {
 
     let result = scan_case(subject_path, &HashMap::new(), None, 4096);
     assert_basic_mcp_driver_result(&result);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("hello from sandboxscan"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("hello from sandboxscan")
+    );
 }

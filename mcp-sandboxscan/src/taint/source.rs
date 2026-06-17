@@ -3,9 +3,18 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum TaintSource {
-    FileRead { path: String, content: String },
-    EnvVar { key: String, value: String },
-    HttpFetch { url: String, content: String },
+    FileRead {
+        path: String,
+        content: String,
+    },
+    EnvVar {
+        key: String,
+        value: String,
+    },
+    HttpFetch {
+        url: String,
+        content: String,
+    },
     NetworkConnect {
         host: String,
         port: u16,
@@ -29,7 +38,12 @@ impl TaintSource {
             TaintSource::FileRead { path, .. } => format!("FileRead: {}", path),
             TaintSource::EnvVar { key, .. } => format!("EnvVar: {}", key),
             TaintSource::HttpFetch { url, .. } => format!("HttpFetch: {}", url),
-            TaintSource::NetworkConnect { host, port, protocol, .. } => {
+            TaintSource::NetworkConnect {
+                host,
+                port,
+                protocol,
+                ..
+            } => {
                 format!("NetworkConnect: {protocol}://{host}:{port}")
             }
         }

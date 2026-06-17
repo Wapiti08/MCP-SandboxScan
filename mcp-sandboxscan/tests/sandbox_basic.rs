@@ -1,9 +1,9 @@
 use std::collections::HashMap;
-use std::path::Path;
 use std::fs;
+use std::path::Path;
 
-use mcp_sandboxscan::sandbox::wasm_runner::WasmRunner;
 use mcp_sandboxscan::sandbox::wasi::preview1::WasiPreview1;
+use mcp_sandboxscan::sandbox::wasm_runner::WasmRunner;
 
 /// Basic sanity check:
 /// a benign MCP tool can be executed under WASI
@@ -12,22 +12,16 @@ use mcp_sandboxscan::sandbox::wasi::preview1::WasiPreview1;
 fn test_benign_wasm_exec() {
     // define path to compiled WASM tool
     let wasm_path = Path::new("fixtures/benign_tool/tool.wasm");
-    let wasm_bytes = fs::read(wasm_path)
-        .expect("failed to read benign wasm file");
+    let wasm_bytes = fs::read(wasm_path).expect("failed to read benign wasm file");
 
     let runner = WasmRunner::default();
     let env = HashMap::new();
 
     let runtime = WasiPreview1::new(env.clone(), None, 4096);
 
-    let result = runner
-        .run(&wasm_bytes, &runtime)
-        .expect("execution failed");
+    let result = runner.run(&wasm_bytes, &runtime).expect("execution failed");
 
-    assert_eq!(
-        result.exit_code, 0,
-        "expected normal exit for benign tool"
-    );
+    assert_eq!(result.exit_code, 0, "expected normal exit for benign tool");
     assert!(
         result.stdout.contains("PROMPT"),
         "expected PROMPT in stdout"
@@ -38,24 +32,20 @@ fn test_benign_wasm_exec() {
     );
 }
 
-
 /// Observable abnormal behavior:
 /// unauthorized filesystem access should surface
 /// as a non-zero exit or WASI trap
 #[test]
 fn test_fs_violation_observable() {
     let wasm_path = Path::new("fixtures/fs_violation_tool/tool.wasm");
-    let wasm_bytes = fs::read(wasm_path)
-        .expect("failed to read fs-violation wasm file");
+    let wasm_bytes = fs::read(wasm_path).expect("failed to read fs-violation wasm file");
 
     let runner = WasmRunner::default();
     let env = HashMap::new();
-    
+
     let runtime = WasiPreview1::new(env.clone(), None, 4096);
 
-    let result = runner
-        .run(&wasm_bytes, &runtime)
-        .expect("execution failed");
+    let result = runner.run(&wasm_bytes, &runtime).expect("execution failed");
 
     // not equal
     assert_ne!(

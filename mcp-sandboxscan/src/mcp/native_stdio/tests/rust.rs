@@ -35,7 +35,9 @@ fn driver_calls_mcp_filesystem() {
     );
     assert_basic_mcp_driver_result(&result);
     assert_eq!(result.report.summary.num_flows, 0);
-    assert!(result.report.sinks[0]
-        .as_text()
-        .contains("Allowed directories"));
+    assert!(
+        result.report.sinks[0]
+            .as_text()
+            .contains("Allowed directories")
+    );
 }

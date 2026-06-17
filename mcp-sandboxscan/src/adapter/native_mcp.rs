@@ -73,11 +73,7 @@ impl Adapter for NativeMcpAdapter {
     }
 }
 
-fn failed(
-    subject: &SubjectManifest,
-    status: AdaptationStatus,
-    reason: &str,
-) -> AdaptationReport {
+fn failed(subject: &SubjectManifest, status: AdaptationStatus, reason: &str) -> AdaptationReport {
     AdaptationReport {
         subject_name: subject.name.clone(),
         language: subject.language.clone(),
