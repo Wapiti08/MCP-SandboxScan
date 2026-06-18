@@ -7,6 +7,7 @@ The interface to call and run real MCP
 use super::transcript::McpTranscript;
 use crate::sandbox::exec_evidence::ExecutionEvidence;
 
+#[derive(Clone)]
 pub struct McpCallPlan {
     pub tool_name: String,
     pub arguments: Value,

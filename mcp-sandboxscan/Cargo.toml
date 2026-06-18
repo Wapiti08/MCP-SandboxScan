@@ -4,12 +4,20 @@ version = "0.1.0"
 edition = "2024"
 
 [[bin]]
+name = "bench"
+path = "src/bin/bench.rs"
+
+[[bin]]
 name = "mcp_compare"
 path = "src/bin/mcp_compare.rs"
 
 [[bin]]
 name = "evasion"
 path = "src/bin/evasion.rs"
+
+[[bin]]
+name = "corpus"
+path = "src/bin/corpus.rs"
 
 [dependencies]
 base64 = "0.22"

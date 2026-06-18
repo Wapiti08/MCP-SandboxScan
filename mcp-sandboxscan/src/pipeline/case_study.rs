@@ -50,7 +50,10 @@ pub fn default_env_for_subject(
     }
 
     if !out.contains_key("DEMO_SECRET")
-        && (subject.name.contains("env-leak") || subject.name.contains("env_leak"))
+        && (subject.name.contains("env-leak")
+            || subject.name.contains("env_leak")
+            || subject.name.contains("c2-beacon")
+            || subject.name.contains("c2_beacon"))
     {
         out.insert(
             "DEMO_SECRET".to_string(),

@@ -70,7 +70,18 @@ fn compare_subject_inner(
     )
     .with_context(|| format!("failed to scan subject {}", subject.name))?;
 
-    let report = &result.report;
+    Ok(compare_from_report(
+        &subject,
+        subject_path,
+        &result.report,
+    ))
+}
+
+pub fn compare_from_report(
+    subject: &SubjectManifest,
+    subject_path: &Path,
+    report: &crate::scan::report::ScanReport,
+) -> SinkCompareRow {
     let has_mcp_protocol = subject.capabilities.contains(&Capability::McpProtocol);
 
     let stdout_only_sinks = extract_prompt_sinks(&report.exec.stdout);
@@ -100,7 +111,7 @@ fn compare_subject_inner(
     let stdout_flow_count = stdout_flows.len();
     let full_stdout_flow_count = full_stdout_flows.len();
 
-    Ok(SinkCompareRow {
+    SinkCompareRow {
         subject: subject.name.clone(),
         subject_toml: subject_path.to_string_lossy().into_owned(),
         has_mcp_protocol,
@@ -113,7 +124,7 @@ fn compare_subject_inner(
         mcp_flow_count,
         protocol_wins: mcp_flow_count > stdout_flow_count,
         error: None,
-    })
+    }
 }
 
 pub fn compare_subjects(

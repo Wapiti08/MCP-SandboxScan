@@ -1,6 +1,8 @@
+pub mod util;
 pub mod adapter;
 pub mod collect;
 pub mod cli;
+pub mod eval;
 pub mod mcp;
 pub mod monitor;
 pub mod pipeline;
@@ -9,3 +11,4 @@ pub mod scan;
 pub mod study;
 pub mod subject;
 pub mod taint;
+pub mod corpus;

@@ -24,11 +24,21 @@ for line in sys.stdin:
                 "serverInfo": {"name": "mock-mcp", "version": "0.1.0"}
             }
         }), flush=True)
-    elif msg.get("id") == 2 and method == "tools/call":
-        name = msg.get("params", {}).get("name")
+    elif msg.get("id") == 2 and method == "tools/list":
         print(json.dumps({
             "jsonrpc": "2.0",
             "id": 2,
+            "result": {
+                "tools": [
+                    {"name": "echo", "description": "mock echo", "inputSchema": {"type": "object"}}
+                ]
+            }
+        }), flush=True)
+    elif msg.get("id") == 3 and method == "tools/call":
+        name = msg.get("params", {}).get("name")
+        print(json.dumps({
+            "jsonrpc": "2.0",
+            "id": 3,
             "result": {
                 "content": [
                     {"type": "text", "text": f"mock result from {name}"}
@@ -44,6 +54,7 @@ for line in sys.stdin:
         current_dir: None,
         framing: StdioFraming::Newline,
         env: HashMap::new(),
+        mcp_timeout: None,
     };
     let plan = McpCallPlan {
         tool_name: "echo".to_string(),
@@ -56,13 +67,13 @@ for line in sys.stdin:
         result.tool_result_payload["content"][0]["text"],
         "mock result from echo"
     );
-    assert_eq!(result.transcript.events.len(), 5);
+    assert_eq!(result.transcript.events.len(), 7);
     assert_eq!(
         result.transcript.events[0].method.as_deref(),
         Some("initialize")
     );
     assert_eq!(
-        result.transcript.events[3].method.as_deref(),
+        result.transcript.events[5].method.as_deref(),
         Some("tools/call")
     );
 }

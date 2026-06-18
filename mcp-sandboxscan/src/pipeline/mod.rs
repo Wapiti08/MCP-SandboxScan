@@ -1,5 +1,6 @@
 pub mod case_study;
 pub mod fixtures;
+pub mod limits;
 
 #[allow(unused_imports)]
 pub use fixtures::{
@@ -23,6 +24,8 @@ use crate::scan::dynamic::{run_dynamic_scan, run_python_dynamic_scan};
 use crate::scan::native_mcp::run_native_mcp_scan;
 use crate::scan::report::ScanReport;
 use crate::subject::{Capability, Language, SubjectManifest};
+
+pub use limits::ScanLimits;
 
 fn build_ts_wasi_stdin_payload(
     subject: &SubjectManifest,
@@ -56,6 +59,14 @@ fn build_ts_wasi_stdin_payload(
 pub struct SubjectScanResult {
     pub report: ScanReport,
     pub adaptation_status: AdaptationStatus,
+    pub timing: SubjectScanTiming,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct SubjectScanTiming {
+    pub build_ms: u128,
+    pub scan_ms: u128,
+    pub total_ms: u128,
 }
 
 pub fn scan_subject(
@@ -64,12 +75,26 @@ pub fn scan_subject(
     data_dir: Option<&Path>,
     max_output_bytes: usize,
 ) -> Result<SubjectScanResult> {
-    let adapter = select_adapter(subject)?;
+    scan_subject_with_limits(subject, env, data_dir, max_output_bytes, ScanLimits::default())
+}
 
+pub fn scan_subject_with_limits(
+    subject: &SubjectManifest,
+    env: &HashMap<String, String>,
+    data_dir: Option<&Path>,
+    max_output_bytes: usize,
+    limits: ScanLimits,
+) -> Result<SubjectScanResult> {
+    let total_start = std::time::Instant::now();
+    let adapter = select_adapter(subject, &limits)?;
+
+    let build_start = std::time::Instant::now();
     let adaptation = adapter
         .adapt(subject)
         .with_context(|| format!("failed to adapt subject {}", subject.name))?;
+    let build_ms = build_start.elapsed().as_millis();
 
+    let scan_start = std::time::Instant::now();
     let report = match adaptation.status {
         AdaptationStatus::NativeOnly => {
             let Some(ref artifact) = adaptation.artifact else {
@@ -78,7 +103,7 @@ pub fn scan_subject(
                     adaptation.subject_name
                 );
             };
-            run_native_mcp_scan(subject, artifact, env, data_dir).with_context(|| {
+            run_native_mcp_scan(subject, artifact, env, data_dir, limits.mcp_timeout).with_context(|| {
                 format!(
                     "failed to scan native MCP subject {}",
                     adaptation.subject_name
@@ -123,16 +148,24 @@ pub fn scan_subject(
             adaptation.blockers
         ),
     };
+    let scan_ms = scan_start.elapsed().as_millis();
 
     Ok(SubjectScanResult {
         report,
         adaptation_status: adaptation.status,
+        timing: SubjectScanTiming {
+            build_ms,
+            scan_ms,
+            total_ms: total_start.elapsed().as_millis(),
+        },
     })
 }
 
-fn select_adapter(subject: &SubjectManifest) -> Result<Box<dyn Adapter>> {
+fn select_adapter(subject: &SubjectManifest, limits: &ScanLimits) -> Result<Box<dyn Adapter>> {
     if subject.capabilities.contains(&Capability::McpProtocol) {
-        return Ok(Box::new(NativeMcpAdapter));
+        return Ok(Box::new(NativeMcpAdapter {
+            build_timeout: limits.build_timeout,
+        }));
     }
 
     match subject.language {

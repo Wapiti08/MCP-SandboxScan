@@ -9,6 +9,7 @@ mod scan;
 mod study;
 mod subject;
 mod taint;
+mod util;
 
 fn main() -> anyhow::Result<()> {
     cli::main::entry()

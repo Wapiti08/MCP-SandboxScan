@@ -1,11 +1,23 @@
 use std::process::Command;
+use std::time::Duration;
 
 use anyhow::{Context, Result};
 
 use crate::adapter::{AdaptationReport, AdaptationStatus, Adapter, BuildArtifact};
 use crate::subject::{Capability, SubjectManifest};
+use crate::util::timeout::command_status_with_timeout;
 
-pub struct NativeMcpAdapter;
+pub struct NativeMcpAdapter {
+    pub build_timeout: Option<Duration>,
+}
+
+impl Default for NativeMcpAdapter {
+    fn default() -> Self {
+        Self {
+            build_timeout: None,
+        }
+    }
+}
 
 impl Adapter for NativeMcpAdapter {
     fn name(&self) -> &'static str {
@@ -38,17 +50,29 @@ impl Adapter for NativeMcpAdapter {
         }
 
         if let Some(build) = &subject.build {
-            let status = Command::new(&build.command)
-                .args(&build.args)
+            let mut cmd = Command::new(&build.command);
+            cmd.args(&build.args)
                 .current_dir(&subject.source_dir)
-                .status()
-                .with_context(|| {
+                .env("PIP_DISABLE_PIP_VERSION_CHECK", "1")
+                .env("PIP_NO_PROGRESS_BAR", "1");
+
+            let status = if let Some(timeout) = self.build_timeout {
+                command_status_with_timeout(&mut cmd, timeout).with_context(|| {
                     format!(
                         "failed to run build command `{}` in {}",
                         build.command,
                         subject.source_dir.display()
                     )
-                })?;
+                })?
+            } else {
+                cmd.status().with_context(|| {
+                    format!(
+                        "failed to run build command `{}` in {}",
+                        build.command,
+                        subject.source_dir.display()
+                    )
+                })?
+            };
 
             if !status.success() {
                 return Ok(failed(
@@ -93,7 +117,7 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/python-mcp-server-fetch/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
@@ -108,7 +132,7 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/python-fastmcp-echo/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
@@ -123,7 +147,7 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/rust-mcp-c2-beacon/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
@@ -138,7 +162,7 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/rust-mcp-filesystem/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter.adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {

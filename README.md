@@ -11,6 +11,8 @@ MCP-SandboxScan executes or interacts with MCP implementations, collects runtime
 - String-level external-to-sink flow detection.
 - Subject-based case study pipeline via `subject.toml`.
 - Multi-case study matrix generation with `--study`.
+- **`corpus` CLI** for collecting, resolving, and dynamically scanning real MCP server repositories from GitHub.
+- **`bench` CLI** for labeled evaluation of controlled case studies (precision/recall with oracle).
 - Real MCP stdio protocol smoke testing with `initialize`, `notifications/initialized`, and `tools/call`.
 - Two-layer evidence model:
   - execution evidence: backend, stdout/stderr, exit code, duration
@@ -65,6 +67,15 @@ MCP-SandboxScan executes or interacts with MCP implementations, collects runtime
     - runner.rs: run attack for subject
 
 - study: experiment design for evaluation
+
+- corpus: collect and scan real MCP server repositories from GitHub
+
+    - collect.rs   # GitHub search (curl) or offline seed list
+    - resolve.rs   # git clone + heuristic subject.toml generation
+    - scan.rs      # batch dynamic scan + support/suspicious metrics
+    - verify.rs    # manual review packets for flagged flows
+
+- eval: labeled benchmark suites (`bench` binary)
 
 ## Dependency
 
@@ -234,6 +245,187 @@ cargo run --bin mcp-sandboxscan -- \
   --env USER_INPUT=hello \
   --env API_KEY=secret
 ```
+
+## Scanning Real MCP Servers (Corpus)
+
+Use the **`corpus`** binary to evaluate **real-world MCP server repositories** from GitHub. This complements the controlled `case_studies/` benchmarks and the labeled **`bench`** suites.
+
+| Workflow | Input | Ground truth | Metrics |
+|----------|-------|--------------|---------|
+| `mcp-sandboxscan --subject` | Single `subject.toml` | Manual | Per-subject `ScanReport` |
+| `bench --suite full` | `case_studies/` | Oracle labels | Precision / recall / F1 |
+| **`corpus scan`** | GitHub repos | **None** | Support rate, suspicious rate |
+
+**Important:** corpus results report **observed flows**, not confirmed vulnerabilities. Repos without oracle labels require manual review (`corpus verify`).
+
+### Prerequisites
+
+Always required:
+
+```bash
+git --version    # clone repos during resolve
+curl --version   # GitHub search during collect (unless using --seed)
+```
+
+Per-ecosystem toolchains are needed only for repos of that language (same as [Dependency](#dependency)):
+
+- **TypeScript / npm** — `node`, `npm` (most GitHub MCP servers)
+- **Python** — `python3`, `venv`
+- **Rust** — `cargo`
+- **Go** — `go`
+
+`gh` (GitHub CLI) is **optional**. The Rust collector uses `curl` + the GitHub REST API. The Python script `scripts/github_corpus.py` falls back to `curl` when `gh` is not installed.
+
+### Quick start (offline smoke test)
+
+```bash
+cd mcp-sandboxscan
+
+# 1. Seed a tiny offline corpus (no network)
+cargo run --bin corpus -- collect --seed --out corpus/repos.json
+
+# 2. Clone repos and generate subject.toml manifests
+cargo run --bin corpus -- resolve --max 3
+
+# 3. Dynamic scan (native MCP + monitoring + flow detection)
+cargo run --bin corpus -- scan
+
+# 4. Review cases that triggered flows
+cargo run --bin corpus -- verify \
+  --cases-dir reports/corpus-<run-id>/cases \
+  --out reports/suspicious.json
+```
+
+Replace `<run-id>` with the directory printed by `corpus scan`, or read `reports/CORPUS_LATEST.txt`.
+
+### Full pipeline (GitHub collection)
+
+```bash
+cd mcp-sandboxscan
+
+# Collect MCP-related repos (curl + GitHub API, ~30 per search query)
+# Applies a blocklist filter (awesome lists, SDKs, docs) — see src/corpus/filter.rs
+cargo run --bin corpus -- collect --limit 30 --out corpus/repos.json
+
+# Alternative: Python collector (uses gh if available, else curl)
+python3 scripts/github_corpus.py --limit 30 --out corpus/repos.json
+
+# Clone top N repos and write corpus/manifests/*.toml
+cargo run --bin corpus -- resolve --max 20
+
+# Re-resolve already-processed repos
+cargo run --bin corpus -- resolve --max 20 --force
+
+# Scan all resolved manifests
+cargo run --bin corpus -- scan --out-dir reports/corpus-run-001
+```
+
+### What each step does
+
+```text
+collect  →  corpus/repos.json
+            Metadata: repo id, language, stars, wasm_class (heuristic portability label)
+
+resolve  →  corpus/clones/<owner>__<repo>/     (gitignored)
+            corpus/manifests/<owner>__<repo>.toml
+            Heuristic subject.toml: build/run commands + [mcp] tool stub
+
+scan     →  reports/corpus-<run-id>/
+            corpus_summary.json / .md
+            cases/<owner>__<repo>.json          (full ScanReport per repo)
+            Updates scan_status in corpus/repos.json
+```
+
+### Reading the report
+
+**Support rate** — fraction of resolved repos that built, started, and completed a scan:
+
+```text
+support = scanned_repos / resolved_repos
+```
+
+Broken down by `wasm_class` (`wasm-ready`, `wasm-needs-runtime`, `wasm-hard`, `unknown`) in `corpus_summary.md`.
+
+**Suspicious rate** — fraction of successfully scanned repos where `has_external_to_prompt_flow == true`:
+
+```text
+suspicious = repos_with_flows / scanned_repos
+```
+
+This is **not** a vulnerability rate. A flow may be benign (e.g. echoing user input) or a false positive from substring matching. Use `corpus verify` and inspect `flows` + `mcp_transcript` in per-case JSON.
+
+Example summary excerpt:
+
+```json
+{
+  "scan_success_rate": 0.65,
+  "suspicious_rate": 0.12,
+  "by_wasm_class": {
+    "wasm-hard": { "total": 40, "scanned": 28, "suspicious": 3 }
+  }
+}
+```
+
+### Manual verification
+
+For repos flagged with flows:
+
+```bash
+# Machine-readable review packet (flow snippets + sink preview)
+cargo run --bin corpus -- verify \
+  --cases-dir reports/corpus-<run-id>/cases \
+  --out reports/suspicious.json
+
+# Or inspect a single report directly
+jq '.summary, .flows[:3], .mcp_transcript.events[:5]' \
+  reports/corpus-<run-id>/cases/github__github-mcp-server.json
+```
+
+Record human labels in a spreadsheet or `corpus/labels.csv` (`repo_id,manual_label,notes`) for verified precision on a sample.
+
+### Resolver heuristics (npm / Go)
+
+The corpus resolver includes ecosystem-specific logic in `src/corpus/npm_resolve.rs` and `src/corpus/go_resolve.rs`:
+
+**npm / TypeScript**
+- Detects `package.json` **workspaces** and picks the best MCP server sub-package (e.g. `src/everything` in `modelcontextprotocol/servers`)
+- Prefers `scripts.start:stdio`, then `bin` → `node <file>`, then `main`
+- Monorepos: `npm install` at repo root, `run` from the chosen package directory
+
+**Go**
+- Uses root `main.go` when present (`googleapis/mcp-toolbox`)
+- Otherwise scans `cmd/*/main.go` and prefers names like `github-mcp-server` over `mcpcurl`
+- Builds with `go build -o server ./cmd/<name>`
+
+Re-generate manifests after resolver updates:
+
+```bash
+cargo run --bin corpus -- resolve --max 86 --force
+```
+
+### Resolver limitations (expect failures)
+
+The corpus **resolver is still heuristic**. Scan may fail because:
+
+- The default `[mcp].tool` name (`echo`, etc.) may not exist on that server (use `tools/list` probe — planned)
+- Build steps may need env vars, config files, or Docker
+- Python / Rust paths are less mature than npm / Go
+
+When resolve or scan fails, check `resolve_error` / `scan_status` in `corpus/repos.json` and edit `corpus/manifests/<repo>.toml` manually, then re-run `corpus scan`.
+
+For production-quality scanning of a **known** server, prefer writing a dedicated `subject.toml` under `case_studies/` (see [Run](#run) and ecosystem sections below).
+
+### Controlled benchmark (labeled)
+
+For paper-grade precision/recall on synthetic threats, use **`bench`** instead of `corpus`:
+
+```bash
+cd mcp-sandboxscan
+cargo run --bin bench -- --suite full --out-dir reports/bench-full
+# suites: full | wasi-core | small-ts
+```
+
+See `reports/<run-id>/summary.md` for TP/FN/FP/TN and per-ecosystem support tables.
 
 ## Real Rust MCP Server
 

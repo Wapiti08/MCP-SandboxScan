@@ -1,2 +1,0 @@
-reports/run-1781606687/cases/ts-wasi-c2-beacon/report.json
-reports/run-1781606687/summary.json
