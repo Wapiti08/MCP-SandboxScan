@@ -1,7 +1,7 @@
 // extract snippet from every source and match substrings in sink
-use serde::{Deserialize, Serialize};
-use crate::taint::source::TaintSource;
 use crate::scan::prompt_sink::PromptSink;
+use crate::taint::source::TaintSource;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FlowMatch {
@@ -44,7 +44,6 @@ fn make_snipppets(s: &str) -> Vec<String> {
     }
     // remove empty duplicates
     out.into_iter().filter(|x| !x.trim().is_empty()).collect()
-
 }
 
 pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMatch> {
@@ -58,26 +57,28 @@ pub fn detect_flows(sources: &[TaintSource], sinks: &[PromptSink]) -> Vec<FlowMa
             let sink_text = sink.as_text();
 
             for snip in &snippets {
-            // any matched snippet -> flow
-            if snip.len() >= min_len && sink_text.contains(snip.as_str()) {
-                flows.push(FlowMatch {
-                    source_id: src.short_id(),
-                    sink_type: match sink {
-                        PromptSink::StdoutPrompt { .. } => "StdoutPrompt".to_string(),
-                        PromptSink::JsonPrompt { .. } => "JsonPrompt".to_string(),
-                        PromptSink::ToolReturnLeaf { .. } => "ToolReturnLeaf".to_string(),
-                        PromptSink::McpToolResultText { .. } => "McpToolResultText".to_string(),
-                    },
-                    snippet: snip.clone(),
-                    confidence: "high".to_string(), // MVP
-                });
-                break;
+                // any matched snippet -> flow
+                if snip.len() >= min_len && sink_text.contains(snip.as_str()) {
+                    flows.push(FlowMatch {
+                        source_id: src.short_id(),
+                        sink_type: match sink {
+                            PromptSink::StdoutPrompt { .. } => "StdoutPrompt".to_string(),
+                            PromptSink::JsonPrompt { .. } => "JsonPrompt".to_string(),
+                            PromptSink::ToolReturnLeaf { .. } => "ToolReturnLeaf".to_string(),
+                            PromptSink::McpToolResultText { .. } => "McpToolResultText".to_string(),
+                        },
+                        snippet: snip.clone(),
+                        confidence: "high".to_string(), // MVP
+                    });
+                    break;
                 }
             }
         }
     }
     // deduplicate flows by source_id + sink_type
-    flows.sort_by(|a, b| (a.source_id.clone(), a.sink_type.clone()).cmp(&(b.source_id.clone(), b.sink_type.clone())));
+    flows.sort_by(|a, b| {
+        (a.source_id.clone(), a.sink_type.clone()).cmp(&(b.source_id.clone(), b.sink_type.clone()))
+    });
     flows.dedup_by(|a, b| a.source_id == b.source_id && a.sink_type == b.sink_type);
 
     flows
@@ -91,18 +92,14 @@ mod tests {
 
     #[test]
     fn detects_external_to_prompt_flow() {
-        let sources = vec![
-            TaintSource::EnvVar {
-                key: "API_KEY".to_string(),
-                value: "SECRET_TOKEN".to_string(),
-            }
-        ];
+        let sources = vec![TaintSource::EnvVar {
+            key: "API_KEY".to_string(),
+            value: "SECRET_TOKEN".to_string(),
+        }];
 
-        let sinks = vec![
-            PromptSink::StdoutPrompt{
-                line: "PROMPT: use SECRET_TOKEN to authenticate".to_string(),
-            }
-        ];
+        let sinks = vec![PromptSink::StdoutPrompt {
+            line: "PROMPT: use SECRET_TOKEN to authenticate".to_string(),
+        }];
 
         let flows = detect_flows(&sources, &sinks);
         assert_eq!(flows.len(), 1);
@@ -111,18 +108,14 @@ mod tests {
 
     #[test]
     fn no_false_positive_when_not_present() {
-        let sources = vec![
-            TaintSource::EnvVar {
-                key: "API_KEY".to_string(),
-                value: "SECRET_TOKEN".to_string(),
-            }
-        ];
+        let sources = vec![TaintSource::EnvVar {
+            key: "API_KEY".to_string(),
+            value: "SECRET_TOKEN".to_string(),
+        }];
 
-        let sinks = vec![
-            PromptSink::StdoutPrompt {
-                line: "PROMPT: hello world".to_string(),
-            }
-        ];
+        let sinks = vec![PromptSink::StdoutPrompt {
+            line: "PROMPT: hello world".to_string(),
+        }];
 
         let flows = detect_flows(&sources, &sinks);
         assert!(flows.is_empty());

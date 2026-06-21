@@ -1,0 +1,457 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 404
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "description": "Gives AI coding agents access to Figma design data, providing layout, styling, and content information for implementing designs.",
+              "name": "Figma MCP Server",
+              "version": "0.13.1"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Get comprehensive Figma file data including layout, content, visuals, and component information",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "depth": {
+                      "description": "OPTIONAL. Do NOT use unless explicitly requested by the user. Controls how many levels deep to traverse the node tree.",
+                      "type": "number"
+                    },
+                    "fileKey": {
+                      "description": "The key of the Figma file to fetch, often found in a provided URL like figma.com/(file|design)/<fileKey>/...",
+                      "pattern": "^[a-zA-Z0-9]+$",
+                      "type": "string"
+                    },
+                    "nodeId": {
+                      "description": "The ID of the node to fetch, often found as URL parameter node-id=<nodeId>, always use if provided. Use format '1234:5678' for a standard node, or 'I5666:180910;1:10515;1:10336' for a deeply nested instance node (the semicolon-joined path represents the instance override chain — it's still a single node ID, not multiple nodes).",
+                      "pattern": "^I?\\d+[:|-]\\d+(?:;\\d+[:|-]\\d+)*$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "fileKey"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_figma_data",
+                "title": "Get Figma Data"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true
+                },
+                "description": "Download SVG and PNG images used in a Figma file based on the IDs of image or icon nodes. Images will be saved relative to the server's image directory: /Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/GLips__Figma-Context-MCP",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fileKey": {
+                      "description": "The key of the Figma file containing the images",
+                      "pattern": "^[a-zA-Z0-9]+$",
+                      "type": "string"
+                    },
+                    "localPath": {
+                      "description": "The directory to save images in. Provide a path relative to the server's image directory (e.g., 'public/images' or 'assets/icons'). Either separator works. Absolute paths are accepted only if they point inside the image directory. The directory is created if missing.",
+                      "type": "string"
+                    },
+                    "nodes": {
+                      "description": "The nodes to fetch as images",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "cropTransform": {
+                            "description": "Figma transform matrix for image cropping",
+                            "items": {
+                              "items": {
+                                "type": "number"
+                              },
+                              "type": "array"
+                            },
+                            "type": "array"
+                          },
+                          "fileName": {
+                            "description": "The local name for saving the fetched file, including extension. png, svg, or gif.",
+                            "pattern": "^[a-zA-Z0-9_.-]+\\.(png|svg|gif)$",
+                            "type": "string"
+                          },
+                          "filenameSuffix": {
+                            "description": "Suffix to add to filename for unique cropped images, provided in the Figma data (e.g., 'abc123')",
+                            "pattern": "^[a-zA-Z0-9_-]+$",
+                            "type": "string"
+                          },
+                          "gifRef": {
+                            "description": "If a node has a gifRef fill (animated GIF), you must include this variable to download the animated GIF. When gifRef is present in the Figma data, use it instead of imageRef to get the animated file rather than a static snapshot.",
+                            "type": "string"
+                          },
+                          "imageRef": {
+                            "description": "If a node has an imageRef fill, you must include this variable. Leave blank when downloading Vector SVG images or animated GIFs (use gifRef instead), or when an IMAGE fill is present without an imageRef — in that case the node is rendered as PNG via nodeId.",
+                            "type": "string"
+                          },
+                          "needsCropping": {
+                            "description": "Whether this image needs cropping based on its transform matrix",
+                            "type": "boolean"
+                          },
+                          "nodeId": {
+                            "description": "The ID of the Figma image node to fetch, formatted as 1234:5678",
+                            "pattern": "^I?\\d+[:|-]\\d+(?:;\\d+[:|-]\\d+)*$",
+                            "type": "string"
+                          },
+                          "requiresImageDimensions": {
+                            "description": "Whether this image requires dimension information for CSS variables",
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "nodeId",
+                          "fileName"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "pngScale": {
+                      "default": 2,
+                      "description": "Export scale for PNG images. Optional, defaults to 2 if not specified. Affects PNG images only.",
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "fileKey",
+                    "nodes",
+                    "localPath"
+                  ],
+                  "type": "object"
+                },
+                "name": "download_figma_images",
+                "title": "Download Figma Images"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "fileKey": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt"
+            },
+            "name": "get_figma_data"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Invalid fileKey: File key must be alphanumeric",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "fileKey": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt",
+              "localPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt",
+              "nodes": []
+            },
+            "name": "download_figma_images"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Invalid fileKey: File key must be alphanumeric",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "fileKey": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt"
+          },
+          "name": "get_figma_data"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_figma_data",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Invalid fileKey: File key must be alphanumeric",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get_figma_data"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "fileKey": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt",
+            "localPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt",
+            "nodes": []
+          },
+          "name": "download_figma_images"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "download_figma_images",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Invalid fileKey: File key must be alphanumeric",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "download_figma_images"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 39
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt",
+      "evidence": {
+        "content_len": 40,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Invalid fileKey: File key must be alphanumeric"
+        },
+        "text_len": 46
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Invalid fileKey: File key must be alphanumeric"
+        },
+        "text_len": 46
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_GLips__Figma_Context_MCP"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GLips__Figma_Context_MCP.txt",
+      "content": "MCP_FILE_CANARY_GLips__Figma_Context_MCP"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "Invalid fileKey: File key must be alphanumeric"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "Invalid fileKey: File key must be alphanumeric"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 2,
+    "num_sinks": 2,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

@@ -1,0 +1,1238 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 750
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "mcp-k8s-go",
+              "version": "dev20260621"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Create or modify a Kubernetes resource from a YAML manifest",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    },
+                    "manifest": {
+                      "description": "YAML manifest of the resource to apply",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "manifest"
+                  ],
+                  "type": "object"
+                },
+                "name": "apply-k8s-resource"
+              },
+              {
+                "description": "Get logs for a Kubernetes pod using specific context in a specified namespace",
+                "inputSchema": {
+                  "properties": {
+                    "containerName": {
+                      "description": "Name of the container within the pod to get logs from (optional)",
+                      "type": "string"
+                    },
+                    "context": {
+                      "description": "Name of the Kubernetes context to use",
+                      "type": "string"
+                    },
+                    "limitBytes": {
+                      "description": "Maximum bytes of logs to return. Defaults to no limit.",
+                      "type": "number"
+                    },
+                    "namespace": {
+                      "description": "Name of the namespace where the pod is located",
+                      "type": "string"
+                    },
+                    "pod": {
+                      "description": "Name of the pod to get logs from",
+                      "type": "string"
+                    },
+                    "previousContainer": {
+                      "description": "Return previous terminated container logs, defaults to false.",
+                      "type": "boolean"
+                    },
+                    "sinceDuration": {
+                      "description": "Only return logs newer than a relative duration like 5s, 2m, or 3h. Only one of sinceTime or sinceDuration may be set.",
+                      "type": "string"
+                    },
+                    "sinceTime": {
+                      "description": "Only return logs after a specific date (RFC3339). Only one of sinceTime or sinceDuration may be set.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "context",
+                    "namespace",
+                    "pod"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-k8s-pod-logs"
+              },
+              {
+                "description": "Get details of any Kubernetes resource like pod, node or service - completely as JSON or rendered using template",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    },
+                    "go_template": {
+                      "description": "Go template to render the output, if not specified, the complete JSON object will be returned",
+                      "type": "string"
+                    },
+                    "group": {
+                      "description": "API Group of the resource to get",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "description": "Kind of resource to get",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "Name of the resource to get",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "Namespace to get resource from, skip for cluster resources",
+                      "type": "string"
+                    },
+                    "version": {
+                      "description": "API Version of the resource to get",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-k8s-resource"
+              },
+              {
+                "description": "Execute command in Kubernetes pod",
+                "inputSchema": {
+                  "properties": {
+                    "command": {
+                      "description": "Command to be executed",
+                      "type": "string"
+                    },
+                    "context": {
+                      "description": "Kubernetes context name, defaults to current context",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "Namespace where pod is located",
+                      "type": "string"
+                    },
+                    "pod": {
+                      "description": "Name of the pod to execute command in",
+                      "type": "string"
+                    },
+                    "stdin": {
+                      "description": "Standard input to the command, defaults to empty string",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "namespace",
+                    "pod",
+                    "command"
+                  ],
+                  "type": "object"
+                },
+                "name": "k8s-pod-exec"
+              },
+              {
+                "description": "List Kubernetes contexts from configuration files such as kubeconfig",
+                "inputSchema": {
+                  "type": "object"
+                },
+                "name": "list-k8s-contexts"
+              },
+              {
+                "description": "List Kubernetes events using specific context in a specified namespace",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "Maximum number of events to list",
+                      "type": "number"
+                    },
+                    "namespace": {
+                      "description": "Name of the namespace to list events from",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "context",
+                    "namespace"
+                  ],
+                  "type": "object"
+                },
+                "name": "list-k8s-events"
+              },
+              {
+                "description": "List Kubernetes namespaces using specific context",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list-k8s-namespaces"
+              },
+              {
+                "description": "List Kubernetes nodes using specific context",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list-k8s-nodes"
+              },
+              {
+                "description": "List arbitrary Kubernetes resources",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    },
+                    "group": {
+                      "description": "API Group of resources to list",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "description": "Kind of resources to list",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "Namespace to list resources from, defaults to all namespaces",
+                      "type": "string"
+                    },
+                    "version": {
+                      "description": "API Version of resources to list",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ],
+                  "type": "object"
+                },
+                "name": "list-k8s-resources"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "list-k8s-contexts"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "context": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+              "namespace": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+              "pod": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+            },
+            "name": "get-k8s-pod-logs"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "kind": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+              "name": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+            },
+            "name": "get-k8s-resource"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "context": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+              "namespace": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+            },
+            "name": "list-k8s-events"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "list-k8s-namespaces"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "list-k8s-nodes"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "kind": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+            },
+            "name": "list-k8s-resources"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "list-k8s-contexts"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list-k8s-contexts",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [],
+            "isError": false
+          }
+        },
+        "tool_name": "list-k8s-contexts"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "context": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+            "namespace": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+            "pod": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+          },
+          "name": "get-k8s-pod-logs"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-k8s-pod-logs",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get-k8s-pod-logs"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "kind": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+            "name": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+          },
+          "name": "get-k8s-resource"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-k8s-resource",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get-k8s-resource"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "context": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+            "namespace": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+          },
+          "name": "list-k8s-events"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list-k8s-events",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "list-k8s-events"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "list-k8s-namespaces"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list-k8s-namespaces",
+      "evidence": {
+        "response": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "list-k8s-namespaces"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "list-k8s-nodes"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list-k8s-nodes",
+      "evidence": {
+        "response": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "list-k8s-nodes"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "kind": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+          },
+          "name": "list-k8s-resources"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list-k8s-resources",
+      "evidence": {
+        "response": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "list-k8s-resources"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 33
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/strowk__mcp_k8s_go.txt",
+      "evidence": {
+        "content_len": 34,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/strowk__mcp_k8s_go.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get-k8s-pod-logs:$.arguments.context",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.context",
+        "source_id": "ToolInput: get-k8s-pod-logs $.arguments.context",
+        "tool": "get-k8s-pod-logs"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get-k8s-pod-logs:$.arguments.namespace",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.namespace",
+        "source_id": "ToolInput: get-k8s-pod-logs $.arguments.namespace",
+        "tool": "get-k8s-pod-logs"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get-k8s-pod-logs:$.arguments.pod",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.pod",
+        "source_id": "ToolInput: get-k8s-pod-logs $.arguments.pod",
+        "tool": "get-k8s-pod-logs"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get-k8s-resource:$.arguments.kind",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.kind",
+        "source_id": "ToolInput: get-k8s-resource $.arguments.kind",
+        "tool": "get-k8s-resource"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get-k8s-resource:$.arguments.name",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.name",
+        "source_id": "ToolInput: get-k8s-resource $.arguments.name",
+        "tool": "get-k8s-resource"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "list-k8s-events:$.arguments.context",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.context",
+        "source_id": "ToolInput: list-k8s-events $.arguments.context",
+        "tool": "list-k8s-events"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "list-k8s-events:$.arguments.namespace",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.namespace",
+        "source_id": "ToolInput: list-k8s-events $.arguments.namespace",
+        "tool": "list-k8s-events"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "list-k8s-resources:$.arguments.kind",
+      "evidence": {
+        "content_len": 35,
+        "path": "$.arguments.kind",
+        "source_id": "ToolInput: list-k8s-resources $.arguments.kind",
+        "tool": "list-k8s-resources"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist"
+        },
+        "text_len": 60
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+        },
+        "text_len": 109
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist"
+        },
+        "text_len": 60
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+        },
+        "text_len": 109
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[5].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+        },
+        "text_len": 109
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[6].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+        },
+        "text_len": 109
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: get-k8s-pod-logs $.arguments.context"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: get-k8s-pod-logs $.arguments.namespace"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: get-k8s-pod-logs $.arguments.pod"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: get-k8s-resource $.arguments.kind"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: get-k8s-resource $.arguments.name"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: list-k8s-events $.arguments.context"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: list-k8s-events $.arguments.namespace"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+        "source_id": "ToolInput: list-k8s-resources $.arguments.kind"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/strowk__mcp_k8s_go.txt",
+      "content": "MCP_FILE_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get-k8s-pod-logs",
+      "path": "$.arguments.context",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get-k8s-pod-logs",
+      "path": "$.arguments.namespace",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get-k8s-pod-logs",
+      "path": "$.arguments.pod",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get-k8s-resource",
+      "path": "$.arguments.kind",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get-k8s-resource",
+      "path": "$.arguments.name",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "list-k8s-events",
+      "path": "$.arguments.context",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "list-k8s-events",
+      "path": "$.arguments.namespace",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "list-k8s-resources",
+      "path": "$.arguments.kind",
+      "content": "MCP_INPUT_CANARY_strowk__mcp_k8s_go"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "context \"MCP_INPUT_CANARY_strowk__mcp_k8s_go\" does not exist"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[4].result.content[0].text",
+      "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[5].result.content[0].text",
+      "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[6].result.content[0].text",
+      "value": "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable"
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "ToolInput: get-k8s-pod-logs $.arguments.context",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: get-k8s-pod-logs $.arguments.namespace",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: get-k8s-pod-logs $.arguments.pod",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: get-k8s-resource $.arguments.kind",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: get-k8s-resource $.arguments.name",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: list-k8s-events $.arguments.context",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: list-k8s-events $.arguments.namespace",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: list-k8s-resources $.arguments.kind",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_strowk__mcp_k8s_go",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 10,
+    "num_sinks": 6,
+    "num_flows": 8,
+    "has_external_to_prompt_flow": true
+  }
+}

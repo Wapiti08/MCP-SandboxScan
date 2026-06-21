@@ -12,8 +12,8 @@ use crate::scan::compare::compare_from_report;
 use crate::study::portability::WasmPortabilityStatus;
 use crate::subject::SubjectManifest;
 
-use super::metrics::{update_confusion, Confusion, Label, Verdict};
-use super::score::{label_for_scenario, scenario_from_name, score_case, ScenarioKind};
+use super::metrics::{Confusion, Label, Verdict, update_confusion};
+use super::score::{ScenarioKind, label_for_scenario, scenario_from_name, score_case};
 use super::suite::SuiteId;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

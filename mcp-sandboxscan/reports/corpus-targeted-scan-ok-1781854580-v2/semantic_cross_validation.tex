@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Cross-validation between declared tool semantics and runtime network evidence.}
+\label{tab:semantic-cross-validation}
+\begin{tabular}{lrp{0.45\linewidth}}
+\toprule
+Relation & Repos & Interpretation \\
+\midrule
+Declared egress risk and observed egress & 5 & Confirmed by runtime evidence \\
+Declared egress risk only & 14 & Declared capability was not exercised by this run \\
+Observed egress only & 4 & Potential metadata understatement or classifier miss \\
+Neither declared nor observed & 10 & No egress evidence in this run \\
+\bottomrule
+\end{tabular}
+\end{table}

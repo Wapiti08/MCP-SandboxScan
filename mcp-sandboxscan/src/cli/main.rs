@@ -96,8 +96,11 @@ pub fn entry() -> Result<()> {
             .with_context(|| format!("Failed to parse subject {}", subject_path.display()))?;
 
         let scan_env = default_env_for_subject(&subject, &env);
-        let effective_data_dir =
-            resolve_data_dir(&manifest_dir, &subject, args.data_dir.as_ref().map(|v| v.as_path()))?;
+        let effective_data_dir = resolve_data_dir(
+            &manifest_dir,
+            &subject,
+            args.data_dir.as_ref().map(|v| v.as_path()),
+        )?;
 
         let result = scan_subject(
             &subject,

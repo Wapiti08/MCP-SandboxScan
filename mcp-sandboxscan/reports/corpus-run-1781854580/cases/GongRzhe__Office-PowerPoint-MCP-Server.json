@@ -1,0 +1,3026 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 719
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "experimental": {},
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "ppt-mcp-server",
+              "version": "1.28.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "title": "Create Presentation"
+                },
+                "description": "Create a new PowerPoint presentation.",
+                "inputSchema": {
+                  "properties": {
+                    "id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Id"
+                    }
+                  },
+                  "title": "create_presentationArguments",
+                  "type": "object"
+                },
+                "name": "create_presentation",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "create_presentationOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Create Presentation from Template"
+                },
+                "description": "Create a new PowerPoint presentation from a template file.",
+                "inputSchema": {
+                  "properties": {
+                    "id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Id"
+                    },
+                    "template_path": {
+                      "title": "Template Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "template_path"
+                  ],
+                  "title": "create_presentation_from_templateArguments",
+                  "type": "object"
+                },
+                "name": "create_presentation_from_template",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "create_presentation_from_templateOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Open Presentation"
+                },
+                "description": "Open an existing PowerPoint presentation from a file.",
+                "inputSchema": {
+                  "properties": {
+                    "file_path": {
+                      "title": "File Path",
+                      "type": "string"
+                    },
+                    "id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Id"
+                    }
+                  },
+                  "required": [
+                    "file_path"
+                  ],
+                  "title": "open_presentationArguments",
+                  "type": "object"
+                },
+                "name": "open_presentation",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "open_presentationOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Save Presentation"
+                },
+                "description": "Save a presentation to a file.",
+                "inputSchema": {
+                  "properties": {
+                    "file_path": {
+                      "title": "File Path",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    }
+                  },
+                  "required": [
+                    "file_path"
+                  ],
+                  "title": "save_presentationArguments",
+                  "type": "object"
+                },
+                "name": "save_presentation",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "save_presentationOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Presentation Info"
+                },
+                "description": "Get information about a presentation.",
+                "inputSchema": {
+                  "properties": {
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    }
+                  },
+                  "title": "get_presentation_infoArguments",
+                  "type": "object"
+                },
+                "name": "get_presentation_info",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "get_presentation_infoOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Template File Info"
+                },
+                "description": "Get information about a template file including layouts and properties.",
+                "inputSchema": {
+                  "properties": {
+                    "template_path": {
+                      "title": "Template Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "template_path"
+                  ],
+                  "title": "get_template_file_infoArguments",
+                  "type": "object"
+                },
+                "name": "get_template_file_info",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "get_template_file_infoOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Set Core Properties"
+                },
+                "description": "Set core document properties.",
+                "inputSchema": {
+                  "properties": {
+                    "author": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Author"
+                    },
+                    "comments": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Comments"
+                    },
+                    "keywords": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Keywords"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "subject": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Subject"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Title"
+                    }
+                  },
+                  "title": "set_core_propertiesArguments",
+                  "type": "object"
+                },
+                "name": "set_core_properties",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "set_core_propertiesOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Add Slide"
+                },
+                "description": "Add a new slide to the presentation with optional background styling.",
+                "inputSchema": {
+                  "properties": {
+                    "background_colors": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "items": {
+                              "type": "integer"
+                            },
+                            "type": "array"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Background Colors"
+                    },
+                    "background_type": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Background Type"
+                    },
+                    "color_scheme": {
+                      "default": "modern_blue",
+                      "title": "Color Scheme",
+                      "type": "string"
+                    },
+                    "gradient_direction": {
+                      "default": "horizontal",
+                      "title": "Gradient Direction",
+                      "type": "string"
+                    },
+                    "layout_index": {
+                      "default": 1,
+                      "title": "Layout Index",
+                      "type": "integer"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Title"
+                    }
+                  },
+                  "title": "add_slideArguments",
+                  "type": "object"
+                },
+                "name": "add_slide",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "add_slideOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Slide Info"
+                },
+                "description": "Get information about a specific slide.",
+                "inputSchema": {
+                  "properties": {
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "slide_index"
+                  ],
+                  "title": "get_slide_infoArguments",
+                  "type": "object"
+                },
+                "name": "get_slide_info",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "get_slide_infoOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Extract Slide Text"
+                },
+                "description": "Extract all text content from a specific slide.",
+                "inputSchema": {
+                  "properties": {
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "slide_index"
+                  ],
+                  "title": "extract_slide_textArguments",
+                  "type": "object"
+                },
+                "name": "extract_slide_text",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "extract_slide_textOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Extract Presentation Text"
+                },
+                "description": "Extract all text content from all slides in the presentation.",
+                "inputSchema": {
+                  "properties": {
+                    "include_slide_info": {
+                      "default": true,
+                      "title": "Include Slide Info",
+                      "type": "boolean"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    }
+                  },
+                  "title": "extract_presentation_textArguments",
+                  "type": "object"
+                },
+                "name": "extract_presentation_text",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "extract_presentation_textOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Populate Placeholder"
+                },
+                "description": "Populate a placeholder with text.",
+                "inputSchema": {
+                  "properties": {
+                    "placeholder_idx": {
+                      "title": "Placeholder Idx",
+                      "type": "integer"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "placeholder_idx",
+                    "text"
+                  ],
+                  "title": "populate_placeholderArguments",
+                  "type": "object"
+                },
+                "name": "populate_placeholder",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "populate_placeholderOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Add Bullet Points"
+                },
+                "description": "Add bullet points to a placeholder.",
+                "inputSchema": {
+                  "properties": {
+                    "bullet_points": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "title": "Bullet Points",
+                      "type": "array"
+                    },
+                    "placeholder_idx": {
+                      "title": "Placeholder Idx",
+                      "type": "integer"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "placeholder_idx",
+                    "bullet_points"
+                  ],
+                  "title": "add_bullet_pointsArguments",
+                  "type": "object"
+                },
+                "name": "add_bullet_points",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "add_bullet_pointsOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Manage Text"
+                },
+                "description": "Unified text management tool for adding, formatting, validating text, and formatting multiple text runs.",
+                "inputSchema": {
+                  "properties": {
+                    "alignment": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Alignment"
+                    },
+                    "auto_fit": {
+                      "default": true,
+                      "title": "Auto Fit",
+                      "type": "boolean"
+                    },
+                    "bg_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Bg Color"
+                    },
+                    "bold": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Bold"
+                    },
+                    "color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Color"
+                    },
+                    "font_name": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Font Name"
+                    },
+                    "font_size": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Font Size"
+                    },
+                    "height": {
+                      "default": 2.0,
+                      "title": "Height",
+                      "type": "number"
+                    },
+                    "italic": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Italic"
+                    },
+                    "left": {
+                      "default": 1.0,
+                      "title": "Left",
+                      "type": "number"
+                    },
+                    "max_font_size": {
+                      "default": 72,
+                      "title": "Max Font Size",
+                      "type": "integer"
+                    },
+                    "min_font_size": {
+                      "default": 8,
+                      "title": "Min Font Size",
+                      "type": "integer"
+                    },
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "shape_index": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Shape Index"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "text": {
+                      "default": "",
+                      "title": "Text",
+                      "type": "string"
+                    },
+                    "text_runs": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Text Runs"
+                    },
+                    "top": {
+                      "default": 1.0,
+                      "title": "Top",
+                      "type": "number"
+                    },
+                    "underline": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Underline"
+                    },
+                    "validation_only": {
+                      "default": false,
+                      "title": "Validation Only",
+                      "type": "boolean"
+                    },
+                    "vertical_alignment": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Vertical Alignment"
+                    },
+                    "width": {
+                      "default": 4.0,
+                      "title": "Width",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "operation"
+                  ],
+                  "title": "manage_textArguments",
+                  "type": "object"
+                },
+                "name": "manage_text",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "manage_textOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Manage Image"
+                },
+                "description": "Unified image management tool for adding and enhancing images.",
+                "inputSchema": {
+                  "properties": {
+                    "blur_radius": {
+                      "default": 0,
+                      "title": "Blur Radius",
+                      "type": "number"
+                    },
+                    "brightness": {
+                      "default": 1.0,
+                      "title": "Brightness",
+                      "type": "number"
+                    },
+                    "contrast": {
+                      "default": 1.0,
+                      "title": "Contrast",
+                      "type": "number"
+                    },
+                    "enhancement_style": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Enhancement Style"
+                    },
+                    "filter_type": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Filter Type"
+                    },
+                    "height": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Height"
+                    },
+                    "image_source": {
+                      "title": "Image Source",
+                      "type": "string"
+                    },
+                    "left": {
+                      "default": 1.0,
+                      "title": "Left",
+                      "type": "number"
+                    },
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "output_path": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Output Path"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "saturation": {
+                      "default": 1.0,
+                      "title": "Saturation",
+                      "type": "number"
+                    },
+                    "sharpness": {
+                      "default": 1.0,
+                      "title": "Sharpness",
+                      "type": "number"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "source_type": {
+                      "default": "file",
+                      "title": "Source Type",
+                      "type": "string"
+                    },
+                    "top": {
+                      "default": 1.0,
+                      "title": "Top",
+                      "type": "number"
+                    },
+                    "width": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Width"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "operation",
+                    "image_source"
+                  ],
+                  "title": "manage_imageArguments",
+                  "type": "object"
+                },
+                "name": "manage_image",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "manage_imageOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Add Table"
+                },
+                "description": "Add a table to a slide with enhanced formatting options.",
+                "inputSchema": {
+                  "properties": {
+                    "body_bg_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Body Bg Color"
+                    },
+                    "body_font_size": {
+                      "default": 10,
+                      "title": "Body Font Size",
+                      "type": "integer"
+                    },
+                    "border_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Border Color"
+                    },
+                    "cols": {
+                      "title": "Cols",
+                      "type": "integer"
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Data"
+                    },
+                    "header_bg_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Header Bg Color"
+                    },
+                    "header_font_size": {
+                      "default": 12,
+                      "title": "Header Font Size",
+                      "type": "integer"
+                    },
+                    "header_row": {
+                      "default": true,
+                      "title": "Header Row",
+                      "type": "boolean"
+                    },
+                    "height": {
+                      "title": "Height",
+                      "type": "number"
+                    },
+                    "left": {
+                      "title": "Left",
+                      "type": "number"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "rows": {
+                      "title": "Rows",
+                      "type": "integer"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "top": {
+                      "title": "Top",
+                      "type": "number"
+                    },
+                    "width": {
+                      "title": "Width",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "rows",
+                    "cols",
+                    "left",
+                    "top",
+                    "width",
+                    "height"
+                  ],
+                  "title": "add_tableArguments",
+                  "type": "object"
+                },
+                "name": "add_table",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "add_tableOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Format Table Cell"
+                },
+                "description": "Format a specific table cell.",
+                "inputSchema": {
+                  "properties": {
+                    "alignment": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Alignment"
+                    },
+                    "bg_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Bg Color"
+                    },
+                    "bold": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Bold"
+                    },
+                    "col": {
+                      "title": "Col",
+                      "type": "integer"
+                    },
+                    "color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Color"
+                    },
+                    "font_name": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Font Name"
+                    },
+                    "font_size": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Font Size"
+                    },
+                    "italic": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Italic"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "row": {
+                      "title": "Row",
+                      "type": "integer"
+                    },
+                    "shape_index": {
+                      "title": "Shape Index",
+                      "type": "integer"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "vertical_alignment": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Vertical Alignment"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "shape_index",
+                    "row",
+                    "col"
+                  ],
+                  "title": "format_table_cellArguments",
+                  "type": "object"
+                },
+                "name": "format_table_cell",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "format_table_cellOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Add Shape"
+                },
+                "description": "Add an auto shape to a slide with enhanced options.",
+                "inputSchema": {
+                  "properties": {
+                    "fill_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Fill Color"
+                    },
+                    "font_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Font Color"
+                    },
+                    "font_size": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Font Size"
+                    },
+                    "height": {
+                      "title": "Height",
+                      "type": "number"
+                    },
+                    "left": {
+                      "title": "Left",
+                      "type": "number"
+                    },
+                    "line_color": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "integer"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Line Color"
+                    },
+                    "line_width": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Line Width"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "shape_type": {
+                      "title": "Shape Type",
+                      "type": "string"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "text": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Text"
+                    },
+                    "top": {
+                      "title": "Top",
+                      "type": "number"
+                    },
+                    "width": {
+                      "title": "Width",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "shape_type",
+                    "left",
+                    "top",
+                    "width",
+                    "height"
+                  ],
+                  "title": "add_shapeArguments",
+                  "type": "object"
+                },
+                "name": "add_shape",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "add_shapeOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Add Chart"
+                },
+                "description": "Add a chart to a slide with comprehensive formatting options.",
+                "inputSchema": {
+                  "properties": {
+                    "categories": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "title": "Categories",
+                      "type": "array"
+                    },
+                    "chart_type": {
+                      "title": "Chart Type",
+                      "type": "string"
+                    },
+                    "color_scheme": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Color Scheme"
+                    },
+                    "has_data_labels": {
+                      "default": false,
+                      "title": "Has Data Labels",
+                      "type": "boolean"
+                    },
+                    "has_legend": {
+                      "default": true,
+                      "title": "Has Legend",
+                      "type": "boolean"
+                    },
+                    "height": {
+                      "title": "Height",
+                      "type": "number"
+                    },
+                    "left": {
+                      "title": "Left",
+                      "type": "number"
+                    },
+                    "legend_position": {
+                      "default": "right",
+                      "title": "Legend Position",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "series_names": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "title": "Series Names",
+                      "type": "array"
+                    },
+                    "series_values": {
+                      "items": {
+                        "items": {
+                          "type": "number"
+                        },
+                        "type": "array"
+                      },
+                      "title": "Series Values",
+                      "type": "array"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Title"
+                    },
+                    "top": {
+                      "title": "Top",
+                      "type": "number"
+                    },
+                    "width": {
+                      "title": "Width",
+                      "type": "number"
+                    },
+                    "x_axis_title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "X Axis Title"
+                    },
+                    "y_axis_title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Y Axis Title"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "chart_type",
+                    "left",
+                    "top",
+                    "width",
+                    "height",
+                    "categories",
+                    "series_names",
+                    "series_values"
+                  ],
+                  "title": "add_chartArguments",
+                  "type": "object"
+                },
+                "name": "add_chart",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "add_chartOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Apply Professional Design"
+                },
+                "description": "Unified professional design tool for themes, slides, and visual enhancements.\nThis applies professional styling and themes rather than structural layout changes.",
+                "inputSchema": {
+                  "properties": {
+                    "apply_to_existing": {
+                      "default": true,
+                      "title": "Apply To Existing",
+                      "type": "boolean"
+                    },
+                    "color_scheme": {
+                      "default": "modern_blue",
+                      "title": "Color Scheme",
+                      "type": "string"
+                    },
+                    "content": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Content"
+                    },
+                    "enhance_charts": {
+                      "default": true,
+                      "title": "Enhance Charts",
+                      "type": "boolean"
+                    },
+                    "enhance_content": {
+                      "default": true,
+                      "title": "Enhance Content",
+                      "type": "boolean"
+                    },
+                    "enhance_shapes": {
+                      "default": true,
+                      "title": "Enhance Shapes",
+                      "type": "boolean"
+                    },
+                    "enhance_title": {
+                      "default": true,
+                      "title": "Enhance Title",
+                      "type": "boolean"
+                    },
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Slide Index"
+                    },
+                    "slide_type": {
+                      "default": "title_content",
+                      "title": "Slide Type",
+                      "type": "string"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Title"
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ],
+                  "title": "apply_professional_designArguments",
+                  "type": "object"
+                },
+                "name": "apply_professional_design",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "apply_professional_designOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Apply Picture Effects"
+                },
+                "description": "Apply multiple picture effects in combination.",
+                "inputSchema": {
+                  "properties": {
+                    "effects": {
+                      "additionalProperties": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "title": "Effects",
+                      "type": "object"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "shape_index": {
+                      "title": "Shape Index",
+                      "type": "integer"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "shape_index",
+                    "effects"
+                  ],
+                  "title": "apply_picture_effectsArguments",
+                  "type": "object"
+                },
+                "name": "apply_picture_effects",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "apply_picture_effectsOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Manage Fonts"
+                },
+                "description": "Unified font management tool for analysis, optimization, and recommendations.",
+                "inputSchema": {
+                  "properties": {
+                    "font_path": {
+                      "title": "Font Path",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "output_path": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Output Path"
+                    },
+                    "presentation_type": {
+                      "default": "business",
+                      "title": "Presentation Type",
+                      "type": "string"
+                    },
+                    "text_content": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Text Content"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "font_path"
+                  ],
+                  "title": "manage_fontsArguments",
+                  "type": "object"
+                },
+                "name": "manage_fonts",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "manage_fontsOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "List Slide Templates"
+                },
+                "description": "List all available slide layout templates.",
+                "inputSchema": {
+                  "properties": {},
+                  "title": "list_slide_templatesArguments",
+                  "type": "object"
+                },
+                "name": "list_slide_templates",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "list_slide_templatesOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Apply Slide Template"
+                },
+                "description": "\nApply a structured layout template to an existing slide.\nThis modifies slide layout and content structure using predefined templates.\n\nArgs:\n    slide_index: Index of the slide to apply template to\n    template_id: ID of the template to apply (e.g., 'title_slide', 'text_with_image')\n    color_scheme: Color scheme to use ('modern_blue', 'corporate_gray', 'elegant_green', 'warm_red')\n    content_mapping: Dictionary mapping element roles to custom content\n    image_paths: Dictionary mapping image element roles to file paths\n    presentation_id: Presentation ID (uses current if None)\n",
+                "inputSchema": {
+                  "properties": {
+                    "color_scheme": {
+                      "default": "modern_blue",
+                      "title": "Color Scheme",
+                      "type": "string"
+                    },
+                    "content_mapping": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Content Mapping"
+                    },
+                    "image_paths": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Image Paths"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "template_id": {
+                      "title": "Template Id",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "template_id"
+                  ],
+                  "title": "apply_slide_templateArguments",
+                  "type": "object"
+                },
+                "name": "apply_slide_template",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "apply_slide_templateOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Create Slide from Template"
+                },
+                "description": "\nCreate a new slide using a layout template.\n\nArgs:\n    template_id: ID of the template to use (e.g., 'title_slide', 'text_with_image')\n    color_scheme: Color scheme to use ('modern_blue', 'corporate_gray', 'elegant_green', 'warm_red')\n    content_mapping: Dictionary mapping element roles to custom content\n    image_paths: Dictionary mapping image element roles to file paths\n    layout_index: PowerPoint layout index to use as base (default: 1)\n    presentation_id: Presentation ID (uses current if None)\n",
+                "inputSchema": {
+                  "properties": {
+                    "color_scheme": {
+                      "default": "modern_blue",
+                      "title": "Color Scheme",
+                      "type": "string"
+                    },
+                    "content_mapping": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Content Mapping"
+                    },
+                    "image_paths": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Image Paths"
+                    },
+                    "layout_index": {
+                      "default": 1,
+                      "title": "Layout Index",
+                      "type": "integer"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "template_id": {
+                      "title": "Template Id",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "template_id"
+                  ],
+                  "title": "create_slide_from_templateArguments",
+                  "type": "object"
+                },
+                "name": "create_slide_from_template",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "create_slide_from_templateOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Create Presentation from Templates"
+                },
+                "description": "\nCreate a complete presentation from a sequence of templates.\n\nArgs:\n    template_sequence: List of template configurations, each containing:\n        - template_id: Template to use\n        - content: Content mapping for the template\n        - images: Image path mapping for the template\n    color_scheme: Color scheme to apply to all slides\n    presentation_title: Optional title for the presentation\n    presentation_id: Presentation ID (uses current if None)\n\nExample template_sequence:\n[\n    {\n        \"template_id\": \"title_slide\",\n        \"content\": {\n            \"title\": \"My Presentation\",\n            \"subtitle\": \"Annual Report 2024\",\n            \"author\": \"John Doe\"\n        }\n    },\n    {\n        \"template_id\": \"text_with_image\",\n        \"content\": {\n            \"title\": \"Key Results\",\n            \"content\": \"• Achievement 1\\n• Achievement 2\"\n        },\n        \"images\": {\n            \"supporting\": \"/path/to/image.jpg\"\n        }\n    }\n]\n",
+                "inputSchema": {
+                  "properties": {
+                    "color_scheme": {
+                      "default": "modern_blue",
+                      "title": "Color Scheme",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "presentation_title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Title"
+                    },
+                    "template_sequence": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "title": "Template Sequence",
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "template_sequence"
+                  ],
+                  "title": "create_presentation_from_templatesArguments",
+                  "type": "object"
+                },
+                "name": "create_presentation_from_templates",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "create_presentation_from_templatesOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Template Info"
+                },
+                "description": "\nGet detailed information about a specific template.\n\nArgs:\n    template_id: ID of the template to get information about\n",
+                "inputSchema": {
+                  "properties": {
+                    "template_id": {
+                      "title": "Template Id",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "template_id"
+                  ],
+                  "title": "get_template_infoArguments",
+                  "type": "object"
+                },
+                "name": "get_template_info",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "get_template_infoOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Auto Generate Presentation"
+                },
+                "description": "\nAutomatically generate a presentation based on topic and preferences.\n\nArgs:\n    topic: Main topic/theme for the presentation\n    slide_count: Number of slides to generate (3-20)\n    presentation_type: Type of presentation ('business', 'academic', 'creative')\n    color_scheme: Color scheme to use\n    include_charts: Whether to include chart slides\n    include_images: Whether to include image placeholders\n    presentation_id: Presentation ID (uses current if None)\n",
+                "inputSchema": {
+                  "properties": {
+                    "color_scheme": {
+                      "default": "modern_blue",
+                      "title": "Color Scheme",
+                      "type": "string"
+                    },
+                    "include_charts": {
+                      "default": true,
+                      "title": "Include Charts",
+                      "type": "boolean"
+                    },
+                    "include_images": {
+                      "default": false,
+                      "title": "Include Images",
+                      "type": "boolean"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "presentation_type": {
+                      "default": "business",
+                      "title": "Presentation Type",
+                      "type": "string"
+                    },
+                    "slide_count": {
+                      "default": 5,
+                      "title": "Slide Count",
+                      "type": "integer"
+                    },
+                    "topic": {
+                      "title": "Topic",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "topic"
+                  ],
+                  "title": "auto_generate_presentationArguments",
+                  "type": "object"
+                },
+                "name": "auto_generate_presentation",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "auto_generate_presentationOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Optimize Slide Text"
+                },
+                "description": "\nOptimize text elements on a slide for better readability and fit.\n\nArgs:\n    slide_index: Index of the slide to optimize\n    auto_resize: Whether to automatically resize fonts to fit containers\n    auto_wrap: Whether to apply intelligent text wrapping\n    optimize_spacing: Whether to optimize line spacing\n    min_font_size: Minimum allowed font size\n    max_font_size: Maximum allowed font size\n    presentation_id: Presentation ID (uses current if None)\n",
+                "inputSchema": {
+                  "properties": {
+                    "auto_resize": {
+                      "default": true,
+                      "title": "Auto Resize",
+                      "type": "boolean"
+                    },
+                    "auto_wrap": {
+                      "default": true,
+                      "title": "Auto Wrap",
+                      "type": "boolean"
+                    },
+                    "max_font_size": {
+                      "default": 36,
+                      "title": "Max Font Size",
+                      "type": "integer"
+                    },
+                    "min_font_size": {
+                      "default": 8,
+                      "title": "Min Font Size",
+                      "type": "integer"
+                    },
+                    "optimize_spacing": {
+                      "default": true,
+                      "title": "Optimize Spacing",
+                      "type": "boolean"
+                    },
+                    "presentation_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Presentation Id"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "slide_index"
+                  ],
+                  "title": "optimize_slide_textArguments",
+                  "type": "object"
+                },
+                "name": "optimize_slide_text",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "optimize_slide_textOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Manage Hyperlinks"
+                },
+                "description": "\nManage hyperlinks in text shapes and runs.\n\nArgs:\n    operation: Operation type (\"add\", \"remove\", \"list\", \"update\")\n    slide_index: Index of the slide (0-based)\n    shape_index: Index of the shape on the slide (0-based)\n    text: Text to make into hyperlink (for \"add\" operation)\n    url: URL for the hyperlink\n    run_index: Index of text run within the shape (0-based)\n    presentation_id: Optional presentation ID (uses current if not provided)\n    \nReturns:\n    Dictionary with operation results\n",
+                "inputSchema": {
+                  "properties": {
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "default": null,
+                      "title": "Presentation Id",
+                      "type": "string"
+                    },
+                    "run_index": {
+                      "default": 0,
+                      "title": "Run Index",
+                      "type": "integer"
+                    },
+                    "shape_index": {
+                      "default": null,
+                      "title": "Shape Index",
+                      "type": "integer"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "text": {
+                      "default": null,
+                      "title": "Text",
+                      "type": "string"
+                    },
+                    "url": {
+                      "default": null,
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "slide_index"
+                  ],
+                  "title": "manage_hyperlinksArguments",
+                  "type": "object"
+                },
+                "name": "manage_hyperlinks",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "manage_hyperlinksOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Update Chart Data"
+                },
+                "description": "\nReplace existing chart data with new categories and series.\n\nArgs:\n    slide_index: Index of the slide (0-based)\n    shape_index: Index of the chart shape (0-based)\n    categories: List of category names\n    series_data: List of dictionaries with 'name' and 'values' keys\n    presentation_id: Optional presentation ID (uses current if not provided)\n    \nReturns:\n    Dictionary with operation results\n",
+                "inputSchema": {
+                  "properties": {
+                    "categories": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "title": "Categories",
+                      "type": "array"
+                    },
+                    "presentation_id": {
+                      "default": null,
+                      "title": "Presentation Id",
+                      "type": "string"
+                    },
+                    "series_data": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "title": "Series Data",
+                      "type": "array"
+                    },
+                    "shape_index": {
+                      "title": "Shape Index",
+                      "type": "integer"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "shape_index",
+                    "categories",
+                    "series_data"
+                  ],
+                  "title": "update_chart_dataArguments",
+                  "type": "object"
+                },
+                "name": "update_chart_data",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "update_chart_dataOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Add Connector"
+                },
+                "description": "\nAdd connector lines/arrows between points on a slide.\n\nArgs:\n    slide_index: Index of the slide (0-based)\n    connector_type: Type of connector (\"straight\", \"elbow\", \"curved\")\n    start_x: Starting X coordinate in inches\n    start_y: Starting Y coordinate in inches\n    end_x: Ending X coordinate in inches  \n    end_y: Ending Y coordinate in inches\n    line_width: Width of the connector line in points\n    color: RGB color as [r, g, b] list\n    presentation_id: Optional presentation ID (uses current if not provided)\n    \nReturns:\n    Dictionary with operation results\n",
+                "inputSchema": {
+                  "properties": {
+                    "color": {
+                      "default": null,
+                      "items": {
+                        "type": "integer"
+                      },
+                      "title": "Color",
+                      "type": "array"
+                    },
+                    "connector_type": {
+                      "title": "Connector Type",
+                      "type": "string"
+                    },
+                    "end_x": {
+                      "title": "End X",
+                      "type": "number"
+                    },
+                    "end_y": {
+                      "title": "End Y",
+                      "type": "number"
+                    },
+                    "line_width": {
+                      "default": 1.0,
+                      "title": "Line Width",
+                      "type": "number"
+                    },
+                    "presentation_id": {
+                      "default": null,
+                      "title": "Presentation Id",
+                      "type": "string"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "start_x": {
+                      "title": "Start X",
+                      "type": "number"
+                    },
+                    "start_y": {
+                      "title": "Start Y",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "connector_type",
+                    "start_x",
+                    "start_y",
+                    "end_x",
+                    "end_y"
+                  ],
+                  "title": "add_connectorArguments",
+                  "type": "object"
+                },
+                "name": "add_connector",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "add_connectorOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Manage Slide Masters"
+                },
+                "description": "\nAccess and manage slide master properties and layouts.\n\nArgs:\n    operation: Operation type (\"list\", \"get_layouts\", \"get_info\")\n    master_index: Index of the slide master (0-based)\n    layout_index: Index of specific layout within master (0-based)\n    presentation_id: Optional presentation ID (uses current if not provided)\n    \nReturns:\n    Dictionary with slide master information\n",
+                "inputSchema": {
+                  "properties": {
+                    "layout_index": {
+                      "default": null,
+                      "title": "Layout Index",
+                      "type": "integer"
+                    },
+                    "master_index": {
+                      "default": 0,
+                      "title": "Master Index",
+                      "type": "integer"
+                    },
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "default": null,
+                      "title": "Presentation Id",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ],
+                  "title": "manage_slide_mastersArguments",
+                  "type": "object"
+                },
+                "name": "manage_slide_masters",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "manage_slide_mastersOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "title": "Manage Slide Transitions"
+                },
+                "description": "\nManage slide transitions and timing.\n\nArgs:\n    slide_index: Index of the slide (0-based)\n    operation: Operation type (\"set\", \"remove\", \"get\")\n    transition_type: Type of transition (basic support)\n    duration: Duration of transition in seconds\n    presentation_id: Optional presentation ID (uses current if not provided)\n    \nReturns:\n    Dictionary with transition information\n",
+                "inputSchema": {
+                  "properties": {
+                    "duration": {
+                      "default": 1.0,
+                      "title": "Duration",
+                      "type": "number"
+                    },
+                    "operation": {
+                      "title": "Operation",
+                      "type": "string"
+                    },
+                    "presentation_id": {
+                      "default": null,
+                      "title": "Presentation Id",
+                      "type": "string"
+                    },
+                    "slide_index": {
+                      "title": "Slide Index",
+                      "type": "integer"
+                    },
+                    "transition_type": {
+                      "default": null,
+                      "title": "Transition Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "slide_index",
+                    "operation"
+                  ],
+                  "title": "manage_slide_transitionsArguments",
+                  "type": "object"
+                },
+                "name": "manage_slide_transitions",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "manage_slide_transitionsOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "description": "List all loaded presentations.",
+                "inputSchema": {
+                  "properties": {},
+                  "title": "list_presentationsArguments",
+                  "type": "object"
+                },
+                "name": "list_presentations",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "list_presentationsOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "description": "Switch to a different loaded presentation.",
+                "inputSchema": {
+                  "properties": {
+                    "presentation_id": {
+                      "title": "Presentation Id",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "presentation_id"
+                  ],
+                  "title": "switch_presentationArguments",
+                  "type": "object"
+                },
+                "name": "switch_presentation",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "switch_presentationOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "description": "Get information about the MCP server.",
+                "inputSchema": {
+                  "properties": {},
+                  "title": "get_server_infoArguments",
+                  "type": "object"
+                },
+                "name": "get_server_info",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "get_server_infoOutput",
+                  "type": "object"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "create_presentation"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"presentation_id\": \"presentation_1\",\n  \"message\": \"Created new presentation with ID: presentation_1\",\n  \"slide_count\": 0\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "structuredContent": {
+              "result": {
+                "message": "Created new presentation with ID: presentation_1",
+                "presentation_id": "presentation_1",
+                "slide_count": 0
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "create_presentation"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "create_presentation",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"presentation_id\": \"presentation_1\",\n  \"message\": \"Created new presentation with ID: presentation_1\",\n  \"slide_count\": 0\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "structuredContent": {
+              "result": {
+                "message": "Created new presentation with ID: presentation_1",
+                "presentation_id": "presentation_1",
+                "slide_count": 0
+              }
+            }
+          }
+        },
+        "tool_name": "create_presentation"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"presentation_id\": \"presentation_1\",\n  \"message\": \"Created new presentation with ID: presentation_1\",\n  \"slide_count\": 0\n}"
+        },
+        "text_len": 126
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "{\n  \"presentation_id\": \"presentation_1\",\n  \"message\": \"Created new presentation with ID: presentation_1\",\n  \"slide_count\": 0\n}"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

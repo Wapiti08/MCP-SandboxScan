@@ -1,0 +1,465 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 256
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "@aashari/mcp-server-atlassian-jira",
+              "version": "1.26.9"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Read any Jira data. Returns TOON format by default (30-60% fewer tokens than JSON).\n\n**IMPORTANT - Cost Optimization:**\n- ALWAYS use `jq` param to filter response fields. Unfiltered responses are very expensive!\n- Use `maxResults` query param to restrict result count (e.g., `maxResults: \"5\"`)\n- If unsure about available fields, first fetch ONE item with `maxResults: \"1\"` and NO jq filter to explore the schema, then use jq in subsequent calls\n\n**Schema Discovery Pattern:**\n1. First call: `path: \"/rest/api/3/search/jql\", queryParams: {\"maxResults\": \"1\", \"jql\": \"project=PROJ\"}` (no jq) - explore available fields\n2. Then use: `jq: \"issues[*].{key: key, summary: fields.summary, status: fields.status.name}\"` - extract only what you need\n\n**Output format:** TOON (default, token-efficient) or JSON (`outputFormat: \"json\"`)\n\n**Common paths:**\n- `/rest/api/3/project` - list all projects\n- `/rest/api/3/project/{projectKeyOrId}` - get project details\n- `/rest/api/3/search/jql` - search issues with JQL (use `jql` query param). NOTE: `/rest/api/3/search` is deprecated!\n- `/rest/api/3/issue/{issueIdOrKey}` - get issue details\n- `/rest/api/3/issue/{issueIdOrKey}/comment` - list issue comments\n- `/rest/api/3/issue/{issueIdOrKey}/worklog` - list issue worklogs\n- `/rest/api/3/issue/{issueIdOrKey}/transitions` - get available transitions\n- `/rest/api/3/user/search` - search users (use `query` param)\n- `/rest/api/3/status` - list all statuses\n- `/rest/api/3/issuetype` - list issue types\n- `/rest/api/3/priority` - list priorities\n\n**JQ examples:** `issues[*].key`, `issues[0]`, `issues[*].{key: key, summary: fields.summary}`\n\n**Example JQL queries:** `project=PROJ`, `assignee=currentUser()`, `status=\"In Progress\"`, `created >= -7d`\n\nAPI reference: https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"issues[*].{key: key, summary: fields.summary}\" (extract specific fields), \"issues[0]\" (first result), \"issues[*].key\" (keys only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Jira API endpoint path (without base URL). Must start with \"/\". Examples: \"/rest/api/3/project\", \"/rest/api/3/search/jql\", \"/rest/api/3/issue/{issueIdOrKey}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"maxResults\": \"50\", \"startAt\": \"0\", \"jql\": \"project=PROJ\", \"fields\": \"summary,status\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "jira_get",
+                "title": "Jira GET Request"
+              },
+              {
+                "description": "Create Jira resources. Returns TOON format by default (token-efficient).\n\n**IMPORTANT - Cost Optimization:**\n- Use `jq` param to extract only needed fields from response (e.g., `jq: \"{key: key, id: id}\"`)\n- Unfiltered responses include all metadata and are expensive!\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Create issue:** `/rest/api/3/issue`\n   body: `{\"fields\": {\"project\": {\"key\": \"PROJ\"}, \"summary\": \"Issue title\", \"issuetype\": {\"name\": \"Task\"}, \"description\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"Description\"}]}]}}}`\n\n2. **Add comment:** `/rest/api/3/issue/{issueIdOrKey}/comment`\n   body: `{\"body\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"Comment text\"}]}]}}`\n\n3. **Add worklog:** `/rest/api/3/issue/{issueIdOrKey}/worklog`\n   body: `{\"timeSpentSeconds\": 3600, \"comment\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"Work done\"}]}]}}`\n\n4. **Transition issue:** `/rest/api/3/issue/{issueIdOrKey}/transitions`\n   body: `{\"transition\": {\"id\": \"31\"}}`\n\n5. **Add attachment:** `/rest/api/3/issue/{issueIdOrKey}/attachments`\n   Note: Requires multipart form data (complex - use Jira UI for attachments)\n\nAPI reference: https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "body": {
+                      "additionalProperties": {},
+                      "description": "Request body as a JSON object. Structure depends on the endpoint. Example for issue: {\"fields\": {\"project\": {\"key\": \"PROJ\"}, \"summary\": \"Issue title\", \"issuetype\": {\"name\": \"Task\"}}}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"issues[*].{key: key, summary: fields.summary}\" (extract specific fields), \"issues[0]\" (first result), \"issues[*].key\" (keys only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Jira API endpoint path (without base URL). Must start with \"/\". Examples: \"/rest/api/3/project\", \"/rest/api/3/search/jql\", \"/rest/api/3/issue/{issueIdOrKey}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"maxResults\": \"50\", \"startAt\": \"0\", \"jql\": \"project=PROJ\", \"fields\": \"summary,status\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "jira_post",
+                "title": "Jira POST Request"
+              },
+              {
+                "description": "Replace Jira resources (full update). Returns TOON format by default.\n\n**IMPORTANT - Cost Optimization:** Use `jq` param to extract only needed fields from response\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Update issue (full):** `/rest/api/3/issue/{issueIdOrKey}`\n   body: `{\"fields\": {\"summary\": \"New title\", \"description\": {...}, \"assignee\": {\"accountId\": \"...\"}}}`\n\n2. **Update project:** `/rest/api/3/project/{projectIdOrKey}`\n   body: `{\"name\": \"New Project Name\", \"description\": \"Updated description\"}`\n\n3. **Set issue property:** `/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}`\n   body: `{\"value\": \"property value\"}`\n\nNote: PUT replaces the entire resource. For partial updates, prefer PATCH.\n\nAPI reference: https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "body": {
+                      "additionalProperties": {},
+                      "description": "Request body as a JSON object. Structure depends on the endpoint. Example for issue: {\"fields\": {\"project\": {\"key\": \"PROJ\"}, \"summary\": \"Issue title\", \"issuetype\": {\"name\": \"Task\"}}}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"issues[*].{key: key, summary: fields.summary}\" (extract specific fields), \"issues[0]\" (first result), \"issues[*].key\" (keys only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Jira API endpoint path (without base URL). Must start with \"/\". Examples: \"/rest/api/3/project\", \"/rest/api/3/search/jql\", \"/rest/api/3/issue/{issueIdOrKey}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"maxResults\": \"50\", \"startAt\": \"0\", \"jql\": \"project=PROJ\", \"fields\": \"summary,status\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "jira_put",
+                "title": "Jira PUT Request"
+              },
+              {
+                "description": "Partially update Jira resources. Returns TOON format by default.\n\n**IMPORTANT - Cost Optimization:** Use `jq` param to filter response fields.\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Update issue fields:** `/rest/api/3/issue/{issueIdOrKey}`\n   body: `{\"fields\": {\"summary\": \"Updated title\"}}` (only updates specified fields)\n\n2. **Update comment:** `/rest/api/3/issue/{issueIdOrKey}/comment/{commentId}`\n   body: `{\"body\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"Updated comment\"}]}]}}`\n\n3. **Update worklog:** `/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}`\n   body: `{\"timeSpentSeconds\": 7200}`\n\nNote: PATCH only updates the fields you specify, leaving others unchanged.\n\nAPI reference: https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "body": {
+                      "additionalProperties": {},
+                      "description": "Request body as a JSON object. Structure depends on the endpoint. Example for issue: {\"fields\": {\"project\": {\"key\": \"PROJ\"}, \"summary\": \"Issue title\", \"issuetype\": {\"name\": \"Task\"}}}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"issues[*].{key: key, summary: fields.summary}\" (extract specific fields), \"issues[0]\" (first result), \"issues[*].key\" (keys only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Jira API endpoint path (without base URL). Must start with \"/\". Examples: \"/rest/api/3/project\", \"/rest/api/3/search/jql\", \"/rest/api/3/issue/{issueIdOrKey}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"maxResults\": \"50\", \"startAt\": \"0\", \"jql\": \"project=PROJ\", \"fields\": \"summary,status\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "jira_patch",
+                "title": "Jira PATCH Request"
+              },
+              {
+                "description": "Delete Jira resources. Returns TOON format by default.\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Delete issue:** `/rest/api/3/issue/{issueIdOrKey}`\n   Query param: `deleteSubtasks=true` to delete subtasks\n\n2. **Delete comment:** `/rest/api/3/issue/{issueIdOrKey}/comment/{commentId}`\n\n3. **Delete worklog:** `/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}`\n\n4. **Delete attachment:** `/rest/api/3/attachment/{attachmentId}`\n\n5. **Remove watcher:** `/rest/api/3/issue/{issueIdOrKey}/watchers`\n   Query param: `accountId={accountId}`\n\nNote: Most DELETE endpoints return 204 No Content on success.\n\nAPI reference: https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"issues[*].{key: key, summary: fields.summary}\" (extract specific fields), \"issues[0]\" (first result), \"issues[*].key\" (keys only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Jira API endpoint path (without base URL). Must start with \"/\". Examples: \"/rest/api/3/project\", \"/rest/api/3/search/jql\", \"/rest/api/3/issue/{issueIdOrKey}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"maxResults\": \"50\", \"startAt\": \"0\", \"jql\": \"project=PROJ\", \"fields\": \"summary,status\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "jira_delete",
+                "title": "Jira DELETE Request"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "jira_get"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool jira_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "jira_get"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "jira_get",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool jira_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "jira_get"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 49
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/aashari__mcp_server_atlassian_jira.txt",
+      "evidence": {
+        "content_len": 50,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/aashari__mcp_server_atlassian_jira.txt"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "MCP error -32602: Input validation error: Invalid arguments for tool jira_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+        },
+        "text_len": 246
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_aashari__mcp_server_atlassian_jira"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/aashari__mcp_server_atlassian_jira.txt",
+      "content": "MCP_FILE_CANARY_aashari__mcp_server_atlassian_jira"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "MCP error -32602: Input validation error: Invalid arguments for tool jira_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 2,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

@@ -40,13 +40,7 @@ pub fn run_subject_matrix(
     let cases: Vec<StudyCaseResult> = subject_paths
         .iter()
         .map(|subject_path| {
-            scan_subject_for_matrix(
-                manifest_dir,
-                subject_path,
-                env,
-                data_dir,
-                max_output_bytes,
-            )
+            scan_subject_for_matrix(manifest_dir, subject_path, env, data_dir, max_output_bytes)
         })
         .collect();
     let summary = StudySummary::from_cases(&cases);

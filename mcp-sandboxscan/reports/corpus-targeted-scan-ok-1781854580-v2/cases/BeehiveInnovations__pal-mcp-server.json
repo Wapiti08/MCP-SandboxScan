@@ -1,0 +1,2821 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 1287
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "prompts": {},
+              "tools": {}
+            },
+            "instructions": "When the user names a specific model (e.g. 'use chat with gpt5'), send that exact model in the tool call. When no model is mentioned, first use the `listmodels` tool from PAL to obtain available models to choose the best one from.",
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "PAL",
+              "version": "9.8.2"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": false
+                },
+                "description": "General chat and collaborative thinking partner for brainstorming, development discussion, getting second opinions, and exploring ideas. Use for ideas, validations, questions, and thoughtful explanations.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "absolute_file_paths": {
+                      "description": "Full, absolute file paths to relevant code in order to share with external model",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Image paths (absolute) or base64 strings for optional visual context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "prompt": {
+                      "description": "Your question or idea for collaborative thinking to be sent to the external model. Provide detailed context, including your goal, what you've tried, and any specific challenges. WARNING: Large inline code must NOT be shared in prompt. Provide full-path to files on disk as separate parameter.",
+                      "type": "string"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "working_directory_absolute_path": {
+                      "description": "Absolute path to an existing directory where generated code artifacts can be saved.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prompt",
+                    "working_directory_absolute_path",
+                    "model"
+                  ],
+                  "type": "object"
+                },
+                "name": "chat"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Link a request to an external AI CLI (Gemini CLI, Qwen CLI, etc.) through PAL MCP to reuse their capabilities inside existing workflows.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "absolute_file_paths": {
+                      "description": "Full paths to relevant code",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "cli_name": {
+                      "description": "Configured CLI client name (from conf/cli_clients). Available: claude, codex, gemini",
+                      "enum": [
+                        "claude",
+                        "codex",
+                        "gemini"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute image paths or base64 blobs for visual context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "prompt": {
+                      "description": "User request forwarded to the CLI (conversation context is pre-applied).",
+                      "type": "string"
+                    },
+                    "role": {
+                      "description": "Optional role preset defined for the selected CLI (defaults to 'default'). Roles per CLI: claude: codereviewer, default, planner; codex: codereviewer, default, planner; gemini: codereviewer, default, planner",
+                      "enum": [
+                        "codereviewer",
+                        "default",
+                        "planner"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prompt",
+                    "cli_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "clink"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Performs multi-stage investigation and reasoning for complex problem analysis. Use for architecture decisions, complex bugs, performance challenges, and security analysis. Provides systematic hypothesis testing, evidence-based investigation, and expert validation.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence": {
+                      "description": "Confidence level: exploring (just starting), low (early investigation), medium (some evidence), high (strong evidence), very_high (comprehensive understanding), almost_certain (near complete confidence), certain (100% confidence locally - no external validation needed)",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "List of files examined during this work step",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Important findings, evidence and insights discovered in this step",
+                      "type": "string"
+                    },
+                    "focus_areas": {
+                      "description": "Focus aspects (architecture, performance, security, etc.)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "hypothesis": {
+                      "description": "Current theory about issue/goal based on work",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute image paths or base64 blobs for visual context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Issues identified with severity levels during work",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "Whether another work step is needed. When false, aim to reduce total_steps to match step_number to avoid mismatch.",
+                      "type": "boolean"
+                    },
+                    "problem_context": {
+                      "description": "Additional context about problem/goal. Be expressive.",
+                      "type": "string"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Files identified as relevant to issue/goal (FULL absolute paths to real files/folders - DO NOT SHORTEN)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "Current work step content and findings from your overall work",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current step number in work sequence (starts at 1)",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Estimated total steps needed to complete work",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "ThinkdeepRequest",
+                  "type": "object"
+                },
+                "name": "thinkdeep"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Breaks down complex tasks through interactive, sequential planning with revision and branching capabilities. Use for complex project planning, system design, migration strategies, and architectural decisions. Builds plans incrementally with deep reflection for complex scenarios.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "branch_from_step": {
+                      "description": "If branching, the step number that this branch starts from.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "branch_id": {
+                      "description": "Name for this branch (e.g. 'approach-A', 'migration-path').",
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "is_branch_point": {
+                      "description": "True when this step creates a new branch to explore an alternative path.",
+                      "type": "boolean"
+                    },
+                    "is_step_revision": {
+                      "description": "Set true when you are replacing a previously recorded step.",
+                      "type": "boolean"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "more_steps_needed": {
+                      "description": "True when you now expect to add additional steps beyond the prior estimate.",
+                      "type": "boolean"
+                    },
+                    "next_step_required": {
+                      "description": "Whether another work step is needed. When false, aim to reduce total_steps to match step_number to avoid mismatch.",
+                      "type": "boolean"
+                    },
+                    "revises_step_number": {
+                      "description": "Step number being replaced when revising.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "step": {
+                      "description": "Planning content for this step. Step 1: describe the task, problem and scope. Later steps: capture updates, revisions, branches, or open questions that shape the plan.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current step number in work sequence (starts at 1)",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "total_steps": {
+                      "description": "Estimated total steps needed to complete work",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "model"
+                  ],
+                  "title": "PlannerRequest",
+                  "type": "object"
+                },
+                "name": "planner"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Builds multi-model consensus through systematic analysis and structured debate. Use for complex decisions, architectural choices, feature proposals, and technology evaluations. Consults multiple models with different stances to synthesize comprehensive recommendations.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "current_model_index": {
+                      "description": "0-based index of the next model to consult (managed internally).",
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "findings": {
+                      "description": "Step 1: your independent analysis for later synthesis (not shared with other models). Steps 2+: summarize the newest model response.",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute image paths or base64 references that add helpful visual context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "model_responses": {
+                      "description": "Internal log of responses gathered so far.",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "models": {
+                      "description": "User-specified roster of models to consult (provide at least two entries). User-specified list of models to consult (provide at least two entries). Each entry may include model, stance (for/against/neutral), and stance_prompt. Each (model, stance) pair must be unique, e.g. [{'model':'gpt5','stance':'for'}, {'model':'pro','stance':'against'}]. When the user names a model, you MUST use that exact value or report the provider error—never swap in another option. Use the `listmodels` tool for the full roster. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "items": {
+                        "properties": {
+                          "model": {
+                            "type": "string"
+                          },
+                          "stance": {
+                            "default": "neutral",
+                            "enum": [
+                              "for",
+                              "against",
+                              "neutral"
+                            ],
+                            "type": "string"
+                          },
+                          "stance_prompt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "model"
+                        ],
+                        "type": "object"
+                      },
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    "next_step_required": {
+                      "description": "True if more model consultations remain; set false when ready to synthesize.",
+                      "type": "boolean"
+                    },
+                    "relevant_files": {
+                      "description": "Optional supporting files that help the consensus analysis. Must be absolute full, non-abbreviated paths.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "Consensus prompt. Step 1: write the exact proposal/question every model will see (use 'Evaluate…', not meta commentary). Steps 2+: capture internal notes about the latest model response—these notes are NOT sent to other models.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current step index (starts at 1). Step 1 is your analysis; steps 2+ handle each model response.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "total_steps": {
+                      "description": "Total steps = number of models consulted plus the final synthesis step.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings"
+                  ],
+                  "title": "ConsensusRequest",
+                  "type": "object"
+                },
+                "name": "consensus"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Performs systematic, step-by-step code review with expert validation. Use for comprehensive analysis covering quality, security, performance, and architecture. Guides through structured investigation to ensure thoroughness.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence": {
+                      "description": "Confidence level: exploring (just starting), low (early investigation), medium (some evidence), high (strong evidence), very_high (comprehensive understanding), almost_certain (near complete confidence), certain (100% confidence locally - no external validation needed)",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "Absolute paths of every file reviewed, including those ruled out.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Capture findings (positive and negative) across quality, security, performance, and architecture; update each step.",
+                      "type": "string"
+                    },
+                    "focus_on": {
+                      "description": "Optional note on areas to emphasise (e.g. 'threading', 'auth flow').",
+                      "type": "string"
+                    },
+                    "hypothesis": {
+                      "description": "Current theory about issue/goal based on work",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional diagram or screenshot paths that clarify review context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Issues with severity (critical/high/medium/low) and descriptions.",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "True when another review step follows. External validation: step 1 → True, step 2 → False. Internal validation: set False immediately. Apply the same rule on continuation flows.",
+                      "type": "boolean"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Step 1: list all files/dirs under review. Must be absolute full non-abbreviated paths. Final step: narrow to files tied to key findings.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "review_type": {
+                      "default": "full",
+                      "description": "Review focus: full, security, performance, or quick.",
+                      "enum": [
+                        "full",
+                        "security",
+                        "performance",
+                        "quick"
+                      ],
+                      "type": "string"
+                    },
+                    "review_validation_type": {
+                      "default": "external",
+                      "description": "Set 'external' (default) for expert follow-up or 'internal' for local-only review.",
+                      "enum": [
+                        "external",
+                        "internal"
+                      ],
+                      "type": "string"
+                    },
+                    "severity_filter": {
+                      "default": "all",
+                      "description": "Lowest severity to include when reporting issues (critical/high/medium/low/all).",
+                      "enum": [
+                        "critical",
+                        "high",
+                        "medium",
+                        "low",
+                        "all"
+                      ],
+                      "type": "string"
+                    },
+                    "standards": {
+                      "description": "Coding standards or style guides to enforce.",
+                      "type": "string"
+                    },
+                    "step": {
+                      "description": "Review narrative. Step 1: outline the review strategy. Later steps: report findings. MUST cover quality, security, performance, and architecture. Reference code via `relevant_files`; avoid dumping large snippets.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current review step (starts at 1) – each step should build on the last.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Number of review steps planned. External validation: two steps (analysis + summary). Internal validation: one step. Use the same limits when continuing an existing review via continuation_id.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "CodereviewRequest",
+                  "type": "object"
+                },
+                "name": "codereview"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Validates git changes and repository state before committing with systematic analysis. Use for multi-repository validation, security review, change impact assessment, and completeness verification. Guides through structured investigation with expert analysis.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "compare_to": {
+                      "description": "Optional git ref (branch/tag/commit) to diff against; falls back to staged/unstaged changes.",
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "description": "Confidence level: exploring (just starting), low (early investigation), medium (some evidence), high (strong evidence), very_high (comprehensive understanding), almost_certain (near complete confidence), certain (100% confidence locally - no external validation needed)",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "Absolute paths for every file examined, including ruled-out candidates.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Record git diff insights, risks, missing tests, security concerns, and positives; update previous notes as you go.",
+                      "type": "string"
+                    },
+                    "focus_on": {
+                      "description": "Optional emphasis areas such as security, performance, or test coverage.",
+                      "type": "string"
+                    },
+                    "hypothesis": {
+                      "description": "Current theory about issue/goal based on work",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute paths to screenshots or diagrams that aid validation.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "include_staged": {
+                      "default": true,
+                      "description": "Whether to inspect staged changes (ignored when `compare_to` is set).",
+                      "type": "boolean"
+                    },
+                    "include_unstaged": {
+                      "default": true,
+                      "description": "Whether to inspect unstaged changes (ignored when `compare_to` is set).",
+                      "type": "boolean"
+                    },
+                    "issues_found": {
+                      "description": "List issues with severity (critical/high/medium/low) plus descriptions (bugs, security, performance, coverage).",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "True to continue with another step, False when validation is complete. CRITICAL: If total_steps>=3 or when `precommit_type = external`, set to True until the final step. When continuation_id is provided: Follow the same validation rules based on precommit_type.",
+                      "type": "boolean"
+                    },
+                    "path": {
+                      "description": "Absolute path to the repository root. Required in step 1.",
+                      "type": "string"
+                    },
+                    "precommit_type": {
+                      "default": "external",
+                      "description": "'external' (default, triggers expert model) or 'internal' (local-only validation).",
+                      "enum": [
+                        "external",
+                        "internal"
+                      ],
+                      "type": "string"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Absolute paths of files involved in the change or validation (code, configs, tests, docs). Must be absolute full non-abbreviated paths.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "severity_filter": {
+                      "default": "all",
+                      "description": "Lowest severity to include when reporting issues.",
+                      "enum": [
+                        "critical",
+                        "high",
+                        "medium",
+                        "low",
+                        "all"
+                      ],
+                      "type": "string"
+                    },
+                    "step": {
+                      "description": "Step 1: outline how you'll validate the git changes. Later steps: report findings. Review diffs and impacts, use `relevant_files`, and avoid pasting large snippets.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current pre-commit step number (starts at 1).",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Planned number of validation steps. External validation: use at most three (analysis → follow-ups → summary). Internal validation: a single step. Honour these limits when resuming via continuation_id.",
+                      "minimum": 3,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "PrecommitRequest",
+                  "type": "object"
+                },
+                "name": "precommit"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Performs systematic debugging and root cause analysis for any type of issue. Use for complex bugs, mysterious errors, performance issues, race conditions, memory leaks, and integration problems. Guides through structured investigation with hypothesis testing and expert analysis.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence": {
+                      "description": "Your confidence in the hypothesis: exploring (starting out), low (early idea), medium (some evidence), high (strong evidence), very_high (very strong evidence), almost_certain (nearly confirmed), certain (100% confidence - root cause and fix are both confirmed locally with no need for external validation). WARNING: Do NOT use 'certain' unless the issue can be fully resolved with a fix, use 'very_high' or 'almost_certain' instead when not 100% sure. Using 'certain' means you have ABSOLUTE confidence locally and PREVENTS external model validation.",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "All examined files (absolute paths), including ruled-out ones.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Discoveries: clues, code/log evidence, disproven theories. Be specific. If no bug found, document clearly as valid.",
+                      "type": "string"
+                    },
+                    "hypothesis": {
+                      "description": "Concrete root cause theory from evidence. Can revise. Valid: 'No bug found - user misunderstanding' or 'Symptoms unrelated to code' if supported.",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional screenshots/visuals clarifying issue (absolute paths).",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Issues identified with severity levels during work",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "True if you plan to continue the investigation with another step. False means root cause is known or investigation is complete. IMPORTANT: When continuation_id is provided (continuing a previous conversation), set this to False to immediately proceed with expert analysis.",
+                      "type": "boolean"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Files directly relevant to issue (absolute paths). Cause, trigger, or manifestation locations.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "Investigation step. Step 1: State issue+direction. Symptoms misleading; 'no bug' valid. Trace dependencies, verify hypotheses. Use relevant_files for code; this for text only.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current step index (starts at 1). Build upon previous steps.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Estimated total steps needed to complete the investigation. Adjust as new findings emerge. IMPORTANT: When continuation_id is provided (continuing a previous conversation), set this to 1 as we're not starting a new multi-step investigation.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "DebugRequest",
+                  "type": "object"
+                },
+                "name": "debug"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Performs comprehensive security audit with systematic vulnerability assessment. Use for OWASP Top 10 analysis, compliance evaluation, threat modeling, and security architecture review. Guides through structured security investigation with expert validation.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "audit_focus": {
+                      "default": "comprehensive",
+                      "description": "Primary focus area: owasp, compliance, infrastructure, dependencies, or comprehensive.",
+                      "enum": [
+                        "owasp",
+                        "compliance",
+                        "infrastructure",
+                        "dependencies",
+                        "comprehensive"
+                      ],
+                      "type": "string"
+                    },
+                    "compliance_requirements": {
+                      "description": "Applicable compliance frameworks or standards (SOC2, PCI DSS, HIPAA, GDPR, ISO 27001, NIST, etc.).",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "confidence": {
+                      "description": "exploring/low/medium/high/very_high/almost_certain/certain. 'certain' blocks external validation—use only when fully complete.",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "Absolute paths for every file inspected, including rejected candidates.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Summarize vulnerabilities, auth issues, validation gaps, compliance notes, and positives; update prior findings as needed.",
+                      "type": "string"
+                    },
+                    "hypothesis": {
+                      "description": "Current theory about issue/goal based on work",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute paths to diagrams or threat models that inform the audit.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Security issues with severity (critical/high/medium/low) and descriptions (vulns, auth flaws, injection, crypto, config).",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "True while additional threat analysis remains; set False once you are ready to hand off for validation.",
+                      "type": "boolean"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Absolute paths for security-relevant files (auth modules, configs, sensitive code).",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "security_scope": {
+                      "description": "Security context (web, mobile, API, cloud, etc.) including stack, user types, data sensitivity, and threat landscape.",
+                      "type": "string"
+                    },
+                    "severity_filter": {
+                      "default": "all",
+                      "description": "Minimum severity to include when reporting security issues.",
+                      "enum": [
+                        "critical",
+                        "high",
+                        "medium",
+                        "low",
+                        "all"
+                      ],
+                      "type": "string"
+                    },
+                    "step": {
+                      "description": "Step 1: outline the audit strategy (OWASP Top 10, auth, validation, etc.). Later steps: report findings. MANDATORY: use `relevant_files` for code references and avoid large snippets.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current security-audit step number (starts at 1).",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "threat_level": {
+                      "default": "medium",
+                      "description": "Assess the threat level: low (internal/low-risk), medium (customer-facing/business data), high (regulated or sensitive), critical (financial/healthcare/PII).",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Expected number of audit steps; adjust as new risks surface.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "SecauditRequest",
+                  "type": "object"
+                },
+                "name": "secaudit"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Generates comprehensive code documentation with systematic analysis of functions, classes, and complexity. Use for documentation generation, code analysis, complexity assessment, and API documentation. Analyzes code structure and patterns to create thorough documentation.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "comments_on_complex_logic": {
+                      "default": true,
+                      "description": "True (default) to add inline comments around non-obvious logic.",
+                      "type": "boolean"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "document_complexity": {
+                      "default": true,
+                      "description": "Include algorithmic complexity (Big O) analysis when True (default).",
+                      "type": "boolean"
+                    },
+                    "document_flow": {
+                      "default": true,
+                      "description": "Include call flow/dependency notes when True (default).",
+                      "type": "boolean"
+                    },
+                    "findings": {
+                      "description": "Important findings, evidence and insights discovered in this step",
+                      "type": "string"
+                    },
+                    "issues_found": {
+                      "description": "Issues identified with severity levels during work",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "next_step_required": {
+                      "description": "Whether another work step is needed. When false, aim to reduce total_steps to match step_number to avoid mismatch.",
+                      "type": "boolean"
+                    },
+                    "num_files_documented": {
+                      "default": 0,
+                      "description": "Count of files finished so far. Increment only when a file is fully documented.",
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Files identified as relevant to issue/goal (FULL absolute paths to real files/folders - DO NOT SHORTEN)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "Current work step content and findings from your overall work",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current step number in work sequence (starts at 1)",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "total_files_to_document": {
+                      "default": 0,
+                      "description": "Total files identified in discovery; completion requires matching this count.",
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "total_steps": {
+                      "description": "Estimated total steps needed to complete work",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "update_existing": {
+                      "default": true,
+                      "description": "True (default) to polish inaccurate or outdated docs instead of leaving them untouched.",
+                      "type": "boolean"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "document_complexity",
+                    "document_flow",
+                    "update_existing",
+                    "comments_on_complex_logic",
+                    "num_files_documented",
+                    "total_files_to_document"
+                  ],
+                  "title": "DocgenRequest",
+                  "type": "object"
+                },
+                "name": "docgen"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Performs comprehensive code analysis with systematic investigation and expert validation. Use for architecture, performance, maintainability, and pattern analysis. Guides through structured code review and strategic planning.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "analysis_type": {
+                      "default": "general",
+                      "description": "Type of analysis to perform (architecture, performance, security, quality, general)",
+                      "enum": [
+                        "architecture",
+                        "performance",
+                        "security",
+                        "quality",
+                        "general"
+                      ],
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "description": "Your confidence in the analysis: exploring, low, medium, high, very_high, almost_certain, or certain. 'certain' indicates the analysis is complete and ready for validation.",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "List all files examined (absolute paths). Include even ruled-out files to track exploration path.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Summary of discoveries from this step, including architectural patterns, tech stack assessment, scalability characteristics, performance implications, maintainability factors, and strategic improvement opportunities. IMPORTANT: Document both strengths (good patterns, solid architecture) and concerns (tech debt, overengineering, unnecessary complexity). In later steps, confirm or update past findings with additional evidence.",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute paths to architecture diagrams or visual references that help with analysis context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Issues or concerns identified during analysis, each with severity level (critical, high, medium, low)",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "Set to true if you plan to continue the investigation with another step. False means you believe the analysis is complete and ready for expert validation.",
+                      "type": "boolean"
+                    },
+                    "output_format": {
+                      "default": "detailed",
+                      "description": "How to format the output (summary, detailed, actionable)",
+                      "enum": [
+                        "summary",
+                        "detailed",
+                        "actionable"
+                      ],
+                      "type": "string"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Subset of files_checked directly relevant to analysis findings (absolute paths). Include files with significant patterns, architectural decisions, or strategic improvement opportunities.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "The analysis plan. Step 1: State your strategy, including how you will map the codebase structure, understand business logic, and assess code quality, performance implications, and architectural patterns. Later steps: Report findings and adapt the approach as new insights emerge.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "The index of the current step in the analysis sequence, beginning at 1. Each step should build upon or revise the previous one.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Your current estimate for how many steps will be needed to complete the analysis. Adjust as new findings emerge.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "AnalyzeRequest",
+                  "type": "object"
+                },
+                "name": "analyze"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Analyzes code for refactoring opportunities with systematic investigation. Use for code smell detection, decomposition planning, modernization, and maintainability improvements. Guides through structured analysis with expert validation.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence": {
+                      "default": "incomplete",
+                      "description": "Your confidence in refactoring analysis: exploring (starting), incomplete (significant work remaining), partial (some opportunities found, more analysis needed), complete (comprehensive analysis finished, all major opportunities identified). WARNING: Use 'complete' ONLY when fully analyzed and can provide recommendations without expert help. 'complete' PREVENTS expert validation. Use 'partial' for large files or uncertain analysis.",
+                      "enum": [
+                        "exploring",
+                        "incomplete",
+                        "partial",
+                        "complete"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "List all files examined (absolute paths). Include even ruled-out files to track exploration path.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Summary of discoveries from this step, including code smells and opportunities for decomposition, modernization, or organization. Document both strengths and weaknesses. In later steps, confirm or update past findings.",
+                      "type": "string"
+                    },
+                    "focus_areas": {
+                      "description": "Specific areas to focus on (e.g., 'performance', 'readability', 'maintainability', 'security')",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "hypothesis": {
+                      "description": "Current theory about issue/goal based on work",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional list of absolute paths to architecture diagrams, UI mockups, design documents, or visual references that help with refactoring context. Only include if they materially assist understanding or assessment.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Refactoring opportunities as dictionaries with 'severity' (critical/high/medium/low), 'type' (codesmells/decompose/modernize/organization), and 'description'. Include all improvement opportunities found.",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "Set to true if you plan to continue the investigation with another step. False means you believe the refactoring analysis is complete and ready for expert validation.",
+                      "type": "boolean"
+                    },
+                    "refactor_type": {
+                      "default": "codesmells",
+                      "description": "Type of refactoring analysis to perform (codesmells, decompose, modernize, organization)",
+                      "enum": [
+                        "codesmells",
+                        "decompose",
+                        "modernize",
+                        "organization"
+                      ],
+                      "type": "string"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Subset of files_checked with code requiring refactoring (absolute paths). Include files with code smells, decomposition needs, or improvement opportunities.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "The refactoring plan. Step 1: State strategy. Later steps: Report findings. CRITICAL: Examine code for smells, and opportunities for decomposition, modernization, and organization. Use 'relevant_files' for code. FORBIDDEN: Large code snippets.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "The index of the current step in the refactoring investigation sequence, beginning at 1. Each step should build upon or revise the previous one.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "style_guide_examples": {
+                      "description": "Optional existing code files to use as style/pattern reference (must be FULL absolute paths to real files / folders - DO NOT SHORTEN). These files represent the target coding style and patterns for the project.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Your current estimate for how many steps will be needed to complete the refactoring investigation. Adjust as new opportunities emerge.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "RefactorRequest",
+                  "type": "object"
+                },
+                "name": "refactor"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Performs systematic code tracing with modes for execution flow or dependency mapping. Use for method execution analysis, call chain tracing, dependency mapping, and architectural understanding. Supports precision mode (execution flow) and dependencies mode (structural relationships).",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence": {
+                      "description": "Confidence level: exploring (just starting), low (early investigation), medium (some evidence), high (strong evidence), very_high (comprehensive understanding), almost_certain (near complete confidence), certain (100% confidence locally - no external validation needed)",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "List of files examined during this work step",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Important findings, evidence and insights discovered in this step",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional paths to architecture diagrams or flow charts that help understand the tracing context.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "Whether another work step is needed. When false, aim to reduce total_steps to match step_number to avoid mismatch.",
+                      "type": "boolean"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Files identified as relevant to issue/goal (FULL absolute paths to real files/folders - DO NOT SHORTEN)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "Current work step content and findings from your overall work",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current step number in work sequence (starts at 1)",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "target_description": {
+                      "description": "Description of what to trace and WHY. Include context about what you're trying to understand or analyze.",
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Estimated total steps needed to complete work",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "trace_mode": {
+                      "description": "Type of tracing: 'ask' (default - prompts user to choose mode), 'precision' (execution flow) or 'dependencies' (structural relationships)",
+                      "enum": [
+                        "precision",
+                        "dependencies",
+                        "ask"
+                      ],
+                      "type": "string"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "target_description",
+                    "trace_mode",
+                    "model"
+                  ],
+                  "title": "TracerRequest",
+                  "type": "object"
+                },
+                "name": "tracer"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Creates comprehensive test suites with edge case coverage for specific functions, classes, or modules. Analyzes code paths, identifies failure modes, and generates framework-specific tests. Be specific about scope - target particular components rather than testing everything.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence": {
+                      "description": "Indicate your current confidence in the test generation assessment. Use: 'exploring' (starting analysis), 'low' (early investigation), 'medium' (some patterns identified), 'high' (strong understanding), 'very_high' (very strong understanding), 'almost_certain' (nearly complete test plan), 'certain' (100% confidence - test plan is thoroughly complete and all test scenarios are identified with no need for external model validation). Do NOT use 'certain' unless the test generation analysis is comprehensively complete, use 'very_high' or 'almost_certain' instead if not 100% sure. Using 'certain' means you have complete confidence locally and prevents external model validation.",
+                      "enum": [
+                        "exploring",
+                        "low",
+                        "medium",
+                        "high",
+                        "very_high",
+                        "almost_certain",
+                        "certain"
+                      ],
+                      "type": "string"
+                    },
+                    "continuation_id": {
+                      "description": "Unique thread continuation ID for multi-turn conversations. Works across different tools. ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, files, and findings so the agent can resume seamlessly.",
+                      "type": "string"
+                    },
+                    "files_checked": {
+                      "description": "Absolute paths of every file examined, including those ruled out.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "findings": {
+                      "description": "Summarise functionality, critical paths, edge cases, boundary conditions, error handling, and existing test patterns. Cover both happy and failure paths.",
+                      "type": "string"
+                    },
+                    "hypothesis": {
+                      "description": "Current theory about issue/goal based on work",
+                      "type": "string"
+                    },
+                    "images": {
+                      "description": "Optional absolute paths to diagrams or visuals that clarify the system under test.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "issues_found": {
+                      "description": "Issues identified with severity levels during work",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "model": {
+                      "description": "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match. Top models: gpt-5.2 (score 100, 400K ctx, thinking, code-gen); gpt-5.1-codex (score 100, 400K ctx, thinking, code-gen); gpt-5.2-pro (score 100, 400K ctx, thinking, code-gen); gpt-5-codex (score 95, 400K ctx, thinking); gpt-5.1-codex-mini (score 90, 400K ctx, thinking, code-gen); +8 more via `listmodels`.",
+                      "type": "string"
+                    },
+                    "next_step_required": {
+                      "description": "True while more investigation or planning remains; set False when test planning is ready for expert validation.",
+                      "type": "boolean"
+                    },
+                    "relevant_context": {
+                      "description": "Methods/functions identified as involved in the issue",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "relevant_files": {
+                      "description": "Absolute paths of code that requires new or updated tests (implementation, dependencies, existing test fixtures).",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "step": {
+                      "description": "Test plan for this step. Step 1: outline how you'll analyse structure, business logic, critical paths, and edge cases. Later steps: record findings and new scenarios as they emerge.",
+                      "type": "string"
+                    },
+                    "step_number": {
+                      "description": "Current test-generation step (starts at 1) — each step should build on prior work.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "temperature": {
+                      "description": "0 = deterministic · 1 = creative.",
+                      "maximum": 1.0,
+                      "minimum": 0.0,
+                      "type": "number"
+                    },
+                    "thinking_mode": {
+                      "description": "Reasoning depth: minimal, low, medium, high, or max.",
+                      "enum": [
+                        "minimal",
+                        "low",
+                        "medium",
+                        "high",
+                        "max"
+                      ],
+                      "type": "string"
+                    },
+                    "total_steps": {
+                      "description": "Estimated number of steps needed for test planning; adjust as new scenarios appear.",
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "use_assistant_model": {
+                      "default": true,
+                      "description": "Use assistant model for expert analysis after workflow steps. False skips expert analysis, relies solely on your personal investigation. Defaults to True for comprehensive validation.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "step",
+                    "step_number",
+                    "total_steps",
+                    "next_step_required",
+                    "findings",
+                    "model"
+                  ],
+                  "title": "TestgenRequest",
+                  "type": "object"
+                },
+                "name": "testgen"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Prevents reflexive agreement by forcing critical thinking and reasoned analysis when a statement is challenged. Trigger automatically when a user critically questions, disagrees or appears to push back on earlier answers, and use it manually to sanity-check contentious claims.",
+                "inputSchema": {
+                  "properties": {
+                    "prompt": {
+                      "description": "Statement to scrutinize. If you invoke `challenge` manually, strip the word 'challenge' and pass just the statement. Automatic invocations send the full user message as-is; do not modify it.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prompt"
+                  ],
+                  "type": "object"
+                },
+                "name": "challenge"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Use this tool automatically when you need current API/SDK documentation, latest version info, breaking changes, deprecations, migration guides, or official release notes. This tool searches authoritative sources (official docs, GitHub, package registries) to ensure up-to-date accuracy.",
+                "inputSchema": {
+                  "properties": {
+                    "prompt": {
+                      "description": "The API, SDK, library, framework, or technology you need current documentation, version info, breaking changes, or migration guidance for.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prompt"
+                  ],
+                  "type": "object"
+                },
+                "name": "apilookup"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Shows which AI model providers are configured, available model names, their aliases and capabilities.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "listmodels"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Get server version, configuration details, and list of available tools.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "version"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "listmodels"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"success\",\"content\":\"# Available AI Models\\n\\n## Google Gemini ❌\\n**Status**: Not configured (set GEMINI_API_KEY)\\n\\n## OpenAI ✅\\n**Status**: Configured and available\\n\\n**Models**:\\n- `gpt-5.1-codex` - 400K context\\n  - GPT-5.1 Codex (400K context, 128K output) - Agentic coding specialization available through the Responses API.\\n  - Supports structured code generation\\n- `gpt-5.2` - 400K context\\n  - GPT-5.2 (400K context, 128K output) - Flagship reasoning model with configurable thinking effort and vision support.\\n  - Supports structured code generation\\n- `gpt-5.2-pro` - 400K context\\n  - GPT-5.2 Pro (400K context, 272K output) - Very advanced, reasoning model\\n  - Supports structured code generation\\n- `gpt-5-codex` - 400K context\\n  - GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.\\n- `gpt-5` - 400K context\\n  - GPT-5 (400K context, 128K output) - Advanced model with reasoning support\\n- `gpt-5.1-codex-mini` - 400K context\\n  - GPT-5.1 Codex mini (400K context, 128K output) - Cost-efficient Codex variant with streaming support.\\n  - Supports structured code generation\\n- `gpt-5-mini` - 400K context\\n  - GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support\\n- `o3-pro` - 200K context\\n  - Professional-grade reasoning with advanced capabilities (200K context)\\n- `o3` - 200K context\\n  - Strong reasoning (200K context) - Logical problems, code generation, systematic analysis\\n- `gpt-5-nano` - 400K context\\n  - GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks\\n- `gpt-4.1` - 1M context\\n  - GPT-4.1 (1M context) - Advanced reasoning model with large context window\\n- `o3-mini` - 200K context\\n  - Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity\\n- `o4-mini` - 200K context\\n  - Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning\\n\\n**Aliases**:\\n- `5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `5.1` → `gpt-5.2`\\n- `5.2` → `gpt-5.2`\\n- `codex-5.1` → `gpt-5.1-codex`\\n- `codex-mini` → `gpt-5.1-codex-mini`\\n- `codex` → `gpt-5-codex`\\n- `gpt-5-code` → `gpt-5-codex`\\n- `gpt-5.1-code` → `gpt-5.1-codex`\\n- `gpt-5.1` → `gpt-5.2`\\n- `gpt4.1` → `gpt-4.1`\\n- `gpt5-code` → `gpt-5-codex`\\n- `gpt5-codex` → `gpt-5-codex`\\n- `gpt5-mini` → `gpt-5-mini`\\n- `gpt5-nano` → `gpt-5-nano`\\n- `gpt5-pro` → `gpt-5.2-pro`\\n- `gpt5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `gpt5.1-codex` → `gpt-5.1-codex`\\n- `gpt5.1` → `gpt-5.2`\\n- `gpt5.1code` → `gpt-5.1-codex`\\n- `gpt5.2-pro` → `gpt-5.2-pro`\\n- `gpt5.2` → `gpt-5.2`\\n- `gpt5.2pro` → `gpt-5.2-pro`\\n- `gpt5` → `gpt-5`\\n- `gpt5mini` → `gpt-5-mini`\\n- `gpt5nano` → `gpt-5-nano`\\n- `gpt5pro` → `gpt-5.2-pro`\\n- `mini` → `gpt-5-mini`\\n- `nano` → `gpt-5-nano`\\n- `o3mini` → `o3-mini`\\n- `o3pro` → `o3-pro`\\n- `o4mini` → `o4-mini`\\n\\n## Azure OpenAI ❌\\n**Status**: Not configured (set AZURE_OPENAI_API_KEY)\\n\\n## X.AI (Grok) ❌\\n**Status**: Not configured (set XAI_API_KEY)\\n\\n## AI DIAL ❌\\n**Status**: Not configured (set DIAL_API_KEY)\\n\\n## OpenRouter ❌\\n**Status**: Not configured (set OPENROUTER_API_KEY)\\n**Note**: Provides access to GPT-5, O3, Mistral, and many more\\n\\n## Custom/Local API ❌\\n**Status**: Not configured (set CUSTOM_API_URL)\\n**Example**: CUSTOM_API_URL=http://localhost:11434 (for Ollama)\\n\\n## Summary\\n**Configured Providers**: 1\\n**Total Available Models**: 44\\n\\n**Usage Tips**:\\n- Use model aliases (e.g., 'flash', 'gpt5', 'opus') for convenience\\n- In auto mode, the CLI Agent will select the best model for each task\\n- Custom models are only available when CUSTOM_API_URL is set\\n- OpenRouter provides access to many cloud models with one API key\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"listmodels\",\"configured_providers\":1},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "version"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"success\",\"content\":\"# PAL MCP Server Version\\n\\n## Server Information\\n**Current Version**: 9.8.2\\n**Last Updated**: 2025-12-15\\n**Author**: Fahad Gilani\\n**Model Selection**: Auto model selection mode (call `listmodels` to inspect options)\\n\\n## Quick Summary — relay everything below\\n- Version `9.8.2` (updated 2025-12-15)\\n- Auto model selection (use `listmodels` for options)\\n- Run `listmodels` for the complete model catalog and capabilities\\n\\n**Connected Client**: Claude\\n**Installation Path**: `/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/BeehiveInnovations__pal-mcp-server`\\n\\n## Agent Reporting Guidance\\nAgents MUST report: version, model-selection status, configured providers, and available-model count.\\nRepeat the quick-summary bullets verbatim in your reply.\\nReference `listmodels` when users ask about model availability or capabilities.\\n\\n## Update Status\\n❌ **Could not check for updates**\\nUnable to connect to GitHub or parse version information.\\nCheck your internet connection or try again later.\\n\\n## Configuration\\n**Providers**:\\n- **Google Gemini**: ❌ Not configured\\n- **OpenAI**: ✅ Configured\\n- **X.AI**: ❌ Not configured\\n- **DIAL**: ❌ Not configured\\n- **OpenRouter**: ❌ Not configured\\n- **Custom/Local**: ❌ Not configured\\n\\n\\n**Available Models**: 44\\n\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"version\",\"server_version\":\"9.8.2\",\"last_updated\":\"2025-12-15\",\"python_version\":\"3.14.0\",\"platform\":\"Darwin 25.5.0\",\"model_selection_mode\":\"auto\",\"default_model\":\"auto\"},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "prompt": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+            },
+            "name": "apilookup"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"status\": \"web_lookup_needed\",\n  \"instructions\": \"MANDATORY: You MUST perform this research in a SEPARATE SUB-TASK using your web search tool.\\n\\nCRITICAL RULES - READ CAREFULLY:\\n- Launch your environment's dedicated web search capability (for example `websearch`, `web_search`, or another native\\nweb-search tool such as the one you use to perform a web search online) to gather sources - do NOT call this `apilookup` tool again\\nduring the same lookup, this is ONLY an orchestration tool to guide you and has NO web search capability of its own.\\n- ALWAYS run the search from a separate sub-task/sub-process so the research happens outside this tool invocation.\\n- If the environment does not expose a web search tool, immediately report that limitation instead of invoking `apilookup` again.\\n\\nMISSION:\\nResearch the latest, most authoritative documentation for the requested API, SDK, library, framework, programming language feature, or tool to answer the user's question accurately using a SUB-AGENT in a separate process.\\n\\nSEARCH STRATEGY (MAXIMUM 2-4 SEARCHES TOTAL FOR THIS MISSION - THEN STOP):\\n- IMPORTANT: Begin by determining today's date and current year\\n- MANDATORY FOR OS-TIED APIS/SDKs: If the request involves iOS, macOS, Windows, Linux, Android, watchOS, tvOS, or any OS-specific framework/API:\\n  * FIRST perform a web search to determine \\\"what is the latest [OS name] version [current year]\\\"\\n  * If the search is around a specific tool or an IDE, confirm the latest version \\\"latest version [tool name]\\\"\\n  * DO NOT rely on your training data or knowledge cutoff for OS versions - you MUST search for current information\\n  * ONLY AFTER confirming the current OS version, search for APIs/SDKs/frameworks for that specific version\\n  * Example workflow: Search \\\"latest iOS version [current year]\\\" → Find current version → Then search \\\"[current iOS version] SwiftUI glass effect button [current year]\\\"\\n- MANDATORY FOR MAJOR FRAMEWORKS/LANGUAGES: For rapidly-evolving ecosystems, verify current stable version:\\n  * Languages: Node.js, Python, Ruby, Rust, Go, Java, .NET/C#, PHP, Kotlin, Swift\\n  * Web frameworks: React, Vue, Angular, Next.js, Nuxt, Svelte, SvelteKit, Remix, Astro, SolidJS\\n  * Backend frameworks: Django, Flask, FastAPI, Rails, Laravel, Spring Boot, Express, NestJS, Axum\\n  * Mobile: Flutter, React Native, Jetpack Compose, SwiftUI\\n  * Build tools: Vite, Webpack, esbuild, Turbopack, Rollup\\n  * Package managers: npm, pnpm, yarn, pip, cargo, go modules, maven, gradle\\n  * Search pattern: \\\"latest [framework/language/SDK] version [current year]\\\" BEFORE searching for specific APIs\\n  * ONLY consider articles, documentation, and resources dated within the current year or most recent release cycle\\n  * Ignore or deprioritize results from previous years unless they are still the current official documentation\\n- ALWAYS find current official documentation, release notes, changelogs, migration guides, and authoritative blog posts. Newest APIs / SDKs released or updated in the current year trump older ones.\\n- Prioritize official sources: project documentation sites, GitHub repositories, package registries (npm, PyPI, crates.io, Maven Central, NuGet, RubyGems, Packagist, etc.), and official blogs\\n- Check version-specific documentation when relevant and add current year to ensure latest docs are retrieved (e.g., \\\"React docs [current year]\\\", \\\"Python what's new [current year]\\\", \\\"TypeScript breaking changes [current year]\\\", \\\"Next.js app router [current year]\\\")\\n- Look for recent Stack Overflow discussions, GitHub issues, RFC documents, or official discussion forums when official docs are incomplete\\n- Cross-reference multiple sources to validate syntax, method signatures, configuration options, and best practices\\n- Search for deprecation warnings, security advisories, or migration paths between major versions\\n- STOP IMMEDIATELY after 2-4 searches maximum - DO NOT continue exploring tangential topics, examples, tutorials, or supplementary material\\n- If latest, more current, authoritative information has been found: STOP looking further\\n- ALWAYS cite authoritative sources with links (official docs, changelogs, GitHub releases, package registry pages)\",\n  \"user_prompt\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "model": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "prompt": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "working_directory_absolute_path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt"
+            },
+            "name": "chat"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for chat: 'gpt-5.2' (category: fast_response)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"chat\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "findings": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "model": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "next_step_required": true,
+              "step": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "step_number": 1,
+              "total_steps": 1
+            },
+            "name": "debug"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for debug: 'gpt-5.1-codex' (category: extended_reasoning)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"debug\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "model": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "next_step_required": true,
+              "step": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+              "step_number": 1,
+              "total_steps": 1
+            },
+            "name": "planner"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"status\": \"pause_for_planning\",\n  \"step_number\": 1,\n  \"total_steps\": 1,\n  \"next_step_required\": true,\n  \"step_content\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n  \"planner_status\": {\n    \"files_checked\": 0,\n    \"relevant_files\": 0,\n    \"relevant_context\": 0,\n    \"issues_found\": 0,\n    \"images_collected\": 0,\n    \"current_confidence\": \"planning\",\n    \"step_history_length\": 2\n  },\n  \"metadata\": {\n    \"branches\": [],\n    \"step_history_length\": 2,\n    \"is_step_revision\": false,\n    \"revises_step_number\": null,\n    \"is_branch_point\": false,\n    \"branch_from_step\": null,\n    \"branch_id\": null,\n    \"more_steps_needed\": false,\n    \"tool_name\": \"planner\",\n    \"model_used\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n    \"provider_used\": \"unknown\"\n  },\n  \"continuation_id\": \"23def96b-6f2b-4522-a8b3-cf7511008df5\",\n  \"planner_required\": true,\n  \"required_actions\": [\n    \"Think deeply about the complete scope and complexity of what needs to be planned\",\n    \"Consider multiple approaches and their trade-offs\",\n    \"Identify key constraints, dependencies, and potential challenges\",\n    \"Think about stakeholders, success criteria, and critical requirements\"\n  ],\n  \"next_steps\": \"Continue with step 2. Approximately 0 steps remaining.\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "listmodels"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "listmodels",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"success\",\"content\":\"# Available AI Models\\n\\n## Google Gemini ❌\\n**Status**: Not configured (set GEMINI_API_KEY)\\n\\n## OpenAI ✅\\n**Status**: Configured and available\\n\\n**Models**:\\n- `gpt-5.1-codex` - 400K context\\n  - GPT-5.1 Codex (400K context, 128K output) - Agentic coding specialization available through the Responses API.\\n  - Supports structured code generation\\n- `gpt-5.2` - 400K context\\n  - GPT-5.2 (400K context, 128K output) - Flagship reasoning model with configurable thinking effort and vision support.\\n  - Supports structured code generation\\n- `gpt-5.2-pro` - 400K context\\n  - GPT-5.2 Pro (400K context, 272K output) - Very advanced, reasoning model\\n  - Supports structured code generation\\n- `gpt-5-codex` - 400K context\\n  - GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.\\n- `gpt-5` - 400K context\\n  - GPT-5 (400K context, 128K output) - Advanced model with reasoning support\\n- `gpt-5.1-codex-mini` - 400K context\\n  - GPT-5.1 Codex mini (400K context, 128K output) - Cost-efficient Codex variant with streaming support.\\n  - Supports structured code generation\\n- `gpt-5-mini` - 400K context\\n  - GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support\\n- `o3-pro` - 200K context\\n  - Professional-grade reasoning with advanced capabilities (200K context)\\n- `o3` - 200K context\\n  - Strong reasoning (200K context) - Logical problems, code generation, systematic analysis\\n- `gpt-5-nano` - 400K context\\n  - GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks\\n- `gpt-4.1` - 1M context\\n  - GPT-4.1 (1M context) - Advanced reasoning model with large context window\\n- `o3-mini` - 200K context\\n  - Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity\\n- `o4-mini` - 200K context\\n  - Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning\\n\\n**Aliases**:\\n- `5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `5.1` → `gpt-5.2`\\n- `5.2` → `gpt-5.2`\\n- `codex-5.1` → `gpt-5.1-codex`\\n- `codex-mini` → `gpt-5.1-codex-mini`\\n- `codex` → `gpt-5-codex`\\n- `gpt-5-code` → `gpt-5-codex`\\n- `gpt-5.1-code` → `gpt-5.1-codex`\\n- `gpt-5.1` → `gpt-5.2`\\n- `gpt4.1` → `gpt-4.1`\\n- `gpt5-code` → `gpt-5-codex`\\n- `gpt5-codex` → `gpt-5-codex`\\n- `gpt5-mini` → `gpt-5-mini`\\n- `gpt5-nano` → `gpt-5-nano`\\n- `gpt5-pro` → `gpt-5.2-pro`\\n- `gpt5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `gpt5.1-codex` → `gpt-5.1-codex`\\n- `gpt5.1` → `gpt-5.2`\\n- `gpt5.1code` → `gpt-5.1-codex`\\n- `gpt5.2-pro` → `gpt-5.2-pro`\\n- `gpt5.2` → `gpt-5.2`\\n- `gpt5.2pro` → `gpt-5.2-pro`\\n- `gpt5` → `gpt-5`\\n- `gpt5mini` → `gpt-5-mini`\\n- `gpt5nano` → `gpt-5-nano`\\n- `gpt5pro` → `gpt-5.2-pro`\\n- `mini` → `gpt-5-mini`\\n- `nano` → `gpt-5-nano`\\n- `o3mini` → `o3-mini`\\n- `o3pro` → `o3-pro`\\n- `o4mini` → `o4-mini`\\n\\n## Azure OpenAI ❌\\n**Status**: Not configured (set AZURE_OPENAI_API_KEY)\\n\\n## X.AI (Grok) ❌\\n**Status**: Not configured (set XAI_API_KEY)\\n\\n## AI DIAL ❌\\n**Status**: Not configured (set DIAL_API_KEY)\\n\\n## OpenRouter ❌\\n**Status**: Not configured (set OPENROUTER_API_KEY)\\n**Note**: Provides access to GPT-5, O3, Mistral, and many more\\n\\n## Custom/Local API ❌\\n**Status**: Not configured (set CUSTOM_API_URL)\\n**Example**: CUSTOM_API_URL=http://localhost:11434 (for Ollama)\\n\\n## Summary\\n**Configured Providers**: 1\\n**Total Available Models**: 44\\n\\n**Usage Tips**:\\n- Use model aliases (e.g., 'flash', 'gpt5', 'opus') for convenience\\n- In auto mode, the CLI Agent will select the best model for each task\\n- Custom models are only available when CUSTOM_API_URL is set\\n- OpenRouter provides access to many cloud models with one API key\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"listmodels\",\"configured_providers\":1},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "listmodels"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "version"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "version",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"success\",\"content\":\"# PAL MCP Server Version\\n\\n## Server Information\\n**Current Version**: 9.8.2\\n**Last Updated**: 2025-12-15\\n**Author**: Fahad Gilani\\n**Model Selection**: Auto model selection mode (call `listmodels` to inspect options)\\n\\n## Quick Summary — relay everything below\\n- Version `9.8.2` (updated 2025-12-15)\\n- Auto model selection (use `listmodels` for options)\\n- Run `listmodels` for the complete model catalog and capabilities\\n\\n**Connected Client**: Claude\\n**Installation Path**: `/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/BeehiveInnovations__pal-mcp-server`\\n\\n## Agent Reporting Guidance\\nAgents MUST report: version, model-selection status, configured providers, and available-model count.\\nRepeat the quick-summary bullets verbatim in your reply.\\nReference `listmodels` when users ask about model availability or capabilities.\\n\\n## Update Status\\n❌ **Could not check for updates**\\nUnable to connect to GitHub or parse version information.\\nCheck your internet connection or try again later.\\n\\n## Configuration\\n**Providers**:\\n- **Google Gemini**: ❌ Not configured\\n- **OpenAI**: ✅ Configured\\n- **X.AI**: ❌ Not configured\\n- **DIAL**: ❌ Not configured\\n- **OpenRouter**: ❌ Not configured\\n- **Custom/Local**: ❌ Not configured\\n\\n\\n**Available Models**: 44\\n\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"version\",\"server_version\":\"9.8.2\",\"last_updated\":\"2025-12-15\",\"python_version\":\"3.14.0\",\"platform\":\"Darwin 25.5.0\",\"model_selection_mode\":\"auto\",\"default_model\":\"auto\"},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "version"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "prompt": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+          },
+          "name": "apilookup"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "apilookup",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"status\": \"web_lookup_needed\",\n  \"instructions\": \"MANDATORY: You MUST perform this research in a SEPARATE SUB-TASK using your web search tool.\\n\\nCRITICAL RULES - READ CAREFULLY:\\n- Launch your environment's dedicated web search capability (for example `websearch`, `web_search`, or another native\\nweb-search tool such as the one you use to perform a web search online) to gather sources - do NOT call this `apilookup` tool again\\nduring the same lookup, this is ONLY an orchestration tool to guide you and has NO web search capability of its own.\\n- ALWAYS run the search from a separate sub-task/sub-process so the research happens outside this tool invocation.\\n- If the environment does not expose a web search tool, immediately report that limitation instead of invoking `apilookup` again.\\n\\nMISSION:\\nResearch the latest, most authoritative documentation for the requested API, SDK, library, framework, programming language feature, or tool to answer the user's question accurately using a SUB-AGENT in a separate process.\\n\\nSEARCH STRATEGY (MAXIMUM 2-4 SEARCHES TOTAL FOR THIS MISSION - THEN STOP):\\n- IMPORTANT: Begin by determining today's date and current year\\n- MANDATORY FOR OS-TIED APIS/SDKs: If the request involves iOS, macOS, Windows, Linux, Android, watchOS, tvOS, or any OS-specific framework/API:\\n  * FIRST perform a web search to determine \\\"what is the latest [OS name] version [current year]\\\"\\n  * If the search is around a specific tool or an IDE, confirm the latest version \\\"latest version [tool name]\\\"\\n  * DO NOT rely on your training data or knowledge cutoff for OS versions - you MUST search for current information\\n  * ONLY AFTER confirming the current OS version, search for APIs/SDKs/frameworks for that specific version\\n  * Example workflow: Search \\\"latest iOS version [current year]\\\" → Find current version → Then search \\\"[current iOS version] SwiftUI glass effect button [current year]\\\"\\n- MANDATORY FOR MAJOR FRAMEWORKS/LANGUAGES: For rapidly-evolving ecosystems, verify current stable version:\\n  * Languages: Node.js, Python, Ruby, Rust, Go, Java, .NET/C#, PHP, Kotlin, Swift\\n  * Web frameworks: React, Vue, Angular, Next.js, Nuxt, Svelte, SvelteKit, Remix, Astro, SolidJS\\n  * Backend frameworks: Django, Flask, FastAPI, Rails, Laravel, Spring Boot, Express, NestJS, Axum\\n  * Mobile: Flutter, React Native, Jetpack Compose, SwiftUI\\n  * Build tools: Vite, Webpack, esbuild, Turbopack, Rollup\\n  * Package managers: npm, pnpm, yarn, pip, cargo, go modules, maven, gradle\\n  * Search pattern: \\\"latest [framework/language/SDK] version [current year]\\\" BEFORE searching for specific APIs\\n  * ONLY consider articles, documentation, and resources dated within the current year or most recent release cycle\\n  * Ignore or deprioritize results from previous years unless they are still the current official documentation\\n- ALWAYS find current official documentation, release notes, changelogs, migration guides, and authoritative blog posts. Newest APIs / SDKs released or updated in the current year trump older ones.\\n- Prioritize official sources: project documentation sites, GitHub repositories, package registries (npm, PyPI, crates.io, Maven Central, NuGet, RubyGems, Packagist, etc.), and official blogs\\n- Check version-specific documentation when relevant and add current year to ensure latest docs are retrieved (e.g., \\\"React docs [current year]\\\", \\\"Python what's new [current year]\\\", \\\"TypeScript breaking changes [current year]\\\", \\\"Next.js app router [current year]\\\")\\n- Look for recent Stack Overflow discussions, GitHub issues, RFC documents, or official discussion forums when official docs are incomplete\\n- Cross-reference multiple sources to validate syntax, method signatures, configuration options, and best practices\\n- Search for deprecation warnings, security advisories, or migration paths between major versions\\n- STOP IMMEDIATELY after 2-4 searches maximum - DO NOT continue exploring tangential topics, examples, tutorials, or supplementary material\\n- If latest, more current, authoritative information has been found: STOP looking further\\n- ALWAYS cite authoritative sources with links (official docs, changelogs, GitHub releases, package registry pages)\",\n  \"user_prompt\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "apilookup"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "model": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "prompt": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "working_directory_absolute_path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt"
+          },
+          "name": "chat"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "chat",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for chat: 'gpt-5.2' (category: fast_response)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"chat\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "chat"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "findings": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "model": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "next_step_required": true,
+            "step": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "step_number": 1,
+            "total_steps": 1
+          },
+          "name": "debug"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "debug",
+      "evidence": {
+        "response": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for debug: 'gpt-5.1-codex' (category: extended_reasoning)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"debug\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "debug"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "model": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "next_step_required": true,
+            "step": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+            "step_number": 1,
+            "total_steps": 1
+          },
+          "name": "planner"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "planner",
+      "evidence": {
+        "response": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"status\": \"pause_for_planning\",\n  \"step_number\": 1,\n  \"total_steps\": 1,\n  \"next_step_required\": true,\n  \"step_content\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n  \"planner_status\": {\n    \"files_checked\": 0,\n    \"relevant_files\": 0,\n    \"relevant_context\": 0,\n    \"issues_found\": 0,\n    \"images_collected\": 0,\n    \"current_confidence\": \"planning\",\n    \"step_history_length\": 2\n  },\n  \"metadata\": {\n    \"branches\": [],\n    \"step_history_length\": 2,\n    \"is_step_revision\": false,\n    \"revises_step_number\": null,\n    \"is_branch_point\": false,\n    \"branch_from_step\": null,\n    \"branch_id\": null,\n    \"more_steps_needed\": false,\n    \"tool_name\": \"planner\",\n    \"model_used\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n    \"provider_used\": \"unknown\"\n  },\n  \"continuation_id\": \"23def96b-6f2b-4522-a8b3-cf7511008df5\",\n  \"planner_required\": true,\n  \"required_actions\": [\n    \"Think deeply about the complete scope and complexity of what needs to be planned\",\n    \"Consider multiple approaches and their trade-offs\",\n    \"Identify key constraints, dependencies, and potential challenges\",\n    \"Think about stakeholders, success criteria, and critical requirements\"\n  ],\n  \"next_steps\": \"Continue with step 2. Approximately 0 steps remaining.\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "planner"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 49
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt",
+      "evidence": {
+        "content_len": 50,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "apilookup:$.arguments.prompt",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.prompt",
+        "source_id": "ToolInput: apilookup $.arguments.prompt",
+        "tool": "apilookup"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "chat:$.arguments.model",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.model",
+        "source_id": "ToolInput: chat $.arguments.model",
+        "tool": "chat"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "chat:$.arguments.prompt",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.prompt",
+        "source_id": "ToolInput: chat $.arguments.prompt",
+        "tool": "chat"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "debug:$.arguments.findings",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.findings",
+        "source_id": "ToolInput: debug $.arguments.findings",
+        "tool": "debug"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "debug:$.arguments.model",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.model",
+        "source_id": "ToolInput: debug $.arguments.model",
+        "tool": "debug"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "debug:$.arguments.step",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.step",
+        "source_id": "ToolInput: debug $.arguments.step",
+        "tool": "debug"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "planner:$.arguments.model",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.model",
+        "source_id": "ToolInput: planner $.arguments.model",
+        "tool": "planner"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "planner:$.arguments.step",
+      "evidence": {
+        "content_len": 51,
+        "path": "$.arguments.step",
+        "source_id": "ToolInput: planner $.arguments.step",
+        "tool": "planner"
+      }
+    },
+    {
+      "kind": "network-connect-attempt",
+      "actor": "scanner",
+      "target": "tcp-connect://raw.githubusercontent.com:443",
+      "evidence": {
+        "content_len": 43,
+        "host": "raw.githubusercontent.com",
+        "port": 443,
+        "protocol": "tcp-connect",
+        "source_id": "NetworkConnect: tcp-connect://raw.githubusercontent.com:443"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"status\":\"success\",\"content\":\"# Available AI Models\\n\\n## Google Gemini ❌\\n**Status**: Not configured (set GEMINI_API_KEY)\\n\\n## OpenAI ✅\\n**Status**: Configured and available\\n\\n**Models**:\\n- `gpt-5.1-codex` - 400K context\\n  - GPT-5.1 Codex (400K context, 128K output) - Agentic coding specialization available through the Responses API.\\n  - Supports structured code generation\\n- `gpt-5.2` - 400K context\\n  - GPT-5.2 (400K context, 128K output) - Flagship reasoning model with configurable thinking effort and vision support.\\n  - Supports structured code generation\\n- `gpt-5.2-pro` - 400K context\\n  - GPT-5.2 Pro (400K context, 272K output) - Very advanced, reasoning model\\n  - Supports structured code generation\\n- `gpt-5-codex` - 400K context\\n  - GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.\\n- `gpt-5` - 400K context\\n  - GPT-5 (400K context, 128K output) - Advanced model with reasoning support\\n- `gpt-5.1-codex-mini` - 400K context\\n  - GPT-5.1 Codex mini (400K context, 128K output) - Cost-efficient Codex variant with streaming support.\\n  - Supports structured code generation\\n- `gpt-5-mini` - 400K context\\n  - GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support\\n- `o3-pro` - 200K context\\n  - Professional-grade reasoning with advanced capabilities (200K context)\\n- `o3` - 200K context\\n  - Strong reasoning (200K context) - Logical problems, code generation, systematic analysis\\n- `gpt-5-nano` - 400K context\\n  - GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks\\n- `gpt-4.1` - 1M context\\n  - GPT-4.1 (1M context) - Advanced reasoning model with large context window\\n- `o3-mini` - 200K context\\n  - Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity\\n- `o4-mini` - 200K context\\n  - Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning\\n\\n**Aliases**:\\n- `5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `5.1` → `gpt-5.2`\\n- `5.2` → `gpt-5.2`\\n- `codex-5.1` → `gpt-5.1-codex`\\n- `codex-mini` → `gpt-5.1-codex-mini`\\n- `codex` → `gpt-5-codex`\\n- `gpt-5-code` → `gpt-5-codex`\\n- `gpt-5.1-code` → `gpt-5.1-codex`\\n- `gpt-5.1` → `gpt-5.2`\\n- `gpt4.1` → `gpt-4.1`\\n- `gpt5-code` → `gpt-5-codex`\\n- `gpt5-codex` → `gpt-5-codex`\\n- `gpt5-mini` → `gpt-5-mini`\\n- `gpt5-nano` → `gpt-5-nano`\\n- `gpt5-pro` → `gpt-5.2-pro`\\n- `gpt5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `gpt5.1-codex` → `gpt-5.1-codex`\\n- `gpt5.1` → `gpt-5.2`\\n- `gpt5.1code` → `gpt-5.1-codex`\\n- `gpt5.2-pro` → `gpt-5.2-pro`\\n- `gpt5.2` → `gpt-5.2`\\n- `gpt5.2pro` → `gpt-5.2-pro`\\n- `gpt5` → `gpt-5`\\n- `gpt5mini` → `gpt-5-mini`\\n- `gpt5nano` → `gpt-5-nano`\\n- `gpt5pro` → `gpt-5.2-pro`\\n- `mini` → `gpt-5-mini`\\n- `nano` → `gpt-5-nano`\\n- `o3mini` → `o3-mini`\\n- `o3pro` → `o3-pro`\\n- `o4mini` → `o4-mini`\\n\\n## Azure OpenAI ❌\\n**Status**: Not configured (set AZURE_OPENAI_API_KEY)\\n\\n## X.AI (Grok) ❌\\n**Status**: Not configured (set XAI_API_KEY)\\n\\n## AI DIAL ❌\\n**Status**: Not configured (set DIAL_API_KEY)\\n\\n## OpenRouter ❌\\n**Status**: Not configured (set OPENROUTER_API_KEY)\\n**Note**: Provides access to GPT-5, O3, Mistral, and many more\\n\\n## Custom/Local API ❌\\n**Status**: Not configured (set CUSTOM_API_URL)\\n**Example**: CUSTOM_API_URL=http://localhost:11434 (for Ollama)\\n\\n## Summary\\n**Configured Providers**: 1\\n**Total Available Models**: 44\\n\\n**Usage Tips**:\\n- Use model aliases (e.g., 'flash', 'gpt5', 'opus') for convenience\\n- In auto mode, the CLI Agent will select the best model for each task\\n- Custom models are only available when CUSTOM_API_URL is set\\n- OpenRouter provides access to many cloud models with one API key\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"listmodels\",\"configured_providers\":1},\"continuation_offer\":null}"
+        },
+        "text_len": 3923
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"status\":\"success\",\"content\":\"# PAL MCP Server Version\\n\\n## Server Information\\n**Current Version**: 9.8.2\\n**Last Updated**: 2025-12-15\\n**Author**: Fahad Gilani\\n**Model Selection**: Auto model selection mode (call `listmodels` to inspect options)\\n\\n## Quick Summary — relay everything below\\n- Version `9.8.2` (updated 2025-12-15)\\n- Auto model selection (use `listmodels` for options)\\n- Run `listmodels` for the complete model catalog and capabilities\\n\\n**Connected Client**: Claude\\n**Installation Path**: `/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/BeehiveInnovations__pal-mcp-server`\\n\\n## Agent Reporting Guidance\\nAgents MUST report: version, model-selection status, configured providers, and available-model count.\\nRepeat the quick-summary bullets verbatim in your reply.\\nReference `listmodels` when users ask about model availability or capabilities.\\n\\n## Update Status\\n❌ **Could not check for updates**\\nUnable to connect to GitHub or parse version information.\\nCheck your internet connection or try again later.\\n\\n## Configuration\\n**Providers**:\\n- **Google Gemini**: ❌ Not configured\\n- **OpenAI**: ✅ Configured\\n- **X.AI**: ❌ Not configured\\n- **DIAL**: ❌ Not configured\\n- **OpenRouter**: ❌ Not configured\\n- **Custom/Local**: ❌ Not configured\\n\\n\\n**Available Models**: 44\\n\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"version\",\"server_version\":\"9.8.2\",\"last_updated\":\"2025-12-15\",\"python_version\":\"3.14.0\",\"platform\":\"Darwin 25.5.0\",\"model_selection_mode\":\"auto\",\"default_model\":\"auto\"},\"continuation_offer\":null}"
+        },
+        "text_len": 1590
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"status\": \"web_lookup_needed\",\n  \"instructions\": \"MANDATORY: You MUST perform this research in a SEPARATE SUB-TASK using your web search tool.\\n\\nCRITICAL RULES - READ CAREFULLY:\\n- Launch your environment's dedicated web search capability (for example `websearch`, `web_search`, or another native\\nweb-search tool such as the one you use to perform a web search online) to gather sources - do NOT call this `apilookup` tool again\\nduring the same lookup, this is ONLY an orchestration tool to guide you and has NO web search capability of its own.\\n- ALWAYS run the search from a separate sub-task/sub-process so the research happens outside this tool invocation.\\n- If the environment does not expose a web search tool, immediately report that limitation instead of invoking `apilookup` again.\\n\\nMISSION:\\nResearch the latest, most authoritative documentation for the requested API, SDK, library, framework, programming language feature, or tool to answer the user's question accurately using a SUB-AGENT in a separate process.\\n\\nSEARCH STRATEGY (MAXIMUM 2-4 SEARCHES TOTAL FOR THIS MISSION - THEN STOP):\\n- IMPORTANT: Begin by determining today's date and current year\\n- MANDATORY FOR OS-TIED APIS/SDKs: If the request involves iOS, macOS, Windows, Linux, Android, watchOS, tvOS, or any OS-specific framework/API:\\n  * FIRST perform a web search to determine \\\"what is the latest [OS name] version [current year]\\\"\\n  * If the search is around a specific tool or an IDE, confirm the latest version \\\"latest version [tool name]\\\"\\n  * DO NOT rely on your training data or knowledge cutoff for OS versions - you MUST search for current information\\n  * ONLY AFTER confirming the current OS version, search for APIs/SDKs/frameworks for that specific version\\n  * Example workflow: Search \\\"latest iOS version [current year]\\\" → Find current version → Then search \\\"[current iOS version] SwiftUI glass effect button [current year]\\\"\\n- MANDATORY FOR MAJOR FRAMEWORKS/LANGUAGES: For rapidly-evolving ecosystems, verify current stable version:\\n  * Languages: Node.js, Python, Ruby, Rust, Go, Java, .NET/C#, PHP, Kotlin, Swift\\n  * Web frameworks: React, Vue, Angular, Next.js, Nuxt, Svelte, SvelteKit, Remix, Astro, SolidJS\\n  * Backend frameworks: Django, Flask, FastAPI, Rails, Laravel, Spring Boot, Express, NestJS, Axum\\n  * Mobile: Flutter, React Native, Jetpack Compose, SwiftUI\\n  * Build tools: Vite, Webpack, esbuild, Turbopack, Rollup\\n  * Package managers: npm, pnpm, yarn, pip, cargo, go modules, maven, gradle\\n  * Search pattern: \\\"latest [framework/language/SDK] version [current year]\\\" BEFORE searching for specific APIs\\n  * ONLY consider articles, documentation, and resources dated within the current year or most recent release cycle\\n  * Ignore or deprioritize results from previous years unless they are still the current official documentation\\n- ALWAYS find current official documentation, release notes, changelogs, migration guides, and authoritative blog posts. Newest APIs / SDKs released or updated in the current year trump older ones.\\n- Prioritize official sources: project documentation sites, GitHub repositories, package registries (npm, PyPI, crates.io, Maven Central, NuGet, RubyGems, Packagist, etc.), and official blogs\\n- Check version-specific documentation when relevant and add current year to ensure latest docs are retrieved (e.g., \\\"React docs [current year]\\\", \\\"Python what's new [current year]\\\", \\\"TypeScript breaking changes [current year]\\\", \\\"Next.js app router [current year]\\\")\\n- Look for recent Stack Overflow discussions, GitHub issues, RFC documents, or official discussion forums when official docs are incomplete\\n- Cross-reference multiple sources to validate syntax, method signatures, configuration options, and best practices\\n- Search for deprecation warnings, security advisories, or migration paths between major versions\\n- STOP IMMEDIATELY after 2-4 searches maximum - DO NOT continue exploring tangential topics, examples, tutorials, or supplementary material\\n- If latest, more current, authoritative information has been found: STOP looking further\\n- ALWAYS cite authoritative sources with links (official docs, changelogs, GitHub releases, package registry pages)\",\n  \"user_prompt\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"\n}"
+        },
+        "text_len": 4323
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for chat: 'gpt-5.2' (category: fast_response)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"chat\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}"
+        },
+        "text_len": 810
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for debug: 'gpt-5.1-codex' (category: extended_reasoning)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"debug\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}"
+        },
+        "text_len": 823
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[5].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"status\": \"pause_for_planning\",\n  \"step_number\": 1,\n  \"total_steps\": 1,\n  \"next_step_required\": true,\n  \"step_content\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n  \"planner_status\": {\n    \"files_checked\": 0,\n    \"relevant_files\": 0,\n    \"relevant_context\": 0,\n    \"issues_found\": 0,\n    \"images_collected\": 0,\n    \"current_confidence\": \"planning\",\n    \"step_history_length\": 2\n  },\n  \"metadata\": {\n    \"branches\": [],\n    \"step_history_length\": 2,\n    \"is_step_revision\": false,\n    \"revises_step_number\": null,\n    \"is_branch_point\": false,\n    \"branch_from_step\": null,\n    \"branch_id\": null,\n    \"more_steps_needed\": false,\n    \"tool_name\": \"planner\",\n    \"model_used\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n    \"provider_used\": \"unknown\"\n  },\n  \"continuation_id\": \"23def96b-6f2b-4522-a8b3-cf7511008df5\",\n  \"planner_required\": true,\n  \"required_actions\": [\n    \"Think deeply about the complete scope and complexity of what needs to be planned\",\n    \"Consider multiple approaches and their trade-offs\",\n    \"Identify key constraints, dependencies, and potential challenges\",\n    \"Think about stakeholders, success criteria, and critical requirements\"\n  ],\n  \"next_steps\": \"Continue with step 2. Approximately 0 steps remaining.\"\n}"
+        },
+        "text_len": 1266
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "RY_BeehiveInnovations__p",
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "RY_BeehiveInnovations__p",
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: apilookup $.arguments.prompt"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: chat $.arguments.model"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: chat $.arguments.prompt"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: debug $.arguments.findings"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: debug $.arguments.model"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: debug $.arguments.step"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: planner $.arguments.model"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+        "source_id": "ToolInput: planner $.arguments.step"
+      }
+    },
+    {
+      "kind": "network-connect-denied",
+      "actor": "network-monitor",
+      "target": "raw.githubusercontent.com:443",
+      "evidence": {
+        "allowed": false,
+        "bytes_sent": 87,
+        "direction": "outbound",
+        "protocol": "tcp-connect",
+        "remote_host": "raw.githubusercontent.com",
+        "remote_port": 443,
+        "url": null
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt",
+      "content": "MCP_FILE_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "apilookup",
+      "path": "$.arguments.prompt",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "chat",
+      "path": "$.arguments.model",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "chat",
+      "path": "$.arguments.prompt",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "debug",
+      "path": "$.arguments.findings",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "debug",
+      "path": "$.arguments.model",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "debug",
+      "path": "$.arguments.step",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "planner",
+      "path": "$.arguments.model",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "planner",
+      "path": "$.arguments.step",
+      "content": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server"
+    },
+    {
+      "type": "NetworkConnect",
+      "host": "raw.githubusercontent.com",
+      "port": 443,
+      "protocol": "tcp-connect",
+      "content": "tcp-connect://raw.githubusercontent.com:443"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "{\"status\":\"success\",\"content\":\"# Available AI Models\\n\\n## Google Gemini ❌\\n**Status**: Not configured (set GEMINI_API_KEY)\\n\\n## OpenAI ✅\\n**Status**: Configured and available\\n\\n**Models**:\\n- `gpt-5.1-codex` - 400K context\\n  - GPT-5.1 Codex (400K context, 128K output) - Agentic coding specialization available through the Responses API.\\n  - Supports structured code generation\\n- `gpt-5.2` - 400K context\\n  - GPT-5.2 (400K context, 128K output) - Flagship reasoning model with configurable thinking effort and vision support.\\n  - Supports structured code generation\\n- `gpt-5.2-pro` - 400K context\\n  - GPT-5.2 Pro (400K context, 272K output) - Very advanced, reasoning model\\n  - Supports structured code generation\\n- `gpt-5-codex` - 400K context\\n  - GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.\\n- `gpt-5` - 400K context\\n  - GPT-5 (400K context, 128K output) - Advanced model with reasoning support\\n- `gpt-5.1-codex-mini` - 400K context\\n  - GPT-5.1 Codex mini (400K context, 128K output) - Cost-efficient Codex variant with streaming support.\\n  - Supports structured code generation\\n- `gpt-5-mini` - 400K context\\n  - GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support\\n- `o3-pro` - 200K context\\n  - Professional-grade reasoning with advanced capabilities (200K context)\\n- `o3` - 200K context\\n  - Strong reasoning (200K context) - Logical problems, code generation, systematic analysis\\n- `gpt-5-nano` - 400K context\\n  - GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks\\n- `gpt-4.1` - 1M context\\n  - GPT-4.1 (1M context) - Advanced reasoning model with large context window\\n- `o3-mini` - 200K context\\n  - Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity\\n- `o4-mini` - 200K context\\n  - Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning\\n\\n**Aliases**:\\n- `5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `5.1` → `gpt-5.2`\\n- `5.2` → `gpt-5.2`\\n- `codex-5.1` → `gpt-5.1-codex`\\n- `codex-mini` → `gpt-5.1-codex-mini`\\n- `codex` → `gpt-5-codex`\\n- `gpt-5-code` → `gpt-5-codex`\\n- `gpt-5.1-code` → `gpt-5.1-codex`\\n- `gpt-5.1` → `gpt-5.2`\\n- `gpt4.1` → `gpt-4.1`\\n- `gpt5-code` → `gpt-5-codex`\\n- `gpt5-codex` → `gpt-5-codex`\\n- `gpt5-mini` → `gpt-5-mini`\\n- `gpt5-nano` → `gpt-5-nano`\\n- `gpt5-pro` → `gpt-5.2-pro`\\n- `gpt5.1-codex-mini` → `gpt-5.1-codex-mini`\\n- `gpt5.1-codex` → `gpt-5.1-codex`\\n- `gpt5.1` → `gpt-5.2`\\n- `gpt5.1code` → `gpt-5.1-codex`\\n- `gpt5.2-pro` → `gpt-5.2-pro`\\n- `gpt5.2` → `gpt-5.2`\\n- `gpt5.2pro` → `gpt-5.2-pro`\\n- `gpt5` → `gpt-5`\\n- `gpt5mini` → `gpt-5-mini`\\n- `gpt5nano` → `gpt-5-nano`\\n- `gpt5pro` → `gpt-5.2-pro`\\n- `mini` → `gpt-5-mini`\\n- `nano` → `gpt-5-nano`\\n- `o3mini` → `o3-mini`\\n- `o3pro` → `o3-pro`\\n- `o4mini` → `o4-mini`\\n\\n## Azure OpenAI ❌\\n**Status**: Not configured (set AZURE_OPENAI_API_KEY)\\n\\n## X.AI (Grok) ❌\\n**Status**: Not configured (set XAI_API_KEY)\\n\\n## AI DIAL ❌\\n**Status**: Not configured (set DIAL_API_KEY)\\n\\n## OpenRouter ❌\\n**Status**: Not configured (set OPENROUTER_API_KEY)\\n**Note**: Provides access to GPT-5, O3, Mistral, and many more\\n\\n## Custom/Local API ❌\\n**Status**: Not configured (set CUSTOM_API_URL)\\n**Example**: CUSTOM_API_URL=http://localhost:11434 (for Ollama)\\n\\n## Summary\\n**Configured Providers**: 1\\n**Total Available Models**: 44\\n\\n**Usage Tips**:\\n- Use model aliases (e.g., 'flash', 'gpt5', 'opus') for convenience\\n- In auto mode, the CLI Agent will select the best model for each task\\n- Custom models are only available when CUSTOM_API_URL is set\\n- OpenRouter provides access to many cloud models with one API key\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"listmodels\",\"configured_providers\":1},\"continuation_offer\":null}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "{\"status\":\"success\",\"content\":\"# PAL MCP Server Version\\n\\n## Server Information\\n**Current Version**: 9.8.2\\n**Last Updated**: 2025-12-15\\n**Author**: Fahad Gilani\\n**Model Selection**: Auto model selection mode (call `listmodels` to inspect options)\\n\\n## Quick Summary — relay everything below\\n- Version `9.8.2` (updated 2025-12-15)\\n- Auto model selection (use `listmodels` for options)\\n- Run `listmodels` for the complete model catalog and capabilities\\n\\n**Connected Client**: Claude\\n**Installation Path**: `/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/BeehiveInnovations__pal-mcp-server`\\n\\n## Agent Reporting Guidance\\nAgents MUST report: version, model-selection status, configured providers, and available-model count.\\nRepeat the quick-summary bullets verbatim in your reply.\\nReference `listmodels` when users ask about model availability or capabilities.\\n\\n## Update Status\\n❌ **Could not check for updates**\\nUnable to connect to GitHub or parse version information.\\nCheck your internet connection or try again later.\\n\\n## Configuration\\n**Providers**:\\n- **Google Gemini**: ❌ Not configured\\n- **OpenAI**: ✅ Configured\\n- **X.AI**: ❌ Not configured\\n- **DIAL**: ❌ Not configured\\n- **OpenRouter**: ❌ Not configured\\n- **Custom/Local**: ❌ Not configured\\n\\n\\n**Available Models**: 44\\n\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"version\",\"server_version\":\"9.8.2\",\"last_updated\":\"2025-12-15\",\"python_version\":\"3.14.0\",\"platform\":\"Darwin 25.5.0\",\"model_selection_mode\":\"auto\",\"default_model\":\"auto\"},\"continuation_offer\":null}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "{\n  \"status\": \"web_lookup_needed\",\n  \"instructions\": \"MANDATORY: You MUST perform this research in a SEPARATE SUB-TASK using your web search tool.\\n\\nCRITICAL RULES - READ CAREFULLY:\\n- Launch your environment's dedicated web search capability (for example `websearch`, `web_search`, or another native\\nweb-search tool such as the one you use to perform a web search online) to gather sources - do NOT call this `apilookup` tool again\\nduring the same lookup, this is ONLY an orchestration tool to guide you and has NO web search capability of its own.\\n- ALWAYS run the search from a separate sub-task/sub-process so the research happens outside this tool invocation.\\n- If the environment does not expose a web search tool, immediately report that limitation instead of invoking `apilookup` again.\\n\\nMISSION:\\nResearch the latest, most authoritative documentation for the requested API, SDK, library, framework, programming language feature, or tool to answer the user's question accurately using a SUB-AGENT in a separate process.\\n\\nSEARCH STRATEGY (MAXIMUM 2-4 SEARCHES TOTAL FOR THIS MISSION - THEN STOP):\\n- IMPORTANT: Begin by determining today's date and current year\\n- MANDATORY FOR OS-TIED APIS/SDKs: If the request involves iOS, macOS, Windows, Linux, Android, watchOS, tvOS, or any OS-specific framework/API:\\n  * FIRST perform a web search to determine \\\"what is the latest [OS name] version [current year]\\\"\\n  * If the search is around a specific tool or an IDE, confirm the latest version \\\"latest version [tool name]\\\"\\n  * DO NOT rely on your training data or knowledge cutoff for OS versions - you MUST search for current information\\n  * ONLY AFTER confirming the current OS version, search for APIs/SDKs/frameworks for that specific version\\n  * Example workflow: Search \\\"latest iOS version [current year]\\\" → Find current version → Then search \\\"[current iOS version] SwiftUI glass effect button [current year]\\\"\\n- MANDATORY FOR MAJOR FRAMEWORKS/LANGUAGES: For rapidly-evolving ecosystems, verify current stable version:\\n  * Languages: Node.js, Python, Ruby, Rust, Go, Java, .NET/C#, PHP, Kotlin, Swift\\n  * Web frameworks: React, Vue, Angular, Next.js, Nuxt, Svelte, SvelteKit, Remix, Astro, SolidJS\\n  * Backend frameworks: Django, Flask, FastAPI, Rails, Laravel, Spring Boot, Express, NestJS, Axum\\n  * Mobile: Flutter, React Native, Jetpack Compose, SwiftUI\\n  * Build tools: Vite, Webpack, esbuild, Turbopack, Rollup\\n  * Package managers: npm, pnpm, yarn, pip, cargo, go modules, maven, gradle\\n  * Search pattern: \\\"latest [framework/language/SDK] version [current year]\\\" BEFORE searching for specific APIs\\n  * ONLY consider articles, documentation, and resources dated within the current year or most recent release cycle\\n  * Ignore or deprioritize results from previous years unless they are still the current official documentation\\n- ALWAYS find current official documentation, release notes, changelogs, migration guides, and authoritative blog posts. Newest APIs / SDKs released or updated in the current year trump older ones.\\n- Prioritize official sources: project documentation sites, GitHub repositories, package registries (npm, PyPI, crates.io, Maven Central, NuGet, RubyGems, Packagist, etc.), and official blogs\\n- Check version-specific documentation when relevant and add current year to ensure latest docs are retrieved (e.g., \\\"React docs [current year]\\\", \\\"Python what's new [current year]\\\", \\\"TypeScript breaking changes [current year]\\\", \\\"Next.js app router [current year]\\\")\\n- Look for recent Stack Overflow discussions, GitHub issues, RFC documents, or official discussion forums when official docs are incomplete\\n- Cross-reference multiple sources to validate syntax, method signatures, configuration options, and best practices\\n- Search for deprecation warnings, security advisories, or migration paths between major versions\\n- STOP IMMEDIATELY after 2-4 searches maximum - DO NOT continue exploring tangential topics, examples, tutorials, or supplementary material\\n- If latest, more current, authoritative information has been found: STOP looking further\\n- ALWAYS cite authoritative sources with links (official docs, changelogs, GitHub releases, package registry pages)\",\n  \"user_prompt\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"\n}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for chat: 'gpt-5.2' (category: fast_response)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"chat\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[4].result.content[0].text",
+      "value": "{\"status\":\"error\",\"content\":\"Model 'MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server' is not available with current API keys. Available models: gpt-5.1-codex, gpt5.1-codex, gpt5.1code, gpt-5.1-code, codex-5.1, gpt-5.2, gpt5.2, 5.2, gpt5.1, gpt-5.1, 5.1, gpt-5.2-pro, gpt5.2-pro, gpt5.2pro, gpt5pro, gpt5-pro, gpt-5-codex, gpt5-codex, codex, gpt-5-code, gpt5-code, gpt-5, gpt5, gpt-5.1-codex-mini, gpt5.1-codex-mini, codex-mini, 5.1-codex-mini, gpt-5-mini, gpt5-mini, gpt5mini, mini, o3-pro, o3pro, o3, gpt-5-nano, gpt5nano, gpt5-nano, nano, gpt-4.1, gpt4.1, o3-mini, o3mini, o4-mini, o4mini. Suggested model for debug: 'gpt-5.1-codex' (category: extended_reasoning)\",\"content_type\":\"text\",\"metadata\":{\"tool_name\":\"debug\",\"requested_model\":\"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\"},\"continuation_offer\":null}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[5].result.content[0].text",
+      "value": "{\n  \"status\": \"pause_for_planning\",\n  \"step_number\": 1,\n  \"total_steps\": 1,\n  \"next_step_required\": true,\n  \"step_content\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n  \"planner_status\": {\n    \"files_checked\": 0,\n    \"relevant_files\": 0,\n    \"relevant_context\": 0,\n    \"issues_found\": 0,\n    \"images_collected\": 0,\n    \"current_confidence\": \"planning\",\n    \"step_history_length\": 2\n  },\n  \"metadata\": {\n    \"branches\": [],\n    \"step_history_length\": 2,\n    \"is_step_revision\": false,\n    \"revises_step_number\": null,\n    \"is_branch_point\": false,\n    \"branch_from_step\": null,\n    \"branch_id\": null,\n    \"more_steps_needed\": false,\n    \"tool_name\": \"planner\",\n    \"model_used\": \"MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server\",\n    \"provider_used\": \"unknown\"\n  },\n  \"continuation_id\": \"23def96b-6f2b-4522-a8b3-cf7511008df5\",\n  \"planner_required\": true,\n  \"required_actions\": [\n    \"Think deeply about the complete scope and complexity of what needs to be planned\",\n    \"Consider multiple approaches and their trade-offs\",\n    \"Identify key constraints, dependencies, and potential challenges\",\n    \"Think about stakeholders, success criteria, and critical requirements\"\n  ],\n  \"next_steps\": \"Continue with step 2. Approximately 0 steps remaining.\"\n}"
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+      "sink_type": "McpToolResultText",
+      "snippet": "RY_BeehiveInnovations__p",
+      "confidence": "high"
+    },
+    {
+      "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/BeehiveInnovations__pal_mcp_server.txt",
+      "sink_type": "McpToolResultText",
+      "snippet": "RY_BeehiveInnovations__p",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: apilookup $.arguments.prompt",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: chat $.arguments.model",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: chat $.arguments.prompt",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: debug $.arguments.findings",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: debug $.arguments.model",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: debug $.arguments.step",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: planner $.arguments.model",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: planner $.arguments.step",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_BeehiveInnovations__pal_mcp_server",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 11,
+    "num_sinks": 6,
+    "num_flows": 10,
+    "has_external_to_prompt_flow": true
+  }
+}

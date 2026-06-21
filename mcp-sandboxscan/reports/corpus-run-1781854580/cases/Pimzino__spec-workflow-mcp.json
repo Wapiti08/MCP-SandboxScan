@@ -1,0 +1,433 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 423
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "prompts": {
+                "listChanged": true
+              },
+              "tools": {
+                "approvals": {},
+                "log-implementation": {},
+                "spec-status": {},
+                "spec-workflow-guide": {},
+                "steering-guide": {}
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "spec-workflow-mcp",
+              "version": "2.2.7"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Spec Workflow Guide"
+                },
+                "description": "Load essential spec workflow instructions to guide feature development from idea to implementation.\n\n# Instructions\nCall this tool FIRST when users request spec creation, feature development, or mention specifications. This provides the complete workflow sequence (Requirements → Design → Tasks → Implementation) that must be followed. Always load before any other spec tools to ensure proper workflow understanding. Its important that you follow this workflow exactly to avoid errors.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "spec-workflow-guide"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Steering Guide"
+                },
+                "description": "Load guide for creating project steering documents.\n\n# Instructions\nCall ONLY when user explicitly requests steering document creation or asks about project architecture docs. Not part of standard spec workflow. Provides templates and guidance for product.md, tech.md, and structure.md creation. Its important that you follow this workflow exactly to avoid errors.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "steering-guide"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Spec Status"
+                },
+                "description": "Display comprehensive specification progress overview.\n\n# Instructions\nCall when resuming work on a spec or checking overall completion status. Shows which phases are complete and task implementation progress. After viewing status, read tasks.md directly to see all tasks and their status markers ([ ] pending, [-] in-progress, [x] completed).",
+                "inputSchema": {
+                  "properties": {
+                    "projectPath": {
+                      "description": "Absolute path to the project root (optional - uses server context path if not provided)",
+                      "type": "string"
+                    },
+                    "specName": {
+                      "description": "Name of the specification",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "specName"
+                  ],
+                  "type": "object"
+                },
+                "name": "spec-status"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Approvals"
+                },
+                "description": "Manage approval requests through the dashboard interface.\n\n# Instructions\nUse this tool to request, check status, or delete approval requests. The action parameter determines the operation:\n- 'request': Create a new approval request after creating each document\n- 'status': Check the current status of an approval request\n- 'delete': Clean up completed, rejected, or needs-revision approval requests (cannot delete pending requests)\n\nCRITICAL: Only provide filePath parameter for requests - the dashboard reads files directly. Never include document content. Wait for user to review and approve before continuing.",
+                "inputSchema": {
+                  "properties": {
+                    "action": {
+                      "description": "The action to perform: request, status, or delete",
+                      "enum": [
+                        "request",
+                        "status",
+                        "delete"
+                      ],
+                      "type": "string"
+                    },
+                    "approvalId": {
+                      "description": "The ID of the approval request (required for status and delete actions)",
+                      "type": "string"
+                    },
+                    "category": {
+                      "description": "Category of the approval request - \"spec\" for specifications, \"steering\" for steering documents (required for request)",
+                      "enum": [
+                        "spec",
+                        "steering"
+                      ],
+                      "type": "string"
+                    },
+                    "categoryName": {
+                      "description": "Name of the spec or \"steering\" for steering documents (required for request)",
+                      "type": "string"
+                    },
+                    "filePath": {
+                      "description": "Path to the file that needs approval, relative to project root (required for request action)",
+                      "type": "string"
+                    },
+                    "projectPath": {
+                      "description": "Absolute path to the project root (optional - uses server context path if not provided)",
+                      "type": "string"
+                    },
+                    "title": {
+                      "description": "Brief title describing what needs approval (required for request action)",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "Type of approval request - \"document\" for content approval, \"action\" for action approval (required for request)",
+                      "enum": [
+                        "document",
+                        "action"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "approvals"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Log Implementation"
+                },
+                "description": "Record comprehensive implementation details for a completed task.\n\n⚠️ CRITICAL: Artifacts are REQUIRED. This creates a searchable knowledge base that future AI agents use to discover existing code and avoid duplication.\n\n# WHY DETAILED LOGGING MATTERS\n\nFuture AI agents (and future you) will use grep/ripgrep to search implementation logs before implementing new tasks. Complete logs prevent:\n- ❌ Creating duplicate API endpoints\n- ❌ Reimplementing existing components\n- ❌ Duplicating utility functions and business logic\n- ❌ Breaking established integration patterns\n\nIncomplete logs = Duplicated code = Technical debt\n\n# REQUIRED FIELDS\n\n## artifacts (REQUIRED - Object)\n\nContains structured data about what was implemented. Must include relevant artifact types:\n\n### apiEndpoints (array of API endpoint objects)\nWhen new API endpoints are created/modified, document:\n- method: HTTP method (GET, POST, PUT, DELETE, PATCH)\n- path: Route path (e.g., \"/api/specs/:name/logs\")\n- purpose: What this endpoint does\n- requestFormat: Request body/query params format (JSON schema or example)\n- responseFormat: Response structure (JSON schema or example)\n- location: File path and line number (e.g., \"src/server.ts:245\")\n\nExample:\n```\n{\n  \"method\": \"GET\",\n  \"path\": \"/api/specs/:name/implementation-log\",\n  \"purpose\": \"Retrieve implementation logs with optional filtering\",\n  \"requestFormat\": \"Query params: taskId (string, optional), search (string, optional)\",\n  \"responseFormat\": \"{ entries: ImplementationLogEntry[] }\",\n  \"location\": \"src/dashboard/server.ts:245\"\n}\n```\n\n### components (array of component objects)\nWhen reusable UI components are created, document:\n- name: Component name\n- type: Framework type (React, Vue, Svelte, etc.)\n- purpose: What the component does\n- location: File path\n- props: Props interface or type signature\n- exports: What it exports (array of export names)\n\nExample:\n```\n{\n  \"name\": \"LogsPage\",\n  \"type\": \"React\",\n  \"purpose\": \"Main dashboard page for viewing implementation logs with search and filtering\",\n  \"location\": \"src/modules/pages/LogsPage.tsx\",\n  \"props\": \"{ specs: any[], selectedSpec: string, onSelect: (value: string) => void }\",\n  \"exports\": [\"LogsPage (default)\"]\n}\n```\n\n### functions (array of function objects)\nWhen utility functions are created, document:\n- name: Function name\n- purpose: What it does\n- location: File path and line\n- signature: Function signature (params and return type)\n- isExported: Whether it can be imported\n\nExample:\n```\n{\n  \"name\": \"searchLogs\",\n  \"purpose\": \"Search implementation logs by keyword\",\n  \"location\": \"src/dashboard/implementation-log-manager.ts:156\",\n  \"signature\": \"(searchTerm: string) => Promise<ImplementationLogEntry[]>\",\n  \"isExported\": true\n}\n```\n\n### classes (array of class objects)\nWhen classes are created, document:\n- name: Class name\n- purpose: What the class does\n- location: File path\n- methods: List of public methods\n- isExported: Whether it can be imported\n\nExample:\n```\n{\n  \"name\": \"ImplementationLogManager\",\n  \"purpose\": \"Manages CRUD operations for implementation logs\",\n  \"location\": \"src/dashboard/implementation-log-manager.ts\",\n  \"methods\": [\"loadLog\", \"addLogEntry\", \"getAllLogs\", \"searchLogs\", \"getTaskStats\"],\n  \"isExported\": true\n}\n```\n\n### integrations (array of integration objects)\nDocument how frontend connects to backend:\n- description: How components connect to APIs\n- frontendComponent: Which component initiates the connection\n- backendEndpoint: Which API endpoint is called\n- dataFlow: Describe the data flow (e.g., \"User clicks → API call → State update → Re-render\")\n\nExample:\n```\n{\n  \"description\": \"LogsPage fetches logs via REST API and subscribes to WebSocket for real-time updates\",\n  \"frontendComponent\": \"LogsPage\",\n  \"backendEndpoint\": \"GET /api/specs/:name/implementation-log\",\n  \"dataFlow\": \"Component mount → API fetch → Display logs → WebSocket subscription → Real-time updates on new entries\"\n}\n```\n\n# GOOD EXAMPLE (Include ALL relevant artifacts)\n\nTask: \"Implemented logs dashboard with real-time updates\"\n\n```json\n{\n  \"taskId\": \"2.3\",\n  \"summary\": \"Implemented real-time implementation logs dashboard with filtering, search, and WebSocket updates\",\n  \"artifacts\": {\n    \"apiEndpoints\": [\n      {\n        \"method\": \"GET\",\n        \"path\": \"/api/specs/:name/implementation-log\",\n        \"purpose\": \"Retrieve implementation logs with optional filtering\",\n        \"requestFormat\": \"Query params: taskId (string, optional), search (string, optional)\",\n        \"responseFormat\": \"{ entries: ImplementationLogEntry[] }\",\n        \"location\": \"src/dashboard/server.ts:245\"\n      }\n    ],\n    \"components\": [\n      {\n        \"name\": \"LogsPage\",\n        \"type\": \"React\",\n        \"purpose\": \"Main dashboard page for viewing implementation logs with search and filtering\",\n        \"location\": \"src/modules/pages/LogsPage.tsx\",\n        \"props\": \"None (uses React Router params)\",\n        \"exports\": [\"LogsPage (default)\"]\n      }\n    ],\n    \"classes\": [\n      {\n        \"name\": \"ImplementationLogManager\",\n        \"purpose\": \"Manages CRUD operations for implementation logs\",\n        \"location\": \"src/dashboard/implementation-log-manager.ts\",\n        \"methods\": [\"loadLog\", \"addLogEntry\", \"getAllLogs\", \"searchLogs\", \"getTaskStats\"],\n        \"isExported\": true\n      }\n    ],\n    \"integrations\": [\n      {\n        \"description\": \"LogsPage fetches logs via REST API and subscribes to WebSocket for real-time updates\",\n        \"frontendComponent\": \"LogsPage\",\n        \"backendEndpoint\": \"GET /api/specs/:name/implementation-log\",\n        \"dataFlow\": \"Component mount → API fetch → Display logs → WebSocket subscription → Real-time updates on new entries\"\n      }\n    ]\n  },\n  \"filesModified\": [\"src/dashboard/server.ts\"],\n  \"filesCreated\": [\"src/modules/pages/LogsPage.tsx\"],\n  \"statistics\": { \"linesAdded\": 650, \"linesRemoved\": 15, \"filesChanged\": 2 }\n}\n```\n\n# BAD EXAMPLE (Don't do this)\n\n❌ Empty artifacts - Future agents learn nothing:\n```json\n{\n  \"taskId\": \"2.3\",\n  \"summary\": \"Added endpoint and page\",\n  \"artifacts\": {},\n  \"filesModified\": [\"server.ts\"],\n  \"filesCreated\": [\"LogsPage.tsx\"]\n}\n```\n\n❌ Vague summary with no structured data:\n```json\n{\n  \"taskId\": \"2.3\",\n  \"summary\": \"Implemented features\",\n  \"artifacts\": {},\n  \"filesModified\": [\"server.ts\", \"app.tsx\"]\n}\n```\n\n# Instructions\n\n1. After completing a task, review what you implemented\n2. Identify all artifacts (APIs, components, functions, classes, integrations)\n3. Document each with full details and locations\n4. Include ALL the information - be thorough!\n5. Future agents depend on this data quality",
+                "inputSchema": {
+                  "properties": {
+                    "artifacts": {
+                      "description": "REQUIRED: Structured data about implemented artifacts (APIs, components, functions, classes, integrations). See tool description for detailed format.",
+                      "properties": {
+                        "apiEndpoints": {
+                          "description": "API endpoints created or modified",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "classes": {
+                          "description": "Classes created",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "components": {
+                          "description": "Reusable UI components created",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "functions": {
+                          "description": "Utility functions or methods created",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "integrations": {
+                          "description": "Frontend-backend integration patterns",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "filesCreated": {
+                      "description": "List of files that were created",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "filesModified": {
+                      "description": "List of files that were modified",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "projectPath": {
+                      "description": "Absolute path to the project root (optional - uses server context path if not provided)",
+                      "type": "string"
+                    },
+                    "specName": {
+                      "description": "Name of the specification",
+                      "type": "string"
+                    },
+                    "statistics": {
+                      "description": "Code statistics for the implementation",
+                      "properties": {
+                        "linesAdded": {
+                          "description": "Number of lines added",
+                          "type": "number"
+                        },
+                        "linesRemoved": {
+                          "description": "Number of lines removed",
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "linesAdded",
+                        "linesRemoved"
+                      ],
+                      "type": "object"
+                    },
+                    "summary": {
+                      "description": "Brief summary of what was implemented",
+                      "type": "string"
+                    },
+                    "taskId": {
+                      "description": "Task ID (e.g., \"1\", \"1.2\", \"3.1.4\")",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "specName",
+                    "taskId",
+                    "summary",
+                    "filesModified",
+                    "filesCreated",
+                    "statistics",
+                    "artifacts"
+                  ],
+                  "type": "object"
+                },
+                "name": "log-implementation"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "spec-workflow-guide"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "success: true\nmessage: Complete spec workflow guide loaded - follow this workflow exactly\ndata:\n  guide: \"# Spec Development Workflow\\n\\n## Overview\\n\\nYou guide users through spec-driven development using MCP tools. Transform rough ideas into detailed specifications through Requirements → Design → Tasks → Implementation phases. Use web search when available for current best practices (current year: 2026). Its important that you follow this workflow exactly to avoid errors.\\nFeature names use kebab-case (e.g., user-authentication). Create ONE spec at a time.\\n\\n## Workflow Diagram\\n```mermaid\\nflowchart TD\\n    Start([Start: User requests feature]) --> CheckSteering{Steering docs exist?}\\n    CheckSteering -->|Yes| P1_Load[Read steering docs:<br/>.spec-workflow/steering/*.md]\\n    CheckSteering -->|No| P1_Template\\n\\n    %% Phase 1: Requirements\\n    P1_Load --> P1_Template[Check user-templates first,<br/>then read template:<br/>requirements-template.md]\\n    P1_Template --> P1_Research[Web search if available]\\n    P1_Research --> P1_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>requirements.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments as guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Design\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>design-template.md]\\n    P2_Template --> P2_Analyze[Analyze codebase patterns]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>design.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments as guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Tasks\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>tasks-template.md]\\n    P3_Template --> P3_Break[Convert design to tasks]\\n    P3_Break --> P3_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>tasks.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments as guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    %% Phase 4: Implementation\\n    P3_Clean -->|success| P4_Ready[Spec complete.<br/>Ready to implement?]\\n    P4_Ready -->|Yes| P4_Status[spec-status]\\n    P4_Status --> P4_Task[Edit tasks.md:<br/>Change [ ] to [-]<br/>for in-progress]\\n    P4_Task --> P4_Code[Implement code]\\n    P4_Code --> P4_Log[log-implementation<br/>Record implementation<br/>details]\\n    P4_Log --> P4_Complete[Edit tasks.md:<br/>Change [-] to [x]<br/>for completed]\\n    P4_Complete --> P4_More{More tasks?}\\n    P4_More -->|Yes| P4_Task\\n    P4_More -->|No| End([Implementation Complete])\\n\\n    style Start fill:#e1f5e1\\n    style End fill:#e1f5e1\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n    style CheckSteering fill:#fff4e6\\n    style P4_More fill:#fff4e6\\n    style P4_Log fill:#e3f2fd\\n```\\n\\n## Spec Workflow\\n\\n### Phase 1: Requirements\\n**Purpose**: Define what to build based on user needs.\\n\\n**File Operations**:\\n- Read steering docs: `.spec-workflow/steering/*.md` (if they exist)\\n- Check for custom template: `.spec-workflow/user-templates/requirements-template.md`\\n- Read template: `.spec-workflow/templates/requirements-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/requirements.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check if `.spec-workflow/steering/` exists (if yes, read product.md, tech.md, structure.md)\\n2. Check for custom template at `.spec-workflow/user-templates/requirements-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/requirements-template.md`\\n4. Research market/user expectations (if web search available, current year: 2026)\\n5. Generate requirements as user stories with EARS criteria6. Create `requirements.md` at `.spec-workflow/specs/{spec-name}/requirements.md`\\n7. Request approval using approvals tool with action:'request' (filePath only, never content)\\n8. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 2: Design\\n**Purpose**: Create technical design addressing all requirements.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/design-template.md`\\n- Read template: `.spec-workflow/templates/design-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/design.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/design-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/design-template.md`\\n3. Analyze codebase for patterns to reuse\\n4. Research technology choices (if web search available, current year: 2026)\\n5. Generate design with all template sections6. Create `design.md` at `.spec-workflow/specs/{spec-name}/design.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 3: Tasks\\n**Purpose**: Break design into atomic implementation tasks.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tasks-template.md`\\n- Read template: `.spec-workflow/templates/tasks-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/tasks.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tasks-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tasks-template.md`\\n3. Convert design into atomic tasks (1-3 files each)\\n4. Include file paths and requirement references\\n5. **IMPORTANT**: Generate a _Prompt field for each task with:\\n   - Role: specialized developer role for the task\\n   - Task: clear description with context references\\n   - Restrictions: what not to do, constraints to follow\\n   - _Leverage: files/utilities to use\\n   - _Requirements: requirements that the task implements\\n   - Success: specific completion criteria\\n   - Instructions related to setting the task in progress in tasks.md, logging the implementation with log-implementation tool after completion, and then marking it as complete when the task is complete.\\n   - Start the prompt with \\\"Implement the task for spec {spec-name}, first run spec-workflow-guide to get the workflow guide then implement the task:\\\"\\n6. Create `tasks.md` at `.spec-workflow/specs/{spec-name}/tasks.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n12. After successful cleanup: \\\"Spec complete. Ready to implement?\\\"\\n\\n### Phase 4: Implementation\\n**Purpose**: Execute tasks systematically.\\n\\n**File Operations**:\\n- Read specs: `.spec-workflow/specs/{spec-name}/*.md` (if returning to work)\\n- Edit tasks.md to update status:\\n  - `- [ ]` = Pending task\\n  - `- [-]` = In-progress task\\n  - `- [x]` = Completed task\\n  - `- [~]` = Blocked task\\n- Optional blocked reason metadata: `- _Blocked: reason why task is blocked_` (add as sub-bullet under the blocked task)\\n\\n**Tools**:\\n- spec-status: Check overall progress\\n- Bash (grep/ripgrep): CRITICAL - Search existing code before implementing (step 3)\\n- Read: Examine implementation log files directly\\n- implement-task prompt: Guide for implementing tasks\\n- log-implementation: Record implementation details with artifacts after task completion (step 5)\\n- Direct editing: Mark tasks as in-progress [-] or complete [x] in tasks.md\\n\\n**Process**:\\n1. Check current status with spec-status\\n2. Read `tasks.md` to see all tasks\\n3. For each task:\\n   - Edit tasks.md: Change `[ ]` to `[-]` for the task you're starting\\n   - **CRITICAL: BEFORE implementing, search existing implementation logs**:\\n     - Implementation logs are in: `.spec-workflow/specs/{spec-name}/Implementation Logs/`\\n     - **Option 1: Use grep for fast searches**:\\n       - `grep -r \\\"api|endpoint\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find API endpoints\\n       - `grep -r \\\"component\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find UI components\\n       - `grep -r \\\"function\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find utility functions\\n       - `grep -r \\\"integration\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find integration patterns\\n     - **Option 2: Read markdown files directly** - Use Read tool to examine specific log files\\n     - Best practice: Search 2-3 different terms to discover comprehensively\\n     - This prevents: duplicate endpoints, reimplemented components, broken integrations\\n     - Reuse existing code that already solves part of the task\\n   - **Read the _Prompt field** for guidance on role, approach, and success criteria\\n   - Follow _Leverage fields to use existing code/utilities\\n   - Implement the code according to the task description\\n   - Test your implementation\\n   - **MANDATORY: Log implementation BEFORE marking task complete** using log-implementation tool:\\n     - ⚠️ Do NOT change [-] to [x] until log-implementation returns success\\n     - A task without an implementation log is NOT complete — this is the most commonly skipped step\\n     - Provide taskId and clear summary of what was implemented (1-2 sentences)\\n     - Include files modified/created and code statistics (lines added/removed)\\n     - **REQUIRED: Include artifacts field with structured implementation data**:\\n       - apiEndpoints: All API routes created/modified (method, path, purpose, formats, location)\\n       - components: All UI components created (name, type, purpose, location, props)\\n       - functions: All utility functions created (name, signature, location)\\n       - classes: All classes created (name, methods, location)\\n       - integrations: Frontend-backend connections with data flow description\\n     - Example: \\\"Created API GET /api/todos/:id endpoint and TodoDetail React component with WebSocket real-time updates\\\"\\n     - This creates a searchable knowledge base for future AI agents to discover existing code\\n     - Prevents implementation details from being lost in chat history\\n   - **Only after log-implementation succeeds**: Edit tasks.md: Change `[-]` to `[x]`\\n4. Continue until all tasks show `[x]`\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Read templates from `.spec-workflow/templates/` directory\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- One spec at a time\\n- Use kebab-case for spec names\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Every task marked [x] MUST have a corresponding implementation log — call log-implementation BEFORE changing [-] to [x]\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n- Steering docs are optional - only create when explicitly requested\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── requirements-template.md\\n│   ├── design-template.md\\n│   ├── tasks-template.md\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n├── specs/\\n│   └── {spec-name}/\\n│       ├── requirements.md\\n│       ├── design.md\\n│       ├── tasks.md\\n│       └── Implementation Logs/     # Created automatically\\n│           ├── task-1_timestamp_id.md\\n│           ├── task-2_timestamp_id.md\\n│           └── ...\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\n  dashboardAvailable: false\nnextSteps[5]: \"Follow sequence: Requirements → Design → Tasks → Implementation\",Load templates with get-template-context first,Request approval after each document,Use MCP tools only,\"Please start the dashboard with: spec-workflow-mcp --dashboard\"",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "spec-workflow-guide"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "spec-workflow-guide",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "success: true\nmessage: Complete spec workflow guide loaded - follow this workflow exactly\ndata:\n  guide: \"# Spec Development Workflow\\n\\n## Overview\\n\\nYou guide users through spec-driven development using MCP tools. Transform rough ideas into detailed specifications through Requirements → Design → Tasks → Implementation phases. Use web search when available for current best practices (current year: 2026). Its important that you follow this workflow exactly to avoid errors.\\nFeature names use kebab-case (e.g., user-authentication). Create ONE spec at a time.\\n\\n## Workflow Diagram\\n```mermaid\\nflowchart TD\\n    Start([Start: User requests feature]) --> CheckSteering{Steering docs exist?}\\n    CheckSteering -->|Yes| P1_Load[Read steering docs:<br/>.spec-workflow/steering/*.md]\\n    CheckSteering -->|No| P1_Template\\n\\n    %% Phase 1: Requirements\\n    P1_Load --> P1_Template[Check user-templates first,<br/>then read template:<br/>requirements-template.md]\\n    P1_Template --> P1_Research[Web search if available]\\n    P1_Research --> P1_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>requirements.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments as guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Design\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>design-template.md]\\n    P2_Template --> P2_Analyze[Analyze codebase patterns]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>design.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments as guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Tasks\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>tasks-template.md]\\n    P3_Template --> P3_Break[Convert design to tasks]\\n    P3_Break --> P3_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>tasks.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments as guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    %% Phase 4: Implementation\\n    P3_Clean -->|success| P4_Ready[Spec complete.<br/>Ready to implement?]\\n    P4_Ready -->|Yes| P4_Status[spec-status]\\n    P4_Status --> P4_Task[Edit tasks.md:<br/>Change [ ] to [-]<br/>for in-progress]\\n    P4_Task --> P4_Code[Implement code]\\n    P4_Code --> P4_Log[log-implementation<br/>Record implementation<br/>details]\\n    P4_Log --> P4_Complete[Edit tasks.md:<br/>Change [-] to [x]<br/>for completed]\\n    P4_Complete --> P4_More{More tasks?}\\n    P4_More -->|Yes| P4_Task\\n    P4_More -->|No| End([Implementation Complete])\\n\\n    style Start fill:#e1f5e1\\n    style End fill:#e1f5e1\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n    style CheckSteering fill:#fff4e6\\n    style P4_More fill:#fff4e6\\n    style P4_Log fill:#e3f2fd\\n```\\n\\n## Spec Workflow\\n\\n### Phase 1: Requirements\\n**Purpose**: Define what to build based on user needs.\\n\\n**File Operations**:\\n- Read steering docs: `.spec-workflow/steering/*.md` (if they exist)\\n- Check for custom template: `.spec-workflow/user-templates/requirements-template.md`\\n- Read template: `.spec-workflow/templates/requirements-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/requirements.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check if `.spec-workflow/steering/` exists (if yes, read product.md, tech.md, structure.md)\\n2. Check for custom template at `.spec-workflow/user-templates/requirements-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/requirements-template.md`\\n4. Research market/user expectations (if web search available, current year: 2026)\\n5. Generate requirements as user stories with EARS criteria6. Create `requirements.md` at `.spec-workflow/specs/{spec-name}/requirements.md`\\n7. Request approval using approvals tool with action:'request' (filePath only, never content)\\n8. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 2: Design\\n**Purpose**: Create technical design addressing all requirements.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/design-template.md`\\n- Read template: `.spec-workflow/templates/design-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/design.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/design-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/design-template.md`\\n3. Analyze codebase for patterns to reuse\\n4. Research technology choices (if web search available, current year: 2026)\\n5. Generate design with all template sections6. Create `design.md` at `.spec-workflow/specs/{spec-name}/design.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 3: Tasks\\n**Purpose**: Break design into atomic implementation tasks.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tasks-template.md`\\n- Read template: `.spec-workflow/templates/tasks-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/tasks.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tasks-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tasks-template.md`\\n3. Convert design into atomic tasks (1-3 files each)\\n4. Include file paths and requirement references\\n5. **IMPORTANT**: Generate a _Prompt field for each task with:\\n   - Role: specialized developer role for the task\\n   - Task: clear description with context references\\n   - Restrictions: what not to do, constraints to follow\\n   - _Leverage: files/utilities to use\\n   - _Requirements: requirements that the task implements\\n   - Success: specific completion criteria\\n   - Instructions related to setting the task in progress in tasks.md, logging the implementation with log-implementation tool after completion, and then marking it as complete when the task is complete.\\n   - Start the prompt with \\\"Implement the task for spec {spec-name}, first run spec-workflow-guide to get the workflow guide then implement the task:\\\"\\n6. Create `tasks.md` at `.spec-workflow/specs/{spec-name}/tasks.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n12. After successful cleanup: \\\"Spec complete. Ready to implement?\\\"\\n\\n### Phase 4: Implementation\\n**Purpose**: Execute tasks systematically.\\n\\n**File Operations**:\\n- Read specs: `.spec-workflow/specs/{spec-name}/*.md` (if returning to work)\\n- Edit tasks.md to update status:\\n  - `- [ ]` = Pending task\\n  - `- [-]` = In-progress task\\n  - `- [x]` = Completed task\\n  - `- [~]` = Blocked task\\n- Optional blocked reason metadata: `- _Blocked: reason why task is blocked_` (add as sub-bullet under the blocked task)\\n\\n**Tools**:\\n- spec-status: Check overall progress\\n- Bash (grep/ripgrep): CRITICAL - Search existing code before implementing (step 3)\\n- Read: Examine implementation log files directly\\n- implement-task prompt: Guide for implementing tasks\\n- log-implementation: Record implementation details with artifacts after task completion (step 5)\\n- Direct editing: Mark tasks as in-progress [-] or complete [x] in tasks.md\\n\\n**Process**:\\n1. Check current status with spec-status\\n2. Read `tasks.md` to see all tasks\\n3. For each task:\\n   - Edit tasks.md: Change `[ ]` to `[-]` for the task you're starting\\n   - **CRITICAL: BEFORE implementing, search existing implementation logs**:\\n     - Implementation logs are in: `.spec-workflow/specs/{spec-name}/Implementation Logs/`\\n     - **Option 1: Use grep for fast searches**:\\n       - `grep -r \\\"api|endpoint\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find API endpoints\\n       - `grep -r \\\"component\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find UI components\\n       - `grep -r \\\"function\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find utility functions\\n       - `grep -r \\\"integration\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find integration patterns\\n     - **Option 2: Read markdown files directly** - Use Read tool to examine specific log files\\n     - Best practice: Search 2-3 different terms to discover comprehensively\\n     - This prevents: duplicate endpoints, reimplemented components, broken integrations\\n     - Reuse existing code that already solves part of the task\\n   - **Read the _Prompt field** for guidance on role, approach, and success criteria\\n   - Follow _Leverage fields to use existing code/utilities\\n   - Implement the code according to the task description\\n   - Test your implementation\\n   - **MANDATORY: Log implementation BEFORE marking task complete** using log-implementation tool:\\n     - ⚠️ Do NOT change [-] to [x] until log-implementation returns success\\n     - A task without an implementation log is NOT complete — this is the most commonly skipped step\\n     - Provide taskId and clear summary of what was implemented (1-2 sentences)\\n     - Include files modified/created and code statistics (lines added/removed)\\n     - **REQUIRED: Include artifacts field with structured implementation data**:\\n       - apiEndpoints: All API routes created/modified (method, path, purpose, formats, location)\\n       - components: All UI components created (name, type, purpose, location, props)\\n       - functions: All utility functions created (name, signature, location)\\n       - classes: All classes created (name, methods, location)\\n       - integrations: Frontend-backend connections with data flow description\\n     - Example: \\\"Created API GET /api/todos/:id endpoint and TodoDetail React component with WebSocket real-time updates\\\"\\n     - This creates a searchable knowledge base for future AI agents to discover existing code\\n     - Prevents implementation details from being lost in chat history\\n   - **Only after log-implementation succeeds**: Edit tasks.md: Change `[-]` to `[x]`\\n4. Continue until all tasks show `[x]`\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Read templates from `.spec-workflow/templates/` directory\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- One spec at a time\\n- Use kebab-case for spec names\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Every task marked [x] MUST have a corresponding implementation log — call log-implementation BEFORE changing [-] to [x]\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n- Steering docs are optional - only create when explicitly requested\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── requirements-template.md\\n│   ├── design-template.md\\n│   ├── tasks-template.md\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n├── specs/\\n│   └── {spec-name}/\\n│       ├── requirements.md\\n│       ├── design.md\\n│       ├── tasks.md\\n│       └── Implementation Logs/     # Created automatically\\n│           ├── task-1_timestamp_id.md\\n│           ├── task-2_timestamp_id.md\\n│           └── ...\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\n  dashboardAvailable: false\nnextSteps[5]: \"Follow sequence: Requirements → Design → Tasks → Implementation\",Load templates with get-template-context first,Request approval after each document,Use MCP tools only,\"Please start the dashboard with: spec-workflow-mcp --dashboard\"",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "spec-workflow-guide"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "success: true\nmessage: Complete spec workflow guide loaded - follow this workflow exactly\ndata:\n  guide: \"# Spec Development Workflow\\n\\n## Overview\\n\\nYou guide users through spec-driven development using MCP tools. Transform rough ideas into detailed specifications through Requirements → Design → Tasks → Implementation phases. Use web search when available for current best practices (current year: 2026). Its important that you follow this workflow exactly to avoid errors.\\nFeature names use kebab-case (e.g., user-authentication). Create ONE spec at a time.\\n\\n## Workflow Diagram\\n```mermaid\\nflowchart TD\\n    Start([Start: User requests feature]) --> CheckSteering{Steering docs exist?}\\n    CheckSteering -->|Yes| P1_Load[Read steering docs:<br/>.spec-workflow/steering/*.md]\\n    CheckSteering -->|No| P1_Template\\n\\n    %% Phase 1: Requirements\\n    P1_Load --> P1_Template[Check user-templates first,<br/>then read template:<br/>requirements-template.md]\\n    P1_Template --> P1_Research[Web search if available]\\n    P1_Research --> P1_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>requirements.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments as guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Design\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>design-template.md]\\n    P2_Template --> P2_Analyze[Analyze codebase patterns]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>design.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments as guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Tasks\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>tasks-template.md]\\n    P3_Template --> P3_Break[Convert design to tasks]\\n    P3_Break --> P3_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>tasks.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments as guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    %% Phase 4: Implementation\\n    P3_Clean -->|success| P4_Ready[Spec complete.<br/>Ready to implement?]\\n    P4_Ready -->|Yes| P4_Status[spec-status]\\n    P4_Status --> P4_Task[Edit tasks.md:<br/>Change [ ] to [-]<br/>for in-progress]\\n    P4_Task --> P4_Code[Implement code]\\n    P4_Code --> P4_Log[log-implementation<br/>Record implementation<br/>details]\\n    P4_Log --> P4_Complete[Edit tasks.md:<br/>Change [-] to [x]<br/>for completed]\\n    P4_Complete --> P4_More{More tasks?}\\n    P4_More -->|Yes| P4_Task\\n    P4_More -->|No| End([Implementation Complete])\\n\\n    style Start fill:#e1f5e1\\n    style End fill:#e1f5e1\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n    style CheckSteering fill:#fff4e6\\n    style P4_More fill:#fff4e6\\n    style P4_Log fill:#e3f2fd\\n```\\n\\n## Spec Workflow\\n\\n### Phase 1: Requirements\\n**Purpose**: Define what to build based on user needs.\\n\\n**File Operations**:\\n- Read steering docs: `.spec-workflow/steering/*.md` (if they exist)\\n- Check for custom template: `.spec-workflow/user-templates/requirements-template.md`\\n- Read template: `.spec-workflow/templates/requirements-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/requirements.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check if `.spec-workflow/steering/` exists (if yes, read product.md, tech.md, structure.md)\\n2. Check for custom template at `.spec-workflow/user-templates/requirements-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/requirements-template.md`\\n4. Research market/user expectations (if web search available, current year: 2026)\\n5. Generate requirements as user stories with EARS criteria6. Create `requirements.md` at `.spec-workflow/specs/{spec-name}/requirements.md`\\n7. Request approval using approvals tool with action:'request' (filePath only, never content)\\n8. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 2: Design\\n**Purpose**: Create technical design addressing all requirements.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/design-template.md`\\n- Read template: `.spec-workflow/templates/design-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/design.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/design-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/design-template.md`\\n3. Analyze codebase for patterns to reuse\\n4. Research technology choices (if web search available, current year: 2026)\\n5. Generate design with all template sections6. Create `design.md` at `.spec-workflow/specs/{spec-name}/design.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 3: Tasks\\n**Purpose**: Break design into atomic implementation tasks.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tasks-template.md`\\n- Read template: `.spec-workflow/templates/tasks-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/tasks.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tasks-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tasks-template.md`\\n3. Convert design into atomic tasks (1-3 files each)\\n4. Include file paths and requirement references\\n5. **IMPORTANT**: Generate a _Prompt field for each task with:\\n   - Role: specialized developer role for the task\\n   - Task: clear description with context references\\n   - Restrictions: what not to do, constraints to follow\\n   - _Leverage: files/utilities to use\\n   - _Requirements: requirements that the task implements\\n   - Success: specific completion criteria\\n   - Instructions related to setting the task in progress in tasks.md, logging the implementation with log-implementation tool after completion, and then marking it as complete when the task is complete.\\n   - Start the prompt with \\\"Implement the task for spec {spec-name}, first run spec-workflow-guide to get the workflow guide then implement the task:\\\"\\n6. Create `tasks.md` at `.spec-workflow/specs/{spec-name}/tasks.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n12. After successful cleanup: \\\"Spec complete. Ready to implement?\\\"\\n\\n### Phase 4: Implementation\\n**Purpose**: Execute tasks systematically.\\n\\n**File Operations**:\\n- Read specs: `.spec-workflow/specs/{spec-name}/*.md` (if returning to work)\\n- Edit tasks.md to update status:\\n  - `- [ ]` = Pending task\\n  - `- [-]` = In-progress task\\n  - `- [x]` = Completed task\\n  - `- [~]` = Blocked task\\n- Optional blocked reason metadata: `- _Blocked: reason why task is blocked_` (add as sub-bullet under the blocked task)\\n\\n**Tools**:\\n- spec-status: Check overall progress\\n- Bash (grep/ripgrep): CRITICAL - Search existing code before implementing (step 3)\\n- Read: Examine implementation log files directly\\n- implement-task prompt: Guide for implementing tasks\\n- log-implementation: Record implementation details with artifacts after task completion (step 5)\\n- Direct editing: Mark tasks as in-progress [-] or complete [x] in tasks.md\\n\\n**Process**:\\n1. Check current status with spec-status\\n2. Read `tasks.md` to see all tasks\\n3. For each task:\\n   - Edit tasks.md: Change `[ ]` to `[-]` for the task you're starting\\n   - **CRITICAL: BEFORE implementing, search existing implementation logs**:\\n     - Implementation logs are in: `.spec-workflow/specs/{spec-name}/Implementation Logs/`\\n     - **Option 1: Use grep for fast searches**:\\n       - `grep -r \\\"api|endpoint\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find API endpoints\\n       - `grep -r \\\"component\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find UI components\\n       - `grep -r \\\"function\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find utility functions\\n       - `grep -r \\\"integration\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find integration patterns\\n     - **Option 2: Read markdown files directly** - Use Read tool to examine specific log files\\n     - Best practice: Search 2-3 different terms to discover comprehensively\\n     - This prevents: duplicate endpoints, reimplemented components, broken integrations\\n     - Reuse existing code that already solves part of the task\\n   - **Read the _Prompt field** for guidance on role, approach, and success criteria\\n   - Follow _Leverage fields to use existing code/utilities\\n   - Implement the code according to the task description\\n   - Test your implementation\\n   - **MANDATORY: Log implementation BEFORE marking task complete** using log-implementation tool:\\n     - ⚠️ Do NOT change [-] to [x] until log-implementation returns success\\n     - A task without an implementation log is NOT complete — this is the most commonly skipped step\\n     - Provide taskId and clear summary of what was implemented (1-2 sentences)\\n     - Include files modified/created and code statistics (lines added/removed)\\n     - **REQUIRED: Include artifacts field with structured implementation data**:\\n       - apiEndpoints: All API routes created/modified (method, path, purpose, formats, location)\\n       - components: All UI components created (name, type, purpose, location, props)\\n       - functions: All utility functions created (name, signature, location)\\n       - classes: All classes created (name, methods, location)\\n       - integrations: Frontend-backend connections with data flow description\\n     - Example: \\\"Created API GET /api/todos/:id endpoint and TodoDetail React component with WebSocket real-time updates\\\"\\n     - This creates a searchable knowledge base for future AI agents to discover existing code\\n     - Prevents implementation details from being lost in chat history\\n   - **Only after log-implementation succeeds**: Edit tasks.md: Change `[-]` to `[x]`\\n4. Continue until all tasks show `[x]`\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Read templates from `.spec-workflow/templates/` directory\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- One spec at a time\\n- Use kebab-case for spec names\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Every task marked [x] MUST have a corresponding implementation log — call log-implementation BEFORE changing [-] to [x]\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n- Steering docs are optional - only create when explicitly requested\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── requirements-template.md\\n│   ├── design-template.md\\n│   ├── tasks-template.md\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n├── specs/\\n│   └── {spec-name}/\\n│       ├── requirements.md\\n│       ├── design.md\\n│       ├── tasks.md\\n│       └── Implementation Logs/     # Created automatically\\n│           ├── task-1_timestamp_id.md\\n│           ├── task-2_timestamp_id.md\\n│           └── ...\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\n  dashboardAvailable: false\nnextSteps[5]: \"Follow sequence: Requirements → Design → Tasks → Implementation\",Load templates with get-template-context first,Request approval after each document,Use MCP tools only,\"Please start the dashboard with: spec-workflow-mcp --dashboard\""
+        },
+        "text_len": 14115
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "success: true\nmessage: Complete spec workflow guide loaded - follow this workflow exactly\ndata:\n  guide: \"# Spec Development Workflow\\n\\n## Overview\\n\\nYou guide users through spec-driven development using MCP tools. Transform rough ideas into detailed specifications through Requirements → Design → Tasks → Implementation phases. Use web search when available for current best practices (current year: 2026). Its important that you follow this workflow exactly to avoid errors.\\nFeature names use kebab-case (e.g., user-authentication). Create ONE spec at a time.\\n\\n## Workflow Diagram\\n```mermaid\\nflowchart TD\\n    Start([Start: User requests feature]) --> CheckSteering{Steering docs exist?}\\n    CheckSteering -->|Yes| P1_Load[Read steering docs:<br/>.spec-workflow/steering/*.md]\\n    CheckSteering -->|No| P1_Template\\n\\n    %% Phase 1: Requirements\\n    P1_Load --> P1_Template[Check user-templates first,<br/>then read template:<br/>requirements-template.md]\\n    P1_Template --> P1_Research[Web search if available]\\n    P1_Research --> P1_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>requirements.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments as guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Design\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>design-template.md]\\n    P2_Template --> P2_Analyze[Analyze codebase patterns]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>design.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments as guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Tasks\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>tasks-template.md]\\n    P3_Template --> P3_Break[Convert design to tasks]\\n    P3_Break --> P3_Create[Create file:<br/>.spec-workflow/specs/{name}/<br/>tasks.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments as guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    %% Phase 4: Implementation\\n    P3_Clean -->|success| P4_Ready[Spec complete.<br/>Ready to implement?]\\n    P4_Ready -->|Yes| P4_Status[spec-status]\\n    P4_Status --> P4_Task[Edit tasks.md:<br/>Change [ ] to [-]<br/>for in-progress]\\n    P4_Task --> P4_Code[Implement code]\\n    P4_Code --> P4_Log[log-implementation<br/>Record implementation<br/>details]\\n    P4_Log --> P4_Complete[Edit tasks.md:<br/>Change [-] to [x]<br/>for completed]\\n    P4_Complete --> P4_More{More tasks?}\\n    P4_More -->|Yes| P4_Task\\n    P4_More -->|No| End([Implementation Complete])\\n\\n    style Start fill:#e1f5e1\\n    style End fill:#e1f5e1\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n    style CheckSteering fill:#fff4e6\\n    style P4_More fill:#fff4e6\\n    style P4_Log fill:#e3f2fd\\n```\\n\\n## Spec Workflow\\n\\n### Phase 1: Requirements\\n**Purpose**: Define what to build based on user needs.\\n\\n**File Operations**:\\n- Read steering docs: `.spec-workflow/steering/*.md` (if they exist)\\n- Check for custom template: `.spec-workflow/user-templates/requirements-template.md`\\n- Read template: `.spec-workflow/templates/requirements-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/requirements.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check if `.spec-workflow/steering/` exists (if yes, read product.md, tech.md, structure.md)\\n2. Check for custom template at `.spec-workflow/user-templates/requirements-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/requirements-template.md`\\n4. Research market/user expectations (if web search available, current year: 2026)\\n5. Generate requirements as user stories with EARS criteria6. Create `requirements.md` at `.spec-workflow/specs/{spec-name}/requirements.md`\\n7. Request approval using approvals tool with action:'request' (filePath only, never content)\\n8. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 2: Design\\n**Purpose**: Create technical design addressing all requirements.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/design-template.md`\\n- Read template: `.spec-workflow/templates/design-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/design.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/design-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/design-template.md`\\n3. Analyze codebase for patterns to reuse\\n4. Research technology choices (if web search available, current year: 2026)\\n5. Generate design with all template sections6. Create `design.md` at `.spec-workflow/specs/{spec-name}/design.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n\\n### Phase 3: Tasks\\n**Purpose**: Break design into atomic implementation tasks.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tasks-template.md`\\n- Read template: `.spec-workflow/templates/tasks-template.md` (if no custom template)\\n- Create document: `.spec-workflow/specs/{spec-name}/tasks.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tasks-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tasks-template.md`\\n3. Convert design into atomic tasks (1-3 files each)\\n4. Include file paths and requirement references\\n5. **IMPORTANT**: Generate a _Prompt field for each task with:\\n   - Role: specialized developer role for the task\\n   - Task: clear description with context references\\n   - Restrictions: what not to do, constraints to follow\\n   - _Leverage: files/utilities to use\\n   - _Requirements: requirements that the task implements\\n   - Success: specific completion criteria\\n   - Instructions related to setting the task in progress in tasks.md, logging the implementation with log-implementation tool after completion, and then marking it as complete when the task is complete.\\n   - Start the prompt with \\\"Implement the task for spec {spec-name}, first run spec-workflow-guide to get the workflow guide then implement the task:\\\"\\n6. Create `tasks.md` at `.spec-workflow/specs/{spec-name}/tasks.md`\\n7. Request approval using approvals tool with action:'request'\\n8. Poll status using approvals with action:'status' until approved/needs-revision\\n9. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n10. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n11. If delete fails: STOP - return to polling\\n12. After successful cleanup: \\\"Spec complete. Ready to implement?\\\"\\n\\n### Phase 4: Implementation\\n**Purpose**: Execute tasks systematically.\\n\\n**File Operations**:\\n- Read specs: `.spec-workflow/specs/{spec-name}/*.md` (if returning to work)\\n- Edit tasks.md to update status:\\n  - `- [ ]` = Pending task\\n  - `- [-]` = In-progress task\\n  - `- [x]` = Completed task\\n  - `- [~]` = Blocked task\\n- Optional blocked reason metadata: `- _Blocked: reason why task is blocked_` (add as sub-bullet under the blocked task)\\n\\n**Tools**:\\n- spec-status: Check overall progress\\n- Bash (grep/ripgrep): CRITICAL - Search existing code before implementing (step 3)\\n- Read: Examine implementation log files directly\\n- implement-task prompt: Guide for implementing tasks\\n- log-implementation: Record implementation details with artifacts after task completion (step 5)\\n- Direct editing: Mark tasks as in-progress [-] or complete [x] in tasks.md\\n\\n**Process**:\\n1. Check current status with spec-status\\n2. Read `tasks.md` to see all tasks\\n3. For each task:\\n   - Edit tasks.md: Change `[ ]` to `[-]` for the task you're starting\\n   - **CRITICAL: BEFORE implementing, search existing implementation logs**:\\n     - Implementation logs are in: `.spec-workflow/specs/{spec-name}/Implementation Logs/`\\n     - **Option 1: Use grep for fast searches**:\\n       - `grep -r \\\"api|endpoint\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find API endpoints\\n       - `grep -r \\\"component\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find UI components\\n       - `grep -r \\\"function\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find utility functions\\n       - `grep -r \\\"integration\\\" .spec-workflow/specs/{spec-name}/Implementation Logs/` - Find integration patterns\\n     - **Option 2: Read markdown files directly** - Use Read tool to examine specific log files\\n     - Best practice: Search 2-3 different terms to discover comprehensively\\n     - This prevents: duplicate endpoints, reimplemented components, broken integrations\\n     - Reuse existing code that already solves part of the task\\n   - **Read the _Prompt field** for guidance on role, approach, and success criteria\\n   - Follow _Leverage fields to use existing code/utilities\\n   - Implement the code according to the task description\\n   - Test your implementation\\n   - **MANDATORY: Log implementation BEFORE marking task complete** using log-implementation tool:\\n     - ⚠️ Do NOT change [-] to [x] until log-implementation returns success\\n     - A task without an implementation log is NOT complete — this is the most commonly skipped step\\n     - Provide taskId and clear summary of what was implemented (1-2 sentences)\\n     - Include files modified/created and code statistics (lines added/removed)\\n     - **REQUIRED: Include artifacts field with structured implementation data**:\\n       - apiEndpoints: All API routes created/modified (method, path, purpose, formats, location)\\n       - components: All UI components created (name, type, purpose, location, props)\\n       - functions: All utility functions created (name, signature, location)\\n       - classes: All classes created (name, methods, location)\\n       - integrations: Frontend-backend connections with data flow description\\n     - Example: \\\"Created API GET /api/todos/:id endpoint and TodoDetail React component with WebSocket real-time updates\\\"\\n     - This creates a searchable knowledge base for future AI agents to discover existing code\\n     - Prevents implementation details from being lost in chat history\\n   - **Only after log-implementation succeeds**: Edit tasks.md: Change `[-]` to `[x]`\\n4. Continue until all tasks show `[x]`\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Read templates from `.spec-workflow/templates/` directory\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- One spec at a time\\n- Use kebab-case for spec names\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Every task marked [x] MUST have a corresponding implementation log — call log-implementation BEFORE changing [-] to [x]\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n- Steering docs are optional - only create when explicitly requested\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── requirements-template.md\\n│   ├── design-template.md\\n│   ├── tasks-template.md\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n├── specs/\\n│   └── {spec-name}/\\n│       ├── requirements.md\\n│       ├── design.md\\n│       ├── tasks.md\\n│       └── Implementation Logs/     # Created automatically\\n│           ├── task-1_timestamp_id.md\\n│           ├── task-2_timestamp_id.md\\n│           └── ...\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\n  dashboardAvailable: false\nnextSteps[5]: \"Follow sequence: Requirements → Design → Tasks → Implementation\",Load templates with get-template-context first,Request approval after each document,Use MCP tools only,\"Please start the dashboard with: spec-workflow-mcp --dashboard\""
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

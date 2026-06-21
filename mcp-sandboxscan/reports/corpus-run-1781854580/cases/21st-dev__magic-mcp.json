@@ -1,0 +1,336 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 204
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "21st-magic",
+              "version": "0.0.46"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "\n\"Use this tool when the user requests a new UI component—e.g., mentions /ui, /21 /21st, or asks for a button, input, dialog, table, form, banner, card, or other React component.\nThis tool ONLY returns the text snippet for that UI component. \nAfter calling this tool, you must edit or add files to integrate the snippet into the codebase.\"\n",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "absolutePathToCurrentFile": {
+                      "description": "Absolute path to the current file to which we want to apply changes",
+                      "type": "string"
+                    },
+                    "absolutePathToProjectDirectory": {
+                      "description": "Absolute path to the project root directory",
+                      "type": "string"
+                    },
+                    "message": {
+                      "description": "Full users message",
+                      "type": "string"
+                    },
+                    "searchQuery": {
+                      "description": "Generate a search query for 21st.dev (library for searching UI components) to find a UI component that matches the user's message. Must be a two-four words max or phrase",
+                      "type": "string"
+                    },
+                    "standaloneRequestQuery": {
+                      "description": "You need to formulate what component user wants to create, based on his message, possbile chat histroy and a place where he makes the request.Extract additional context about what should be done to create a ui component/page based on the user's message, search query, and conversation history, files. Don't halucinate and be on point.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "searchQuery",
+                    "absolutePathToCurrentFile",
+                    "absolutePathToProjectDirectory",
+                    "standaloneRequestQuery"
+                  ],
+                  "type": "object"
+                },
+                "name": "21st_magic_component_builder"
+              },
+              {
+                "description": "\nSearch and return logos in specified format (JSX, TSX, SVG).\nSupports single and multiple logo searches with category filtering.\nCan return logos in different themes (light/dark) if available.\n\nWhen to use this tool:\n1. When user types \"/logo\" command (e.g., \"/logo GitHub\")\n2. When user asks to add a company logo that's not in the local project\n\nExample queries:\n- Single company: [\"discord\"]\n- Multiple companies: [\"discord\", \"github\", \"slack\"]\n- Specific brand: [\"microsoft office\"]\n- Command style: \"/logo GitHub\" -> [\"github\"]\n- Request style: \"Add Discord logo to the project\" -> [\"discord\"]\n\nFormat options:\n- TSX: Returns TypeScript React component\n- JSX: Returns JavaScript React component\n- SVG: Returns raw SVG markup\n\nEach result includes:\n- Component name (e.g., DiscordIcon)\n- Component code\n- Import instructions\n",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "format": {
+                      "description": "Output format",
+                      "enum": [
+                        "JSX",
+                        "TSX",
+                        "SVG"
+                      ],
+                      "type": "string"
+                    },
+                    "queries": {
+                      "description": "List of company names to search for logos",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "queries",
+                    "format"
+                  ],
+                  "type": "object"
+                },
+                "name": "logo_search"
+              },
+              {
+                "description": "\n\"Use this tool when the user wants to see component, get inspiration, or /21st fetch data and previews from 21st.dev. This tool returns the JSON data of matching components without generating new code. This tool ONLY returns the text snippet for that UI component. \nAfter calling this tool, you must edit or add files to integrate the snippet into the codebase.\"\n",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "message": {
+                      "description": "Full users message",
+                      "type": "string"
+                    },
+                    "searchQuery": {
+                      "description": "Search query for 21st.dev (library for searching UI components) to find a UI component that matches the user's message. Must be a two-four words max or phrase",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "searchQuery"
+                  ],
+                  "type": "object"
+                },
+                "name": "21st_magic_component_inspiration"
+              },
+              {
+                "description": "\n\"Use this tool when the user requests to re-design/refine/improve current UI component with /ui or /21 commands, \nor when context is about improving, or refining UI for a React component or molecule (NOT for big pages).\nThis tool improves UI of components and returns redesigned version of the component and instructions on how to implement it.\"\n",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "absolutePathToRefiningFile": {
+                      "description": "Absolute path to the file that needs to be refined",
+                      "type": "string"
+                    },
+                    "context": {
+                      "description": "Extract the specific UI elements and aspects that need improvement based on user messages, code, and conversation history. Identify exactly which components (buttons, forms, modals, etc.) the user is referring to and what aspects (styling, layout, responsiveness, etc.) they want to enhance. Do not include generic improvements - focus only on what the user explicitly mentions or what can be reasonably inferred from the available context. If nothing specific is mentioned or you cannot determine what needs improvement, return an empty string.",
+                      "type": "string"
+                    },
+                    "userMessage": {
+                      "description": "Full user's message about UI refinement",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "userMessage",
+                    "absolutePathToRefiningFile",
+                    "context"
+                  ],
+                  "type": "object"
+                },
+                "name": "21st_magic_component_refiner"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "21st_magic_component_builder"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool 21st_magic_component_builder: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"message\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"searchQuery\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToCurrentFile\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToProjectDirectory\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"standaloneRequestQuery\"\n    ],\n    \"message\": \"Required\"\n  }\n]",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "21st_magic_component_builder"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "21st_magic_component_builder",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool 21st_magic_component_builder: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"message\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"searchQuery\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToCurrentFile\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToProjectDirectory\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"standaloneRequestQuery\"\n    ],\n    \"message\": \"Required\"\n  }\n]",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "21st_magic_component_builder"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "MCP error -32602: Input validation error: Invalid arguments for tool 21st_magic_component_builder: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"message\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"searchQuery\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToCurrentFile\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToProjectDirectory\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"standaloneRequestQuery\"\n    ],\n    \"message\": \"Required\"\n  }\n]"
+        },
+        "text_len": 936
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "MCP error -32602: Input validation error: Invalid arguments for tool 21st_magic_component_builder: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"message\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"searchQuery\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToCurrentFile\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"absolutePathToProjectDirectory\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"standaloneRequestQuery\"\n    ],\n    \"message\": \"Required\"\n  }\n]"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

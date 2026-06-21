@@ -15,7 +15,10 @@ mod tests {
     #[test]
     fn classifies_ecosystems() {
         assert_eq!(wasm_class_from_language(Some("Rust")), "wasm-ready");
-        assert_eq!(wasm_class_from_language(Some("Python")), "wasm-needs-runtime");
+        assert_eq!(
+            wasm_class_from_language(Some("Python")),
+            "wasm-needs-runtime"
+        );
         assert_eq!(wasm_class_from_language(Some("TypeScript")), "wasm-hard");
         assert_eq!(wasm_class_from_language(None), "unknown");
     }

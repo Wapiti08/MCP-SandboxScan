@@ -6,12 +6,10 @@ use anyhow::{Context, Result};
 use crate::subject::{Capability, SubjectManifest};
 
 pub fn needs_data_dir(subject: &SubjectManifest) -> bool {
-    subject.capabilities.iter().any(|cap| {
-        matches!(
-            cap,
-            Capability::FileRead | Capability::FileWrite
-        )
-    })
+    subject
+        .capabilities
+        .iter()
+        .any(|cap| matches!(cap, Capability::FileRead | Capability::FileWrite))
 }
 
 pub fn resolve_data_dir(
@@ -27,8 +25,7 @@ pub fn resolve_data_dir(
     }
 
     let dir = manifest_dir.join("data");
-    std::fs::create_dir_all(&dir)
-        .with_context(|| format!("failed to create {}", dir.display()))?;
+    std::fs::create_dir_all(&dir).with_context(|| format!("failed to create {}", dir.display()))?;
     let secret = dir.join("secret.txt");
     if !secret.exists() {
         std::fs::write(&secret, "top-secret-0123456789abcdef")
@@ -43,9 +40,7 @@ pub fn default_env_for_subject(
 ) -> HashMap<String, String> {
     let mut out = env.clone();
 
-    if subject.capabilities.contains(&Capability::FileRead)
-        && !out.contains_key("FILE_TO_READ")
-    {
+    if subject.capabilities.contains(&Capability::FileRead) && !out.contains_key("FILE_TO_READ") {
         out.insert("FILE_TO_READ".to_string(), "secret.txt".to_string());
     }
 

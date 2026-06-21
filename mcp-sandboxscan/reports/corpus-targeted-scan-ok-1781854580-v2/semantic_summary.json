@@ -1,0 +1,536 @@
+{
+  "total_repos": 35,
+  "repos_with_tool_metadata": 35,
+  "repos_with_any_signal": 35,
+  "total_tools": 505,
+  "described_tools": 503,
+  "sensitive_tools": 345,
+  "by_capability": {
+    "credential": 30,
+    "network": 124,
+    "unknown": 160,
+    "cloud_saas": 100,
+    "browser": 157,
+    "shell": 28,
+    "database": 93,
+    "filesystem": 74,
+    "code_repo": 91
+  },
+  "by_source": {
+    "static_source": {
+      "repos": 2,
+      "tools": 3,
+      "described_tools": 1,
+      "sensitive_tools": 2
+    },
+    "dynamic_tools_list": {
+      "repos": 33,
+      "tools": 502,
+      "described_tools": 502,
+      "sensitive_tools": 343
+    }
+  },
+  "cases": [
+    {
+      "repo_id": "modelcontextprotocol/servers",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 13,
+      "described_tools": 13,
+      "sensitive_tools": 3,
+      "by_capability": {
+        "network": 3,
+        "database": 1,
+        "unknown": 10,
+        "code_repo": 1
+      }
+    },
+    {
+      "repo_id": "microsoft/playwright-mcp",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 23,
+      "described_tools": 23,
+      "sensitive_tools": 23,
+      "by_capability": {
+        "network": 5,
+        "shell": 1,
+        "filesystem": 3,
+        "browser": 23
+      }
+    },
+    {
+      "repo_id": "github/github-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 43,
+      "described_tools": 43,
+      "sensitive_tools": 43,
+      "by_capability": {
+        "code_repo": 41,
+        "filesystem": 2,
+        "network": 14,
+        "browser": 16,
+        "credential": 2,
+        "database": 6
+      }
+    },
+    {
+      "repo_id": "czlonkowski/n8n-mcp",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 7,
+      "described_tools": 7,
+      "sensitive_tools": 4,
+      "by_capability": {
+        "database": 3,
+        "credential": 2,
+        "cloud_saas": 2,
+        "shell": 1,
+        "unknown": 3,
+        "network": 3,
+        "browser": 2
+      }
+    },
+    {
+      "repo_id": "mksglu/context-mode",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 11,
+      "described_tools": 11,
+      "sensitive_tools": 10,
+      "by_capability": {
+        "unknown": 1,
+        "code_repo": 4,
+        "credential": 1,
+        "filesystem": 2,
+        "shell": 5,
+        "browser": 2,
+        "network": 5,
+        "database": 5
+      }
+    },
+    {
+      "repo_id": "GLips/Figma-Context-MCP",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 2,
+      "described_tools": 2,
+      "sensitive_tools": 2,
+      "by_capability": {
+        "cloud_saas": 2,
+        "filesystem": 1,
+        "network": 2,
+        "database": 1
+      }
+    },
+    {
+      "repo_id": "BeehiveInnovations/pal-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 18,
+      "described_tools": 18,
+      "sensitive_tools": 15,
+      "by_capability": {
+        "code_repo": 13,
+        "network": 13,
+        "browser": 3,
+        "unknown": 3,
+        "cloud_saas": 1,
+        "filesystem": 11
+      }
+    },
+    {
+      "repo_id": "wonderwhy-er/DesktopCommanderMCP",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 26,
+      "described_tools": 26,
+      "sensitive_tools": 25,
+      "by_capability": {
+        "shell": 15,
+        "cloud_saas": 1,
+        "filesystem": 14,
+        "browser": 6,
+        "code_repo": 2,
+        "database": 4,
+        "network": 4,
+        "unknown": 1
+      }
+    },
+    {
+      "repo_id": "executeautomation/mcp-playwright",
+      "tier": "tier1",
+      "source": "static_source",
+      "tool_count": 2,
+      "described_tools": 0,
+      "sensitive_tools": 2,
+      "by_capability": {
+        "browser": 1,
+        "network": 2
+      }
+    },
+    {
+      "repo_id": "mobile-next/mobile-mcp",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 23,
+      "described_tools": 23,
+      "sensitive_tools": 7,
+      "by_capability": {
+        "network": 1,
+        "code_repo": 2,
+        "browser": 4,
+        "unknown": 16,
+        "filesystem": 1
+      }
+    },
+    {
+      "repo_id": "21st-dev/magic-mcp",
+      "tier": "tier1",
+      "source": "static_source",
+      "tool_count": 1,
+      "described_tools": 1,
+      "sensitive_tools": 0,
+      "by_capability": {
+        "unknown": 1
+      }
+    },
+    {
+      "repo_id": "exa-labs/exa-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 2,
+      "described_tools": 2,
+      "sensitive_tools": 2,
+      "by_capability": {
+        "browser": 2,
+        "network": 2,
+        "database": 1
+      }
+    },
+    {
+      "repo_id": "makenotion/notion-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 24,
+      "described_tools": 24,
+      "sensitive_tools": 24,
+      "by_capability": {
+        "browser": 24,
+        "cloud_saas": 24,
+        "network": 24,
+        "database": 24,
+        "credential": 1
+      }
+    },
+    {
+      "repo_id": "Coding-Solo/godot-mcp",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 14,
+      "described_tools": 14,
+      "sensitive_tools": 11,
+      "by_capability": {
+        "filesystem": 11,
+        "unknown": 3
+      }
+    },
+    {
+      "repo_id": "Pimzino/spec-workflow-mcp",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 5,
+      "described_tools": 5,
+      "sensitive_tools": 5,
+      "by_capability": {
+        "browser": 1,
+        "database": 1,
+        "filesystem": 3,
+        "network": 4
+      }
+    },
+    {
+      "repo_id": "zcaceres/markdownify-mcp",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 11,
+      "described_tools": 11,
+      "sensitive_tools": 11,
+      "by_capability": {
+        "network": 4,
+        "browser": 2,
+        "code_repo": 1,
+        "filesystem": 7
+      }
+    },
+    {
+      "repo_id": "GongRzhe/Office-Word-MCP-Server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 54,
+      "described_tools": 54,
+      "sensitive_tools": 21,
+      "by_capability": {
+        "unknown": 33,
+        "credential": 2,
+        "code_repo": 1,
+        "filesystem": 1,
+        "browser": 17
+      }
+    },
+    {
+      "repo_id": "GongRzhe/Office-PowerPoint-MCP-Server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 37,
+      "described_tools": 37,
+      "sensitive_tools": 4,
+      "by_capability": {
+        "browser": 2,
+        "unknown": 33,
+        "code_repo": 1,
+        "network": 1
+      }
+    },
+    {
+      "repo_id": "Flux159/mcp-server-kubernetes",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 23,
+      "described_tools": 23,
+      "sensitive_tools": 20,
+      "by_capability": {
+        "browser": 1,
+        "credential": 1,
+        "network": 2,
+        "unknown": 3,
+        "cloud_saas": 19,
+        "code_repo": 2,
+        "shell": 2,
+        "filesystem": 2
+      }
+    },
+    {
+      "repo_id": "bitbonsai/mcpvault",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 15,
+      "described_tools": 15,
+      "sensitive_tools": 3,
+      "by_capability": {
+        "unknown": 12,
+        "database": 1,
+        "filesystem": 2
+      }
+    },
+    {
+      "repo_id": "designcomputer/mysql_mcp_server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 3,
+      "described_tools": 3,
+      "sensitive_tools": 3,
+      "by_capability": {
+        "database": 3,
+        "network": 1,
+        "browser": 3
+      }
+    },
+    {
+      "repo_id": "nickclyde/duckduckgo-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 2,
+      "described_tools": 2,
+      "sensitive_tools": 2,
+      "by_capability": {
+        "network": 2,
+        "browser": 2,
+        "database": 1
+      }
+    },
+    {
+      "repo_id": "datalayer/jupyter-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 17,
+      "described_tools": 17,
+      "sensitive_tools": 3,
+      "by_capability": {
+        "unknown": 14,
+        "network": 1,
+        "filesystem": 1,
+        "credential": 1,
+        "shell": 1
+      }
+    },
+    {
+      "repo_id": "strowk/mcp-k8s-go",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 9,
+      "described_tools": 9,
+      "sensitive_tools": 9,
+      "by_capability": {
+        "shell": 1,
+        "cloud_saas": 9
+      }
+    },
+    {
+      "repo_id": "smn2gnt/MCP-Salesforce",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 14,
+      "described_tools": 14,
+      "sensitive_tools": 14,
+      "by_capability": {
+        "database": 2,
+        "credential": 3,
+        "network": 3,
+        "cloud_saas": 12
+      }
+    },
+    {
+      "repo_id": "tsmztech/mcp-server-salesforce",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 15,
+      "described_tools": 15,
+      "sensitive_tools": 15,
+      "by_capability": {
+        "network": 1,
+        "shell": 2,
+        "database": 2,
+        "browser": 1,
+        "cloud_saas": 15
+      }
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-bitbucket",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 6,
+      "described_tools": 6,
+      "sensitive_tools": 6,
+      "by_capability": {
+        "network": 6,
+        "browser": 5,
+        "cloud_saas": 5,
+        "database": 5,
+        "filesystem": 1,
+        "credential": 5,
+        "code_repo": 6
+      }
+    },
+    {
+      "repo_id": "aashari/boilerplate-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 2,
+      "described_tools": 2,
+      "sensitive_tools": 2,
+      "by_capability": {
+        "browser": 2,
+        "database": 2,
+        "network": 2,
+        "credential": 2
+      }
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-jira",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 5,
+      "described_tools": 5,
+      "sensitive_tools": 5,
+      "by_capability": {
+        "database": 5,
+        "code_repo": 5,
+        "browser": 5,
+        "network": 5,
+        "cloud_saas": 5,
+        "credential": 5
+      }
+    },
+    {
+      "repo_id": "HatriGt/hana-mcp-server",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 34,
+      "described_tools": 34,
+      "sensitive_tools": 26,
+      "by_capability": {
+        "database": 19,
+        "network": 3,
+        "browser": 26,
+        "unknown": 8
+      }
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-confluence",
+      "tier": "tier1",
+      "source": "dynamic_tools_list",
+      "tool_count": 5,
+      "described_tools": 5,
+      "sensitive_tools": 5,
+      "by_capability": {
+        "cloud_saas": 5,
+        "network": 5,
+        "credential": 5,
+        "database": 5,
+        "browser": 5
+      }
+    },
+    {
+      "repo_id": "dend/brick-mcp-app",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 20,
+      "described_tools": 20,
+      "sensitive_tools": 2,
+      "by_capability": {
+        "network": 1,
+        "browser": 1,
+        "database": 1,
+        "unknown": 18
+      }
+    },
+    {
+      "repo_id": "hoangsonww/GitIntel-MCP-Server",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 12,
+      "described_tools": 12,
+      "sensitive_tools": 12,
+      "by_capability": {
+        "filesystem": 12,
+        "code_repo": 12,
+        "browser": 1
+      }
+    },
+    {
+      "repo_id": "imprvhub/mcp-claude-hackernews",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 5,
+      "described_tools": 5,
+      "sensitive_tools": 5,
+      "by_capability": {
+        "network": 5
+      }
+    },
+    {
+      "repo_id": "jhgaylor/hirebase-mcp",
+      "tier": "tier2",
+      "source": "dynamic_tools_list",
+      "tool_count": 2,
+      "described_tools": 2,
+      "sensitive_tools": 1,
+      "by_capability": {
+        "database": 1,
+        "unknown": 1
+      }
+    }
+  ]
+}

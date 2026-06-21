@@ -1,0 +1,674 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 206
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "resources": {
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "mcp-git-intel",
+              "version": "1.0.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Find files that change most frequently. High change frequency correlates with defect density — the top 4% of files by change frequency typically contain 50%+ of bugs. Use this to identify files that need refactoring, better test coverage, or architectural attention. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": {
+                      "default": 90,
+                      "description": "Number of days to look back (default: 90)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Max results to return (default: 20, max: 100)",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100,
+                      "type": "integer"
+                    },
+                    "path_filter": {
+                      "description": "Filter to files under this path (e.g., \"src/api\")",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "hotspots",
+                "title": "Change Hotspots"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Analyze code churn — how much code is being written and then rewritten. High churn indicates instability, unclear requirements, or code that is hard to get right. A file with 500 lines added and 400 deleted in a month is a red flag. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": {
+                      "default": 90,
+                      "description": "Number of days to look back (default: 90)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Max results to return (default: 20, max: 100)",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100,
+                      "type": "integer"
+                    },
+                    "path_filter": {
+                      "description": "Filter to files under this path",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "churn",
+                "title": "Code Churn Analysis"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Find files that always change together (temporal coupling). These represent hidden dependencies not visible in imports or type signatures. If auth.ts and middleware.ts change together in 90% of commits, refactoring one without the other will likely break things. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": {
+                      "default": 90,
+                      "description": "Days to look back (default: 90)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Max pairs to return (default: 20)",
+                      "exclusiveMinimum": 0,
+                      "maximum": 50,
+                      "type": "integer"
+                    },
+                    "min_commits": {
+                      "default": 3,
+                      "description": "Minimum shared commits to report (default: 3)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "min_coupling": {
+                      "default": 0.5,
+                      "description": "Minimum coupling score 0-1 (default: 0.5)",
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "path_filter": {
+                      "description": "Filter to files under this path",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "coupling",
+                "title": "Temporal Coupling"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Show who knows a file or directory best, weighted by recency, volume of changes, and commit frequency. Use this to find the right reviewer for a PR, identify knowledge silos, or plan for team transitions. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": {
+                      "default": 365,
+                      "description": "Days to look back (default: 365)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "path": {
+                      "description": "File or directory path to analyze (relative to repo root)",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "knowledge_map",
+                "title": "Knowledge Map"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Track how a file's complexity has changed over time by sampling its state at regular intervals in git history. Identifies files growing out of control, complexity spikes from specific commits, and files that need splitting. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": {
+                      "default": 180,
+                      "description": "Days to look back (default: 180)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "path": {
+                      "description": "File path to analyze (relative to repo root)",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    },
+                    "samples": {
+                      "default": 10,
+                      "description": "Number of time samples (default: 10, max: 30)",
+                      "maximum": 30,
+                      "minimum": 3,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "complexity_trend",
+                "title": "Complexity Trend"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Assess the risk profile of uncommitted changes or a specific commit range. Combines multiple signals: file hotspot history, change size, number of files, author familiarity, and file type sensitivity. Returns a score 0-100 with per-file breakdown and actionable recommendations. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "ref_range": {
+                      "description": "Git ref range to assess (e.g., \"main..feature-branch\"). Defaults to uncommitted changes.",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "risk_assessment",
+                "title": "Change Risk Assessment"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Generate structured release notes from commits between two git refs. Groups by conventional commit type, extracts breaking changes, and links PR/issue references. Supports grouping by type, scope, or author. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "from_ref": {
+                      "description": "Starting ref (tag, branch, or commit hash)",
+                      "type": "string"
+                    },
+                    "group_by": {
+                      "default": "type",
+                      "description": "How to group commits (default: type)",
+                      "enum": [
+                        "type",
+                        "scope",
+                        "author"
+                      ],
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    },
+                    "to_ref": {
+                      "default": "HEAD",
+                      "description": "Ending ref (default: HEAD)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from_ref"
+                  ],
+                  "type": "object"
+                },
+                "name": "release_notes",
+                "title": "Release Notes Generator"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Comprehensive contributor analytics: who is active, what areas they work in, their commit patterns, and collaboration graph. Useful for understanding team dynamics, identifying knowledge silos, onboarding planning, and workload distribution. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "author": {
+                      "description": "Filter to a specific author name (partial match)",
+                      "type": "string"
+                    },
+                    "days": {
+                      "default": 90,
+                      "description": "Days to look back (default: 90)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "contributor_stats",
+                "title": "Contributor Statistics"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Show the full commit history of a specific file — who changed it, when, how much, and why. Useful for understanding why a file looks the way it does, finding when a bug was introduced, or tracing the evolution of a module. Uses --follow to track renames. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": {
+                      "default": 365,
+                      "description": "Number of days to look back (default: 365)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "default": 30,
+                      "description": "Max commits to return (default: 30, max: 100)",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100,
+                      "type": "integer"
+                    },
+                    "path": {
+                      "description": "File path to analyze (e.g., \"src/index.ts\")",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "file_history",
+                "title": "File History"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Show the age of code in each file — when it was last modified. Identifies stale files that haven't been touched in months or years (potential dead code or abandoned features) vs actively maintained areas. Useful for cleanup planning, onboarding, and understanding which parts of the codebase are actively evolving. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "limit": {
+                      "default": 30,
+                      "description": "Max files to return (default: 30, max: 100)",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100,
+                      "type": "integer"
+                    },
+                    "path_filter": {
+                      "description": "Filter to files under this path (e.g., \"src/\")",
+                      "type": "string"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    },
+                    "sort": {
+                      "default": "oldest",
+                      "description": "Sort order: \"oldest\" shows stalest files first, \"newest\" shows most recent first",
+                      "enum": [
+                        "oldest",
+                        "newest"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "code_age",
+                "title": "Code Age Analysis"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Analyze when and how the team commits — day-of-week distribution, hour-of-day heatmap, commit size breakdown, and weekly velocity trends. Reveals work patterns like weekend deployments, late-night hotfixes, or declining commit velocity. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "author": {
+                      "description": "Filter to a specific author (exact match on name)",
+                      "type": "string"
+                    },
+                    "days": {
+                      "default": 90,
+                      "description": "Number of days to look back (default: 90)",
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "commit_patterns",
+                "title": "Commit Patterns"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Analyze all branches for staleness, divergence from the main branch, and merge risk. Identifies stale branches that should be cleaned up, branches that have diverged significantly and may cause merge conflicts, and branches with no recent activity. NOTE: If the server was not started inside a git repo, you MUST provide repo_path.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "base_branch": {
+                      "default": "HEAD",
+                      "description": "Branch to compare against (default: HEAD). Typically \"main\" or \"master\".",
+                      "type": "string"
+                    },
+                    "include_remote": {
+                      "default": false,
+                      "description": "Include remote tracking branches (default: false)",
+                      "type": "boolean"
+                    },
+                    "repo_path": {
+                      "description": "Absolute path to the git repository to analyze. Required if Claude Code was not opened in a git repo.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "branch_risk",
+                "title": "Branch Risk Analysis"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "hotspots"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "No commits found in the specified time range.",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "hotspots"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "hotspots",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "No commits found in the specified time range.",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "hotspots"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "No commits found in the specified time range."
+        },
+        "text_len": 45
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "No commits found in the specified time range."
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

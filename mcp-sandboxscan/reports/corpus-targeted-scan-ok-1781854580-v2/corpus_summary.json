@@ -1,0 +1,1171 @@
+{
+  "run_id": "run-1782068052",
+  "total_repos": 35,
+  "resolved_repos": 35,
+  "scanned_repos": 33,
+  "scan_success_rate": 0.9428571428571428,
+  "suspicious_rate": 0.36363636363636365,
+  "by_wasm_class": {
+    "wasm-hard": {
+      "total": 24,
+      "scanned": 22,
+      "suspicious": 7
+    },
+    "unknown": {
+      "total": 1,
+      "scanned": 1,
+      "suspicious": 0
+    },
+    "wasm-ready": {
+      "total": 2,
+      "scanned": 2,
+      "suspicious": 2
+    },
+    "wasm-needs-runtime": {
+      "total": 8,
+      "scanned": 8,
+      "suspicious": 3
+    }
+  },
+  "by_ecosystem": {
+    "python": {
+      "total": 8,
+      "scanned": 8,
+      "suspicious": 3
+    },
+    "npm": {
+      "total": 25,
+      "scanned": 23,
+      "suspicious": 7
+    },
+    "go": {
+      "total": 2,
+      "scanned": 2,
+      "suspicious": 2
+    }
+  },
+  "by_failure_category": {
+    "timeout": 2
+  },
+  "latency": {
+    "count": 33,
+    "build_ms_p50": 2821,
+    "build_ms_p95": 13764,
+    "scan_ms_p50": 431,
+    "scan_ms_p95": 7575,
+    "total_ms_p50": 3311,
+    "total_ms_p95": 25161
+  },
+  "tier1": {
+    "resolved": 28,
+    "scanned": 26,
+    "scan_success_rate": 0.9285714285714286,
+    "suspicious": 9,
+    "suspicious_rate": 0.34615384615384615,
+    "latency": {
+      "count": 26,
+      "build_ms_p50": 2786,
+      "build_ms_p95": 13764,
+      "scan_ms_p50": 438,
+      "scan_ms_p95": 1490,
+      "total_ms_p50": 3236,
+      "total_ms_p95": 14278
+    }
+  },
+  "semantic": {
+    "all": {
+      "repos_with_metadata": 33,
+      "total_tools": 502,
+      "described_tools": 502,
+      "sensitive_tools": 343,
+      "by_capability": {
+        "shell": 28,
+        "browser": 156,
+        "cloud_saas": 100,
+        "network": 122,
+        "code_repo": 91,
+        "database": 93,
+        "credential": 30,
+        "unknown": 159,
+        "filesystem": 74
+      }
+    },
+    "tier1": {
+      "repos_with_metadata": 26,
+      "total_tools": 426,
+      "described_tools": 426,
+      "sensitive_tools": 299,
+      "by_capability": {
+        "network": 107,
+        "unknown": 127,
+        "shell": 23,
+        "database": 85,
+        "browser": 150,
+        "credential": 29,
+        "filesystem": 51,
+        "cloud_saas": 100,
+        "code_repo": 74
+      }
+    },
+    "tier2": {
+      "repos_with_metadata": 7,
+      "total_tools": 76,
+      "described_tools": 76,
+      "sensitive_tools": 44,
+      "by_capability": {
+        "browser": 6,
+        "code_repo": 17,
+        "filesystem": 23,
+        "shell": 5,
+        "database": 8,
+        "credential": 1,
+        "network": 15,
+        "unknown": 32
+      }
+    }
+  },
+  "cases": [
+    {
+      "repo_id": "modelcontextprotocol/servers",
+      "subject_toml": "corpus/manifests/modelcontextprotocol__servers.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 1,
+      "num_sinks": 10,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/modelcontextprotocol__servers.json",
+      "stars": 87415,
+      "dep_count": 4,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 3808,
+      "scan_ms": 431,
+      "total_ms": 4240,
+      "tool_profile": {
+        "tool_count": 13,
+        "described_tools": 13,
+        "sensitive_tools": 3,
+        "by_capability": {
+          "code_repo": 1,
+          "unknown": 10,
+          "network": 3,
+          "database": 1
+        }
+      }
+    },
+    {
+      "repo_id": "microsoft/playwright-mcp",
+      "subject_toml": "corpus/manifests/microsoft__playwright-mcp.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/microsoft__playwright-mcp.json",
+      "stars": 34075,
+      "dep_count": 5,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 393,
+      "scan_ms": 278,
+      "total_ms": 672,
+      "tool_profile": {
+        "tool_count": 23,
+        "described_tools": 23,
+        "sensitive_tools": 23,
+        "by_capability": {
+          "filesystem": 3,
+          "browser": 23,
+          "network": 5,
+          "shell": 1
+        }
+      }
+    },
+    {
+      "repo_id": "github/github-mcp-server",
+      "subject_toml": "corpus/manifests/github__github-mcp-server.toml",
+      "language": "Go",
+      "wasm_class": "wasm-ready",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 13,
+      "num_sinks": 7,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/github__github-mcp-server.json",
+      "stars": 30784,
+      "dep_count": 2,
+      "ecosystem": "go",
+      "tier": "tier1",
+      "build_ms": 519,
+      "scan_ms": 365,
+      "total_ms": 885,
+      "tool_profile": {
+        "tool_count": 43,
+        "described_tools": 43,
+        "sensitive_tools": 43,
+        "by_capability": {
+          "code_repo": 41,
+          "database": 6,
+          "filesystem": 2,
+          "credential": 2,
+          "browser": 16,
+          "network": 14
+        }
+      }
+    },
+    {
+      "repo_id": "czlonkowski/n8n-mcp",
+      "subject_toml": "corpus/manifests/czlonkowski__n8n-mcp.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 2,
+      "num_sinks": 3,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/czlonkowski__n8n-mcp.json",
+      "stars": 21838,
+      "dep_count": 40,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 24722,
+      "scan_ms": 438,
+      "total_ms": 25161,
+      "tool_profile": {
+        "tool_count": 7,
+        "described_tools": 7,
+        "sensitive_tools": 4,
+        "by_capability": {
+          "unknown": 3,
+          "credential": 2,
+          "cloud_saas": 2,
+          "shell": 1,
+          "browser": 2,
+          "network": 3,
+          "database": 3
+        }
+      }
+    },
+    {
+      "repo_id": "mksglu/context-mode",
+      "subject_toml": "corpus/manifests/mksglu__context-mode.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/mksglu__context-mode.json",
+      "stars": 17727,
+      "dep_count": 15,
+      "ecosystem": "npm",
+      "tier": "tier2",
+      "build_ms": 3025,
+      "scan_ms": 286,
+      "total_ms": 3311,
+      "tool_profile": {
+        "tool_count": 11,
+        "described_tools": 11,
+        "sensitive_tools": 10,
+        "by_capability": {
+          "browser": 2,
+          "database": 5,
+          "credential": 1,
+          "code_repo": 4,
+          "filesystem": 2,
+          "shell": 5,
+          "network": 5,
+          "unknown": 1
+        }
+      }
+    },
+    {
+      "repo_id": "GLips/Figma-Context-MCP",
+      "subject_toml": "corpus/manifests/GLips__Figma-Context-MCP.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/GLips__Figma-Context-MCP.json",
+      "stars": 15148,
+      "dep_count": 31,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 3719,
+      "scan_ms": 408,
+      "total_ms": 4127,
+      "tool_profile": {
+        "tool_count": 2,
+        "described_tools": 2,
+        "sensitive_tools": 2,
+        "by_capability": {
+          "network": 2,
+          "filesystem": 1,
+          "database": 1,
+          "cloud_saas": 2
+        }
+      }
+    },
+    {
+      "repo_id": "BeehiveInnovations/pal-mcp-server",
+      "subject_toml": "corpus/manifests/BeehiveInnovations__pal-mcp-server.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 10,
+      "num_sinks": 6,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/BeehiveInnovations__pal-mcp-server.json",
+      "stars": 11597,
+      "dep_count": 6,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 3555,
+      "scan_ms": 1292,
+      "total_ms": 4847,
+      "tool_profile": {
+        "tool_count": 18,
+        "described_tools": 18,
+        "sensitive_tools": 15,
+        "by_capability": {
+          "browser": 3,
+          "unknown": 3,
+          "filesystem": 11,
+          "network": 13,
+          "cloud_saas": 1,
+          "code_repo": 13
+        }
+      }
+    },
+    {
+      "repo_id": "wonderwhy-er/DesktopCommanderMCP",
+      "subject_toml": "corpus/manifests/wonderwhy-er__DesktopCommanderMCP.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 4,
+      "num_sinks": 5,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/wonderwhy-er__DesktopCommanderMCP.json",
+      "stars": 6184,
+      "dep_count": 47,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 10245,
+      "scan_ms": 860,
+      "total_ms": 11105,
+      "tool_profile": {
+        "tool_count": 26,
+        "described_tools": 26,
+        "sensitive_tools": 25,
+        "by_capability": {
+          "network": 4,
+          "code_repo": 2,
+          "database": 4,
+          "unknown": 1,
+          "filesystem": 14,
+          "cloud_saas": 1,
+          "shell": 15,
+          "browser": 6
+        }
+      }
+    },
+    {
+      "repo_id": "executeautomation/mcp-playwright",
+      "subject_toml": "corpus/manifests/executeautomation__mcp-playwright.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "unknown",
+      "scan_ok": false,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 0,
+      "error": "failed to scan native MCP subject executeautomation__mcp-playwright: MCP server timed out after 30s",
+      "failure_category": "timeout",
+      "stars": 5554,
+      "dep_count": 19,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "total_ms": 93212
+    },
+    {
+      "repo_id": "mobile-next/mobile-mcp",
+      "subject_toml": "corpus/manifests/mobile-next__mobile-mcp.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 8,
+      "num_sinks": 8,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/mobile-next__mobile-mcp.json",
+      "stars": 5228,
+      "dep_count": 26,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 1755,
+      "scan_ms": 710,
+      "total_ms": 2466,
+      "tool_profile": {
+        "tool_count": 23,
+        "described_tools": 23,
+        "sensitive_tools": 7,
+        "by_capability": {
+          "unknown": 16,
+          "code_repo": 2,
+          "network": 1,
+          "browser": 4,
+          "filesystem": 1
+        }
+      }
+    },
+    {
+      "repo_id": "21st-dev/magic-mcp",
+      "subject_toml": "corpus/manifests/21st-dev__magic-mcp.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "unknown",
+      "scan_ok": false,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 0,
+      "error": "failed to scan native MCP subject 21st-dev__magic-mcp: MCP server timed out after 30s",
+      "failure_category": "timeout",
+      "stars": 5166,
+      "dep_count": 15,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "total_ms": 93886
+    },
+    {
+      "repo_id": "exa-labs/exa-mcp-server",
+      "subject_toml": "corpus/manifests/exa-labs__exa-mcp-server.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/exa-labs__exa-mcp-server.json",
+      "stars": 4590,
+      "dep_count": 17,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 1128,
+      "scan_ms": 160,
+      "total_ms": 1289,
+      "tool_profile": {
+        "tool_count": 2,
+        "described_tools": 2,
+        "sensitive_tools": 2,
+        "by_capability": {
+          "network": 2,
+          "browser": 2,
+          "database": 1
+        }
+      }
+    },
+    {
+      "repo_id": "makenotion/notion-mcp-server",
+      "subject_toml": "corpus/manifests/makenotion__notion-mcp-server.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 5,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/makenotion__notion-mcp-server.json",
+      "stars": 4437,
+      "dep_count": 24,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 1454,
+      "scan_ms": 187,
+      "total_ms": 1642,
+      "tool_profile": {
+        "tool_count": 24,
+        "described_tools": 24,
+        "sensitive_tools": 24,
+        "by_capability": {
+          "cloud_saas": 24,
+          "browser": 24,
+          "database": 24,
+          "credential": 1,
+          "network": 24
+        }
+      }
+    },
+    {
+      "repo_id": "Coding-Solo/godot-mcp",
+      "subject_toml": "corpus/manifests/Coding-Solo__godot-mcp.toml",
+      "language": "JavaScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 9,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/Coding-Solo__godot-mcp.json",
+      "stars": 4259,
+      "dep_count": 5,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 2180,
+      "scan_ms": 87,
+      "total_ms": 2267,
+      "tool_profile": {
+        "tool_count": 14,
+        "described_tools": 14,
+        "sensitive_tools": 11,
+        "by_capability": {
+          "filesystem": 11,
+          "unknown": 3
+        }
+      }
+    },
+    {
+      "repo_id": "Pimzino/spec-workflow-mcp",
+      "subject_toml": "corpus/manifests/Pimzino__spec-workflow-mcp.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 1,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/Pimzino__spec-workflow-mcp.json",
+      "stars": 4234,
+      "dep_count": 52,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 13764,
+      "scan_ms": 513,
+      "total_ms": 14278,
+      "tool_profile": {
+        "tool_count": 5,
+        "described_tools": 5,
+        "sensitive_tools": 5,
+        "by_capability": {
+          "network": 4,
+          "browser": 1,
+          "database": 1,
+          "filesystem": 3
+        }
+      }
+    },
+    {
+      "repo_id": "zcaceres/markdownify-mcp",
+      "subject_toml": "corpus/manifests/zcaceres__markdownify-mcp.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 1,
+      "num_sinks": 7,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/zcaceres__markdownify-mcp.json",
+      "stars": 2749,
+      "dep_count": 6,
+      "ecosystem": "npm",
+      "tier": "tier2",
+      "build_ms": 4052,
+      "scan_ms": 363,
+      "total_ms": 4416,
+      "tool_profile": {
+        "tool_count": 11,
+        "described_tools": 11,
+        "sensitive_tools": 11,
+        "by_capability": {
+          "browser": 2,
+          "filesystem": 7,
+          "network": 4,
+          "code_repo": 1
+        }
+      }
+    },
+    {
+      "repo_id": "GongRzhe/Office-Word-MCP-Server",
+      "subject_toml": "corpus/manifests/GongRzhe__Office-Word-MCP-Server.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 8,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/GongRzhe__Office-Word-MCP-Server.json",
+      "stars": 2057,
+      "dep_count": 5,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 2958,
+      "scan_ms": 894,
+      "total_ms": 3852,
+      "tool_profile": {
+        "tool_count": 54,
+        "described_tools": 54,
+        "sensitive_tools": 21,
+        "by_capability": {
+          "code_repo": 1,
+          "unknown": 33,
+          "filesystem": 1,
+          "browser": 17,
+          "credential": 2
+        }
+      }
+    },
+    {
+      "repo_id": "GongRzhe/Office-PowerPoint-MCP-Server",
+      "subject_toml": "corpus/manifests/GongRzhe__Office-PowerPoint-MCP-Server.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 8,
+      "num_sinks": 196,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/GongRzhe__Office-PowerPoint-MCP-Server.json",
+      "stars": 1798,
+      "dep_count": 4,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 2781,
+      "scan_ms": 727,
+      "total_ms": 3508,
+      "tool_profile": {
+        "tool_count": 37,
+        "described_tools": 37,
+        "sensitive_tools": 4,
+        "by_capability": {
+          "unknown": 33,
+          "network": 1,
+          "browser": 2,
+          "code_repo": 1
+        }
+      }
+    },
+    {
+      "repo_id": "Flux159/mcp-server-kubernetes",
+      "subject_toml": "corpus/manifests/Flux159__mcp-server-kubernetes.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 0,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/Flux159__mcp-server-kubernetes.json",
+      "stars": 1438,
+      "dep_count": 19,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 2821,
+      "scan_ms": 1490,
+      "total_ms": 4311,
+      "tool_profile": {
+        "tool_count": 23,
+        "described_tools": 23,
+        "sensitive_tools": 20,
+        "by_capability": {
+          "cloud_saas": 19,
+          "code_repo": 2,
+          "network": 2,
+          "shell": 2,
+          "unknown": 3,
+          "browser": 1,
+          "filesystem": 2,
+          "credential": 1
+        }
+      }
+    },
+    {
+      "repo_id": "bitbonsai/mcpvault",
+      "subject_toml": "corpus/manifests/bitbonsai__mcpvault.toml",
+      "language": "Astro",
+      "wasm_class": "unknown",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 7,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/bitbonsai__mcpvault.json",
+      "stars": 1432,
+      "dep_count": 8,
+      "ecosystem": "npm",
+      "tier": "tier2",
+      "build_ms": 1174,
+      "scan_ms": 277,
+      "total_ms": 1452,
+      "tool_profile": {
+        "tool_count": 15,
+        "described_tools": 15,
+        "sensitive_tools": 3,
+        "by_capability": {
+          "unknown": 12,
+          "filesystem": 2,
+          "database": 1
+        }
+      }
+    },
+    {
+      "repo_id": "designcomputer/mysql_mcp_server",
+      "subject_toml": "corpus/manifests/designcomputer__mysql_mcp_server.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/designcomputer__mysql_mcp_server.json",
+      "stars": 1304,
+      "dep_count": 4,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 2786,
+      "scan_ms": 449,
+      "total_ms": 3236,
+      "tool_profile": {
+        "tool_count": 3,
+        "described_tools": 3,
+        "sensitive_tools": 3,
+        "by_capability": {
+          "browser": 3,
+          "database": 3,
+          "network": 1
+        }
+      }
+    },
+    {
+      "repo_id": "nickclyde/duckduckgo-mcp-server",
+      "subject_toml": "corpus/manifests/nickclyde__duckduckgo-mcp-server.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/nickclyde__duckduckgo-mcp-server.json",
+      "stars": 1254,
+      "dep_count": 1,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 2629,
+      "scan_ms": 472,
+      "total_ms": 3102,
+      "tool_profile": {
+        "tool_count": 2,
+        "described_tools": 2,
+        "sensitive_tools": 2,
+        "by_capability": {
+          "database": 1,
+          "browser": 2,
+          "network": 2
+        }
+      }
+    },
+    {
+      "repo_id": "datalayer/jupyter-mcp-server",
+      "subject_toml": "corpus/manifests/datalayer__jupyter-mcp-server.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 4,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/datalayer__jupyter-mcp-server.json",
+      "stars": 1167,
+      "dep_count": 7,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 3058,
+      "scan_ms": 7575,
+      "total_ms": 10634,
+      "tool_profile": {
+        "tool_count": 17,
+        "described_tools": 17,
+        "sensitive_tools": 3,
+        "by_capability": {
+          "unknown": 14,
+          "shell": 1,
+          "filesystem": 1,
+          "credential": 1,
+          "network": 1
+        }
+      }
+    },
+    {
+      "repo_id": "strowk/mcp-k8s-go",
+      "subject_toml": "corpus/manifests/strowk__mcp-k8s-go.toml",
+      "language": "Go",
+      "wasm_class": "wasm-ready",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 8,
+      "num_sinks": 6,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/strowk__mcp-k8s-go.json",
+      "stars": 382,
+      "dep_count": 2,
+      "ecosystem": "go",
+      "tier": "tier1",
+      "build_ms": 691,
+      "scan_ms": 751,
+      "total_ms": 1443,
+      "tool_profile": {
+        "tool_count": 9,
+        "described_tools": 9,
+        "sensitive_tools": 9,
+        "by_capability": {
+          "shell": 1,
+          "cloud_saas": 9
+        }
+      }
+    },
+    {
+      "repo_id": "smn2gnt/MCP-Salesforce",
+      "subject_toml": "corpus/manifests/smn2gnt__MCP-Salesforce.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/smn2gnt__MCP-Salesforce.json",
+      "stars": 179,
+      "dep_count": 4,
+      "ecosystem": "python",
+      "tier": "tier1",
+      "build_ms": 2830,
+      "scan_ms": 592,
+      "total_ms": 3422,
+      "tool_profile": {
+        "tool_count": 14,
+        "described_tools": 14,
+        "sensitive_tools": 14,
+        "by_capability": {
+          "network": 3,
+          "database": 2,
+          "credential": 3,
+          "cloud_saas": 12
+        }
+      }
+    },
+    {
+      "repo_id": "tsmztech/mcp-server-salesforce",
+      "subject_toml": "corpus/manifests/tsmztech__mcp-server-salesforce.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 4,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/tsmztech__mcp-server-salesforce.json",
+      "stars": 160,
+      "dep_count": 6,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 2846,
+      "scan_ms": 255,
+      "total_ms": 3102,
+      "tool_profile": {
+        "tool_count": 15,
+        "described_tools": 15,
+        "sensitive_tools": 15,
+        "by_capability": {
+          "cloud_saas": 15,
+          "shell": 2,
+          "database": 2,
+          "browser": 1,
+          "network": 1
+        }
+      }
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-bitbucket",
+      "subject_toml": "corpus/manifests/aashari__mcp-server-atlassian-bitbucket.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/aashari__mcp-server-atlassian-bitbucket.json",
+      "stars": 156,
+      "dep_count": 34,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 3410,
+      "scan_ms": 343,
+      "total_ms": 3754,
+      "tool_profile": {
+        "tool_count": 6,
+        "described_tools": 6,
+        "sensitive_tools": 6,
+        "by_capability": {
+          "filesystem": 1,
+          "browser": 5,
+          "credential": 5,
+          "network": 6,
+          "database": 5,
+          "code_repo": 6,
+          "cloud_saas": 5
+        }
+      }
+    },
+    {
+      "repo_id": "aashari/boilerplate-mcp-server",
+      "subject_toml": "corpus/manifests/aashari__boilerplate-mcp-server.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/aashari__boilerplate-mcp-server.json",
+      "stars": 71,
+      "dep_count": 34,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 2873,
+      "scan_ms": 580,
+      "total_ms": 3453,
+      "tool_profile": {
+        "tool_count": 2,
+        "described_tools": 2,
+        "sensitive_tools": 2,
+        "by_capability": {
+          "browser": 2,
+          "credential": 2,
+          "database": 2,
+          "network": 2
+        }
+      }
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-jira",
+      "subject_toml": "corpus/manifests/aashari__mcp-server-atlassian-jira.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/aashari__mcp-server-atlassian-jira.json",
+      "stars": 71,
+      "dep_count": 37,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 2785,
+      "scan_ms": 258,
+      "total_ms": 3043,
+      "tool_profile": {
+        "tool_count": 5,
+        "described_tools": 5,
+        "sensitive_tools": 5,
+        "by_capability": {
+          "database": 5,
+          "cloud_saas": 5,
+          "credential": 5,
+          "browser": 5,
+          "network": 5,
+          "code_repo": 5
+        }
+      }
+    },
+    {
+      "repo_id": "HatriGt/hana-mcp-server",
+      "subject_toml": "corpus/manifests/HatriGt__hana-mcp-server.toml",
+      "language": "JavaScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 12,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/HatriGt__hana-mcp-server.json",
+      "stars": 58,
+      "dep_count": 4,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 487,
+      "scan_ms": 169,
+      "total_ms": 656,
+      "tool_profile": {
+        "tool_count": 34,
+        "described_tools": 34,
+        "sensitive_tools": 26,
+        "by_capability": {
+          "database": 19,
+          "network": 3,
+          "browser": 26,
+          "unknown": 8
+        }
+      }
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-confluence",
+      "subject_toml": "corpus/manifests/aashari__mcp-server-atlassian-confluence.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/aashari__mcp-server-atlassian-confluence.json",
+      "stars": 58,
+      "dep_count": 36,
+      "ecosystem": "npm",
+      "tier": "tier1",
+      "build_ms": 2711,
+      "scan_ms": 265,
+      "total_ms": 2977,
+      "tool_profile": {
+        "tool_count": 5,
+        "described_tools": 5,
+        "sensitive_tools": 5,
+        "by_capability": {
+          "network": 5,
+          "browser": 5,
+          "credential": 5,
+          "cloud_saas": 5,
+          "database": 5
+        }
+      }
+    },
+    {
+      "repo_id": "dend/brick-mcp-app",
+      "subject_toml": "corpus/manifests/dend__brick-mcp-app.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 2,
+      "num_sinks": 5,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/dend__brick-mcp-app.json",
+      "stars": 16,
+      "dep_count": 22,
+      "ecosystem": "npm",
+      "tier": "tier2",
+      "build_ms": 4683,
+      "scan_ms": 60351,
+      "total_ms": 65035,
+      "tool_profile": {
+        "tool_count": 20,
+        "described_tools": 20,
+        "sensitive_tools": 2,
+        "by_capability": {
+          "unknown": 18,
+          "browser": 1,
+          "database": 1,
+          "network": 1
+        }
+      }
+    },
+    {
+      "repo_id": "hoangsonww/GitIntel-MCP-Server",
+      "subject_toml": "corpus/manifests/hoangsonww__GitIntel-MCP-Server.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 1,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/hoangsonww__GitIntel-MCP-Server.json",
+      "stars": 11,
+      "dep_count": 7,
+      "ecosystem": "npm",
+      "tier": "tier2",
+      "build_ms": 1428,
+      "scan_ms": 226,
+      "total_ms": 1654,
+      "tool_profile": {
+        "tool_count": 12,
+        "described_tools": 12,
+        "sensitive_tools": 12,
+        "by_capability": {
+          "code_repo": 12,
+          "browser": 1,
+          "filesystem": 12
+        }
+      }
+    },
+    {
+      "repo_id": "imprvhub/mcp-claude-hackernews",
+      "subject_toml": "corpus/manifests/imprvhub__mcp-claude-hackernews.toml",
+      "language": "TypeScript",
+      "wasm_class": "wasm-hard",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": false,
+      "num_flows": 0,
+      "num_sinks": 3,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/imprvhub__mcp-claude-hackernews.json",
+      "stars": 10,
+      "dep_count": 4,
+      "ecosystem": "npm",
+      "tier": "tier2",
+      "build_ms": 1033,
+      "scan_ms": 258,
+      "total_ms": 1291,
+      "tool_profile": {
+        "tool_count": 5,
+        "described_tools": 5,
+        "sensitive_tools": 5,
+        "by_capability": {
+          "network": 5
+        }
+      }
+    },
+    {
+      "repo_id": "jhgaylor/hirebase-mcp",
+      "subject_toml": "corpus/manifests/jhgaylor__hirebase-mcp.toml",
+      "language": "Python",
+      "wasm_class": "wasm-needs-runtime",
+      "wasm_status": "NativeOnly",
+      "scan_ok": true,
+      "has_flow": true,
+      "num_flows": 2,
+      "num_sinks": 2,
+      "report_path": "reports/corpus-targeted-scan-ok-1781854580-v2/cases/jhgaylor__hirebase-mcp.json",
+      "stars": 10,
+      "dep_count": 3,
+      "ecosystem": "python",
+      "tier": "tier2",
+      "build_ms": 2846,
+      "scan_ms": 517,
+      "total_ms": 3363,
+      "tool_profile": {
+        "tool_count": 2,
+        "described_tools": 2,
+        "sensitive_tools": 1,
+        "by_capability": {
+          "database": 1,
+          "unknown": 1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+reports/confused-deputy-latest/cases/go-mcp-echo/report.json
+reports/confused-deputy-latest/summary.json

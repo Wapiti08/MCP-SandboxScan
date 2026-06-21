@@ -1,0 +1,2897 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 891
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "experimental": {},
+              "extensions": {
+                "io.modelcontextprotocol/ui": {}
+              },
+              "logging": {},
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "Word Document Server",
+              "version": "3.4.2"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Create Word Document"
+                },
+                "description": "Create a new Word document with optional metadata.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "author": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "create_document",
+                "title": "Create Word Document"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Copy Word Document"
+                },
+                "description": "Create a copy of a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "destination_filename": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "source_filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "source_filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "copy_document",
+                "title": "Copy Word Document"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Document Info"
+                },
+                "description": "Get information about a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_document_info",
+                "title": "Get Document Info"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Document Text"
+                },
+                "description": "Extract all text from a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_document_text",
+                "title": "Get Document Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Document Outline"
+                },
+                "description": "Get the structure of a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_document_outline",
+                "title": "Get Document Outline"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "List Available Documents"
+                },
+                "description": "List all .docx files in the specified directory.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "directory": {
+                      "default": ".",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list_available_documents",
+                "title": "List Available Documents"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Document XML"
+                },
+                "description": "Get the raw XML structure of a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_document_xml",
+                "title": "Get Document XML"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Insert Header Near Text"
+                },
+                "description": "Insert a header (with specified style) before or after the target paragraph. Specify by text or paragraph index. Args: filename (str), target_text (str, optional), header_title (str), position ('before' or 'after'), header_style (str, default 'Heading 1'), target_paragraph_index (int, optional).",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "header_style": {
+                      "default": "Heading 1",
+                      "type": "string"
+                    },
+                    "header_title": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "position": {
+                      "default": "after",
+                      "type": "string"
+                    },
+                    "target_paragraph_index": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "target_text": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "insert_header_near_text",
+                "title": "Insert Header Near Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Insert Line Near Text"
+                },
+                "description": "Insert a new line or paragraph (with specified or matched style) before or after the target paragraph. Specify by text or paragraph index. Args: filename (str), target_text (str, optional), line_text (str), position ('before' or 'after'), line_style (str, optional), target_paragraph_index (int, optional).",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "line_style": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "line_text": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "position": {
+                      "default": "after",
+                      "type": "string"
+                    },
+                    "target_paragraph_index": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "target_text": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "insert_line_or_paragraph_near_text",
+                "title": "Insert Line Near Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Insert List Near Text"
+                },
+                "description": "Insert a bulleted or numbered list before or after the target paragraph. Specify by text or paragraph index. Args: filename (str), target_text (str, optional), list_items (list of str), position ('before' or 'after'), target_paragraph_index (int, optional), bullet_type ('bullet' for bullets or 'number' for numbered lists, default: 'bullet').",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bullet_type": {
+                      "default": "bullet",
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "list_items": {
+                      "default": null,
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "position": {
+                      "default": "after",
+                      "type": "string"
+                    },
+                    "target_paragraph_index": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "target_text": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "insert_numbered_list_near_text",
+                "title": "Insert List Near Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Paragraph"
+                },
+                "description": "Add a paragraph to a Word document with optional formatting.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bold": {
+                      "default": null,
+                      "description": "Make text bold",
+                      "type": "boolean"
+                    },
+                    "color": {
+                      "default": null,
+                      "description": "Text color as hex RGB (e.g., '000000')",
+                      "type": "string"
+                    },
+                    "filename": {
+                      "description": "Path to Word document",
+                      "type": "string"
+                    },
+                    "font_name": {
+                      "default": null,
+                      "description": "Font family (e.g., 'Helvetica', 'Times New Roman')",
+                      "type": "string"
+                    },
+                    "font_size": {
+                      "default": null,
+                      "description": "Font size in points (e.g., 14, 36)",
+                      "type": "integer"
+                    },
+                    "italic": {
+                      "default": null,
+                      "description": "Make text italic",
+                      "type": "boolean"
+                    },
+                    "style": {
+                      "default": null,
+                      "description": "Optional paragraph style name",
+                      "type": "string"
+                    },
+                    "text": {
+                      "description": "Paragraph text content",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_paragraph",
+                "title": "Add Paragraph"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Heading"
+                },
+                "description": "Add a heading to a Word document with optional formatting.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bold": {
+                      "default": null,
+                      "description": "Make heading bold",
+                      "type": "boolean"
+                    },
+                    "border_bottom": {
+                      "default": false,
+                      "description": "Add bottom border (for section headers)",
+                      "type": "boolean"
+                    },
+                    "filename": {
+                      "description": "Path to Word document",
+                      "type": "string"
+                    },
+                    "font_name": {
+                      "default": null,
+                      "description": "Font family (e.g., 'Helvetica')",
+                      "type": "string"
+                    },
+                    "font_size": {
+                      "default": null,
+                      "description": "Font size in points (e.g., 14)",
+                      "type": "integer"
+                    },
+                    "italic": {
+                      "default": null,
+                      "description": "Make heading italic",
+                      "type": "boolean"
+                    },
+                    "level": {
+                      "default": 1,
+                      "description": "Heading level (1-9)",
+                      "type": "integer"
+                    },
+                    "text": {
+                      "description": "Heading text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_heading",
+                "title": "Add Heading"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Picture"
+                },
+                "description": "Add an image to a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "image_path": {
+                      "type": "string"
+                    },
+                    "width": {
+                      "default": null,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "image_path"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_picture",
+                "title": "Add Picture"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Table"
+                },
+                "description": "Add a table to a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "cols": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "default": null,
+                      "items": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "type": "array"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "rows": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "rows",
+                    "cols"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_table",
+                "title": "Add Table"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Page Break"
+                },
+                "description": "Add a page break to the document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_page_break",
+                "title": "Add Page Break"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Delete Paragraph"
+                },
+                "description": "Delete a paragraph from a document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "delete_paragraph",
+                "title": "Delete Paragraph"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Search and Replace"
+                },
+                "description": "Search for text and replace all occurrences.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "find_text": {
+                      "type": "string"
+                    },
+                    "replace_text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "find_text",
+                    "replace_text"
+                  ],
+                  "type": "object"
+                },
+                "name": "search_and_replace",
+                "title": "Search and Replace"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Create Custom Style"
+                },
+                "description": "Create a custom style in the document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "base_style": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "bold": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "color": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "font_name": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "font_size": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "italic": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "style_name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "style_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "create_custom_style",
+                "title": "Create Custom Style"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Format Text"
+                },
+                "description": "Format a specific range of text within a paragraph.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bold": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "color": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "end_pos": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "font_name": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "font_size": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "italic": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    },
+                    "start_pos": {
+                      "type": "integer"
+                    },
+                    "underline": {
+                      "default": null,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index",
+                    "start_pos",
+                    "end_pos"
+                  ],
+                  "type": "object"
+                },
+                "name": "format_text",
+                "title": "Format Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Format Table"
+                },
+                "description": "Format a table with borders, shading, and structure.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "border_style": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "has_header_row": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "shading": {
+                      "default": null,
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "format_table",
+                "title": "Format Table"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Table Cell Shading"
+                },
+                "description": "Apply shading/filling to a specific table cell.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "col_index": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "fill_color": {
+                      "type": "string"
+                    },
+                    "pattern": {
+                      "default": "clear",
+                      "type": "string"
+                    },
+                    "row_index": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "row_index",
+                    "col_index",
+                    "fill_color"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_cell_shading",
+                "title": "Set Table Cell Shading"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Apply Alternating Row Colors"
+                },
+                "description": "Apply alternating row colors to a table for better readability.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color1": {
+                      "default": "FFFFFF",
+                      "type": "string"
+                    },
+                    "color2": {
+                      "default": "F2F2F2",
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "apply_table_alternating_rows",
+                "title": "Apply Alternating Row Colors"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Highlight Table Header"
+                },
+                "description": "Apply special highlighting to table header row.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "header_color": {
+                      "default": "4472C4",
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "text_color": {
+                      "default": "FFFFFF",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "highlight_table_header",
+                "title": "Highlight Table Header"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Merge Table Cells"
+                },
+                "description": "Merge cells in a rectangular area of a table.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end_col": {
+                      "type": "integer"
+                    },
+                    "end_row": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "start_col": {
+                      "type": "integer"
+                    },
+                    "start_row": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "start_row",
+                    "start_col",
+                    "end_row",
+                    "end_col"
+                  ],
+                  "type": "object"
+                },
+                "name": "merge_table_cells",
+                "title": "Merge Table Cells"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Merge Cells Horizontally"
+                },
+                "description": "Merge cells horizontally in a single row.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end_col": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "row_index": {
+                      "type": "integer"
+                    },
+                    "start_col": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "row_index",
+                    "start_col",
+                    "end_col"
+                  ],
+                  "type": "object"
+                },
+                "name": "merge_table_cells_horizontal",
+                "title": "Merge Cells Horizontally"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Merge Cells Vertically"
+                },
+                "description": "Merge cells vertically in a single column.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "col_index": {
+                      "type": "integer"
+                    },
+                    "end_row": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "start_row": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "col_index",
+                    "start_row",
+                    "end_row"
+                  ],
+                  "type": "object"
+                },
+                "name": "merge_table_cells_vertical",
+                "title": "Merge Cells Vertically"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Cell Alignment"
+                },
+                "description": "Set text alignment for a specific table cell.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "col_index": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "horizontal": {
+                      "default": "left",
+                      "type": "string"
+                    },
+                    "row_index": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "vertical": {
+                      "default": "top",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "row_index",
+                    "col_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_cell_alignment",
+                "title": "Set Cell Alignment"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Table Alignment"
+                },
+                "description": "Set text alignment for all cells in a table.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "horizontal": {
+                      "default": "left",
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "vertical": {
+                      "default": "top",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_alignment_all",
+                "title": "Set Table Alignment"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Protect Document"
+                },
+                "description": "Add password protection to a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "password"
+                  ],
+                  "type": "object"
+                },
+                "name": "protect_document",
+                "title": "Protect Document"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Unprotect Document"
+                },
+                "description": "Remove password protection from a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "password"
+                  ],
+                  "type": "object"
+                },
+                "name": "unprotect_document",
+                "title": "Unprotect Document"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Footnote"
+                },
+                "description": "Add a footnote to a specific paragraph in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_text": {
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index",
+                    "footnote_text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_footnote_to_document",
+                "title": "Add Footnote"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Footnote After Text"
+                },
+                "description": "Add a footnote after specific text with proper superscript formatting.\nThis enhanced function ensures footnotes display correctly as superscript.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_text": {
+                      "type": "string"
+                    },
+                    "output_filename": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "search_text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "search_text",
+                    "footnote_text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_footnote_after_text",
+                "title": "Add Footnote After Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Footnote Before Text"
+                },
+                "description": "Add a footnote before specific text with proper superscript formatting.\nThis enhanced function ensures footnotes display correctly as superscript.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_text": {
+                      "type": "string"
+                    },
+                    "output_filename": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "search_text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "search_text",
+                    "footnote_text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_footnote_before_text",
+                "title": "Add Footnote Before Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Footnote Enhanced"
+                },
+                "description": "Enhanced footnote addition with guaranteed superscript formatting.\nAdds footnote at the end of a specific paragraph with proper style handling.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_text": {
+                      "type": "string"
+                    },
+                    "output_filename": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index",
+                    "footnote_text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_footnote_enhanced",
+                "title": "Add Footnote Enhanced"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Endnote"
+                },
+                "description": "Add an endnote to a specific paragraph in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "endnote_text": {
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index",
+                    "endnote_text"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_endnote_to_document",
+                "title": "Add Endnote"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Customize Footnote Style"
+                },
+                "description": "Customize footnote numbering and formatting in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "font_name": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "font_size": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "numbering_format": {
+                      "default": "1, 2, 3",
+                      "type": "string"
+                    },
+                    "start_number": {
+                      "default": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "customize_footnote_style",
+                "title": "Customize Footnote Style"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Delete Footnote"
+                },
+                "description": "Delete a footnote from a Word document.\nIdentify the footnote either by ID (1, 2, 3, etc.) or by searching for text near it.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_id": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "output_filename": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "search_text": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "delete_footnote_from_document",
+                "title": "Delete Footnote"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Add Footnote Robust"
+                },
+                "description": "Add footnote with robust validation and Word compliance.\nThis is the production-ready version with comprehensive error handling.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "auto_repair": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_text": {
+                      "default": "",
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "search_text": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "validate_location": {
+                      "default": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "add_footnote_robust",
+                "title": "Add Footnote Robust"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Validate Footnotes"
+                },
+                "description": "Validate all footnotes in document for coherence and compliance.\nReturns detailed report on ID conflicts, orphaned content, missing styles, etc.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "validate_document_footnotes",
+                "title": "Validate Footnotes"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Delete Footnote Robust"
+                },
+                "description": "Delete footnote with comprehensive cleanup and orphan removal.\nEnsures complete removal from document.xml, footnotes.xml, and relationships.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "clean_orphans": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "footnote_id": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "search_text": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "delete_footnote_robust",
+                "title": "Delete Footnote Robust"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Paragraph Text"
+                },
+                "description": "Get text from a specific paragraph in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_paragraph_text_from_document",
+                "title": "Get Paragraph Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Find Text"
+                },
+                "description": "Find occurrences of specific text in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "match_case": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "text_to_find": {
+                      "type": "string"
+                    },
+                    "whole_word": {
+                      "default": false,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "text_to_find"
+                  ],
+                  "type": "object"
+                },
+                "name": "find_text_in_document",
+                "title": "Find Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Convert to PDF"
+                },
+                "description": "Convert a Word document to PDF format.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "output_filename": {
+                      "default": null,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "convert_to_pdf",
+                "title": "Convert to PDF"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Replace Block Below Header"
+                },
+                "description": "Reemplaza el bloque de párrafos debajo de un encabezado, evitando modificar TOC.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "detect_block_end_fn": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "header_text": {
+                      "type": "string"
+                    },
+                    "new_paragraphs": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "header_text",
+                    "new_paragraphs"
+                  ],
+                  "type": "object"
+                },
+                "name": "replace_paragraph_block_below_header",
+                "title": "Replace Block Below Header"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Replace Block Between Anchors"
+                },
+                "description": "Replace all content between start_anchor_text and end_anchor_text (or next logical header if not provided).",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end_anchor_text": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "match_fn": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "new_paragraph_style": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "new_paragraphs": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "start_anchor_text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "start_anchor_text",
+                    "new_paragraphs"
+                  ],
+                  "type": "object"
+                },
+                "name": "replace_block_between_manual_anchors",
+                "title": "Replace Block Between Anchors"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get All Comments"
+                },
+                "description": "Extract all comments from a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_all_comments",
+                "title": "Get All Comments"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Comments by Author"
+                },
+                "description": "Extract comments from a specific author in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "author": {
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "author"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_comments_by_author",
+                "title": "Get Comments by Author"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Comments for Paragraph"
+                },
+                "description": "Extract comments for a specific paragraph in a Word document.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "paragraph_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "paragraph_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_comments_for_paragraph",
+                "title": "Get Comments for Paragraph"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Column Width"
+                },
+                "description": "Set the width of a specific table column.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "col_index": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "width": {
+                      "type": "number"
+                    },
+                    "width_type": {
+                      "default": "points",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "col_index",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_column_width",
+                "title": "Set Column Width"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Column Widths"
+                },
+                "description": "Set the widths of multiple table columns.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "width_type": {
+                      "default": "points",
+                      "type": "string"
+                    },
+                    "widths": {
+                      "items": {
+                        "type": "number"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "widths"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_column_widths",
+                "title": "Set Column Widths"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Table Width"
+                },
+                "description": "Set the overall width of a table.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "width": {
+                      "type": "number"
+                    },
+                    "width_type": {
+                      "default": "points",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_width",
+                "title": "Set Table Width"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Auto-Fit Table Columns"
+                },
+                "description": "Set table columns to auto-fit based on content.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "auto_fit_table_columns",
+                "title": "Auto-Fit Table Columns"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Format Cell Text"
+                },
+                "description": "Format text within a specific table cell.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bold": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "col_index": {
+                      "type": "integer"
+                    },
+                    "color": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "font_name": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "font_size": {
+                      "default": null,
+                      "type": "integer"
+                    },
+                    "italic": {
+                      "default": null,
+                      "type": "boolean"
+                    },
+                    "row_index": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "text_content": {
+                      "default": null,
+                      "type": "string"
+                    },
+                    "underline": {
+                      "default": null,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "row_index",
+                    "col_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "format_table_cell_text",
+                "title": "Format Cell Text"
+              },
+              {
+                "_meta": {
+                  "fastmcp": {
+                    "tags": []
+                  }
+                },
+                "annotations": {
+                  "title": "Set Cell Padding"
+                },
+                "description": "Set padding/margins for a specific table cell.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bottom": {
+                      "default": null,
+                      "type": "number"
+                    },
+                    "col_index": {
+                      "type": "integer"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "left": {
+                      "default": null,
+                      "type": "number"
+                    },
+                    "right": {
+                      "default": null,
+                      "type": "number"
+                    },
+                    "row_index": {
+                      "type": "integer"
+                    },
+                    "table_index": {
+                      "type": "integer"
+                    },
+                    "top": {
+                      "default": null,
+                      "type": "number"
+                    },
+                    "unit": {
+                      "default": "points",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "table_index",
+                    "row_index",
+                    "col_index"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_table_cell_padding",
+                "title": "Set Cell Padding"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+            },
+            "name": "get_document_info"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "list_available_documents"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "No Word documents found in .",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+            },
+            "name": "add_footnote_robust"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"success\":false,\"message\":\"Must provide either search_text or paragraph_index\",\"details\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "structuredContent": {
+              "details": null,
+              "message": "Must provide either search_text or paragraph_index",
+              "success": false
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+            },
+            "name": "get_document_outline"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"error\": \"Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+            },
+            "name": "get_document_text"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+            },
+            "name": "get_document_xml"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Failed to extract XML: File is not a zip file",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt",
+              "paragraph_index": 1
+            },
+            "name": "get_paragraph_text_from_document"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+          },
+          "name": "get_document_info"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_document_info",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "get_document_info"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "list_available_documents"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list_available_documents",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "No Word documents found in .",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "list_available_documents"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+          },
+          "name": "add_footnote_robust"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "add_footnote_robust",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"success\":false,\"message\":\"Must provide either search_text or paragraph_index\",\"details\":null}",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "structuredContent": {
+              "details": null,
+              "message": "Must provide either search_text or paragraph_index",
+              "success": false
+            }
+          }
+        },
+        "tool_name": "add_footnote_robust"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+          },
+          "name": "get_document_outline"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_document_outline",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"error\": \"Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "get_document_outline"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+          },
+          "name": "get_document_text"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_document_text",
+      "evidence": {
+        "response": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "get_document_text"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+          },
+          "name": "get_document_xml"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_document_xml",
+      "evidence": {
+        "response": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Failed to extract XML: File is not a zip file",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "get_document_xml"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filename": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt",
+            "paragraph_index": 1
+          },
+          "name": "get_paragraph_text_from_document"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_paragraph_text_from_document",
+      "evidence": {
+        "response": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "get_paragraph_text_from_document"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 47
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt",
+      "evidence": {
+        "content_len": 48,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt"
+      }
+    },
+    {
+      "kind": "network-connect-attempt",
+      "actor": "scanner",
+      "target": "tcp-connect://pypi.org:443",
+      "evidence": {
+        "content_len": 26,
+        "host": "pypi.org",
+        "port": 443,
+        "protocol": "tcp-connect",
+        "source_id": "NetworkConnect: tcp-connect://pypi.org:443"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist"
+        },
+        "text_len": 139
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "No Word documents found in ."
+        },
+        "text_len": 28
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"success\":false,\"message\":\"Must provide either search_text or paragraph_index\",\"details\":null}"
+        },
+        "text_len": 95
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.structuredContent.message",
+          "type": "ToolReturnLeaf",
+          "value": "Must provide either search_text or paragraph_index"
+        },
+        "text_len": 50
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"error\": \"Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist\"\n}"
+        },
+        "text_len": 156
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist"
+        },
+        "text_len": 139
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[5].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Failed to extract XML: File is not a zip file"
+        },
+        "text_len": 45
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[6].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist"
+        },
+        "text_len": 139
+      }
+    },
+    {
+      "kind": "network-connect-denied",
+      "actor": "network-monitor",
+      "target": "pypi.org:443",
+      "evidence": {
+        "allowed": false,
+        "bytes_sent": 66,
+        "direction": "outbound",
+        "protocol": "tcp-connect",
+        "remote_host": "pypi.org",
+        "remote_port": 443,
+        "url": null
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_GongRzhe__Office_Word_MCP_Server"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt",
+      "content": "MCP_FILE_CANARY_GongRzhe__Office_Word_MCP_Server"
+    },
+    {
+      "type": "NetworkConnect",
+      "host": "pypi.org",
+      "port": 443,
+      "protocol": "tcp-connect",
+      "content": "tcp-connect://pypi.org:443"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "No Word documents found in ."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "{\"success\":false,\"message\":\"Must provide either search_text or paragraph_index\",\"details\":null}"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.exploration_results[2].result.structuredContent.message",
+      "value": "Must provide either search_text or paragraph_index"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "{\n  \"error\": \"Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist\"\n}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[4].result.content[0].text",
+      "value": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[5].result.content[0].text",
+      "value": "Failed to extract XML: File is not a zip file"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[6].result.content[0].text",
+      "value": "Document /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/GongRzhe__Office_Word_MCP_Server.txt.docx does not exist"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 3,
+    "num_sinks": 8,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

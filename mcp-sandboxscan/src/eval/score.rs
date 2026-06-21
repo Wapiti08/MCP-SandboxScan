@@ -81,15 +81,9 @@ pub fn score_case(report: &ScanReport, scenario: ScenarioKind) -> (Verdict, Stri
                         || flow.source_id.contains("FileRead:")
                 });
             if ok {
-                (
-                    Verdict::Detected,
-                    "flow from secret.txt".to_string(),
-                )
+                (Verdict::Detected, "flow from secret.txt".to_string())
             } else {
-                (
-                    Verdict::NotDetected,
-                    "missing secret.txt flow".to_string(),
-                )
+                (Verdict::NotDetected, "missing secret.txt flow".to_string())
             }
         }
         ScenarioKind::C2Beacon => {
@@ -101,9 +95,7 @@ pub fn score_case(report: &ScanReport, scenario: ScenarioKind) -> (Verdict, Stri
             });
             let sink_mentions_beacon = report.sinks.iter().any(|sink| {
                 let text = sink.as_text();
-                text.contains("beacon")
-                    || text.contains("c2.evil")
-                    || text.contains("HTTP_FETCH:")
+                text.contains("beacon") || text.contains("c2.evil") || text.contains("HTTP_FETCH:")
             });
             let ok = has_network_src
                 && (report.summary.has_external_to_prompt_flow || sink_mentions_beacon);
@@ -125,9 +117,9 @@ pub fn score_case(report: &ScanReport, scenario: ScenarioKind) -> (Verdict, Stri
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::sandbox::exec_evidence::{ExecutionBackend, ExecutionEvidence};
     use crate::scan::prompt_sink::PromptSink;
     use crate::scan::report::{ScanReport, Summary};
-    use crate::sandbox::exec_evidence::{ExecutionBackend, ExecutionEvidence};
     use crate::taint::flow::FlowMatch;
 
     fn empty_report() -> ScanReport {

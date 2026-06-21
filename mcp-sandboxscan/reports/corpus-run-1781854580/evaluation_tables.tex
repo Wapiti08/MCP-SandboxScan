@@ -1,0 +1,129 @@
+% Real-world MCP corpus evaluation tables.
+% Generated from reports/corpus-run-1781854580/corpus_summary.json
+% and reports/corpus-run-1781854580/semantic_summary.json.
+
+\begin{table}[t]
+\centering
+\caption{End-to-end coverage and failure breakdown on real-world MCP repositories.}
+\label{tab:realworld-coverage}
+\begin{tabular}{lrrrrrr}
+\toprule
+Subset & Resolved & Scanned & Success & Build & Startup & Call/Timeout \\
+\midrule
+All resolved repos & 91 & 35 & 38.5\% & 19 & 31 & 6 \\
+Tier-1 MCP servers & 42 & 28 & 66.7\% & 4 & 10 & 0 \\
+Tier-2 MCP-related repos & 49 & 7 & 14.3\% & 15 & 21 & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Semantic extraction coverage over the full MCP corpus.}
+\label{tab:semantic-full-coverage}
+\begin{tabular}{lrrrr}
+\toprule
+Source & Repos & Tools & Described & Sensitive \\
+\midrule
+Dynamic \texttt{tools/list} & 35 & 539 & 539 & 377 \\
+Static source registration & 36 & 588 & 377 & 468 \\
+Repo-level signal only & 27 & 0 & 0 & 0 \\
+No semantic signal & 2 & 0 & 0 & 0 \\
+\midrule
+Total tool metadata & 71 & 1127 & 916 & 845 (75.0\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Semantic capability distribution across extracted MCP tools.}
+\label{tab:semantic-capabilities}
+\begin{tabular}{lr}
+\toprule
+Capability & Tools \\
+\midrule
+Network access & 395 \\
+Browser automation & 348 \\
+Unknown / benign utility & 282 \\
+Cloud or SaaS operation & 209 \\
+Filesystem access & 204 \\
+Code repository operation & 198 \\
+Database access & 196 \\
+Credential or secret handling & 94 \\
+Shell or process execution & 62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Cross-validation between declared tool semantics and runtime network evidence.}
+\label{tab:semantic-cross-validation}
+\begin{tabular}{lrp{0.45\linewidth}}
+\toprule
+Relation & Repos & Interpretation \\
+\midrule
+Declared egress risk and observed egress & 5 & Confirmed by runtime evidence \\
+Declared egress risk only & 17 & Declared capability was not exercised by this run \\
+Observed egress only & 2 & Potential metadata understatement or classifier miss \\
+Neither declared nor observed & 11 & No egress evidence in this run \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Real-world coverage.}
+We evaluate SandboxScan on a corpus of 100 popular MCP-related repositories.
+SandboxScan resolves 91 repositories and completes end-to-end dynamic scans
+for 35 of them. Coverage is substantially higher on dedicated MCP servers:
+28 out of 42 resolved Tier-1 servers are scanned successfully (66.7\%),
+compared with 7 out of 49 Tier-2 MCP-related repositories (14.3\%).
+Most incomplete scans are due to operational reproducibility rather than
+the taint analysis itself: 31 repositories fail during MCP startup or
+protocol initialization, and 19 fail during build.
+
+\paragraph{Semantic tool profiling.}
+We additionally run a semantic-only pass over the full 100-repository corpus.
+This pass reuses protocol-level \texttt{tools/list} metadata when available
+and falls back to static source-level MCP tool registrations for repositories
+that did not complete dynamic execution. For repositories where no tool
+registration can be recovered, we record only a weaker repository-level
+semantic signal from README and repository metadata; these signals are not
+counted as tools. Overall, SandboxScan recovers tool metadata for 71
+repositories: 35 from dynamic \texttt{tools/list} responses and 36 from static
+source registrations. These repositories expose 1,127 tools, of which 916
+include descriptions and 845 (75.0\%) are classified as security-sensitive.
+The most common declared capabilities are network access, browser automation,
+cloud/SaaS operations, filesystem access, code repository operations, and
+database access. We use this profile as attack-surface characterization and
+test prioritization evidence; it is not interpreted as a vulnerability
+finding.
+
+\paragraph{Semantic cross-validation.}
+For the 35 repositories that complete dynamic execution, we further compare
+the declared capability of the specific tool invoked during the scan with
+runtime network evidence collected by the egress monitor. This check is
+intentionally conservative: it validates only network-observable behavior,
+and a declared-only result does not indicate a false positive because the
+single generated invocation may not exercise all declared behavior. Among
+35 dynamically scanned cases, all have called-tool metadata. Twenty-two
+invoked tools declare an egress-related capability, and seven executions
+produce runtime network egress. Five cases are both declared and observed,
+seventeen are declared-only, two are observed-only, and eleven have neither
+declared nor observed egress evidence.
+
+\paragraph{Anonymized case studies.}
+We selected three dynamically executed repositories from the 100-repository
+corpus to illustrate how the cross-validation evidence appears in individual
+runs. Repo A exposed a code-review tool whose metadata implied GitHub/code
+repository and network capability; the invoked tool returned an error containing
+\texttt{https://api.github.com/graphql}, while the monitor recorded two denied
+connections to \texttt{api.github.com:443}. Repo B exposed a web-search tool
+classified as network/browser/database capable; even with invalid generated
+arguments, execution attempted an outbound request to a third-party capture API,
+which the monitor denied. Repo C exposed a configuration/desktop-control tool
+whose called-tool metadata did not classify as network-capable, but the runtime
+trace still showed a denied connection to an external browser-support host and
+the tool result reflected local configuration and onboarding prompt text. These
+examples are anonymized because they validate attack-surface evidence rather
+than report repository-specific vulnerabilities.

@@ -19,9 +19,7 @@ pub fn command_status_with_timeout(cmd: &mut Command, timeout: Duration) -> Resu
         Ok(Ok(status)) => Ok(status),
         Ok(Err(e)) => Err(e.into()),
         Err(mpsc::RecvTimeoutError::Timeout) => {
-            let _ = Command::new("kill")
-                .args(["-9", &pid.to_string()])
-                .status();
+            let _ = Command::new("kill").args(["-9", &pid.to_string()]).status();
             match rx.recv_timeout(Duration::from_secs(5)) {
                 Ok(Ok(status)) => Ok(status),
                 Ok(Err(e)) => Err(e.into()),

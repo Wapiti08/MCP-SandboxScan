@@ -1,0 +1,790 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 219
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "resources": {
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "instructions": "3D brick construction tool. IMPORTANT: Always call brick_read_me first to learn available brick types and their dimensions before building anything. Brick type IDs are LDraw part numbers (e.g. \"3001\" = Brick 2x4). Call brick_get_available to see popular parts, but you can also use any valid LDraw part number — dimensions are auto-detected.",
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "Brick Builder",
+              "version": "1.0.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Returns the building guide, coordinate system, and examples. Call this BEFORE using any other brick tool for the first time.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "brick_read_me"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Returns popular brick types with their IDs and dimensions. You can also use any LDraw part number not listed here. For the full library (15,000+ parts), use brick_search_parts to search or browse by category. Call this to learn what bricks you can use before building.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "brick_get_available"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Search or browse the full LDraw parts library. Without arguments, returns all categories with part counts. Use 'query' to search by name, 'category' to browse a specific category, or both to search within a category. Results are paginated.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "category": {
+                      "description": "Filter to a specific category (e.g. 'Brick', 'Plate', 'Slope')",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "default": 25,
+                      "description": "Results per page (default 25, max 50)",
+                      "maximum": 50,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "description": "Pagination offset (default 0)",
+                      "maximum": 9007199254740991,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "query": {
+                      "description": "Search term to match against part names (case-insensitive substring match)",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "brick_search_parts"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Fetch the raw LDraw .dat file for a part plus all its transitive subfile dependencies, for client-side mesh construction.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "partId": {
+                      "description": "LDraw part ID (e.g. '3001')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "partId"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_get_ldraw_files",
+                "title": "Get LDraw Files"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Get dimensions and metadata for a part by its LDraw ID",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "typeId": {
+                      "description": "LDraw part ID",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "typeId"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_get_part_info",
+                "title": "Get Part Info"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "resourceUri": "ui://brick-builder/mcp-app.html"
+                  },
+                  "ui/resourceUri": "ui://brick-builder/mcp-app.html"
+                },
+                "description": "Opens the 3D brick builder viewer. You MUST call this before brick_place so the user can see the bricks. Call brick_read_me first to learn the brick format.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "brick_render_scene",
+                "title": "Render Brick Scene"
+              },
+              {
+                "description": "Place one or more bricks. Input is CSV — one brick per line, columns: typeId,x,y,z,rotation,color. Rows are auto-sorted by Y ascending so supports always land before dependents (your CSV order need not be bottom-up). Batch cap: max 200 rows AND max 10 new part types per call — rows beyond either cap are deferred with a clear error (resend them in a follow-up call). Returns a per-row result array: {ok:true, footprint, snappedFrom?} or {ok:false, error, suggestedY?|suggestedX?|suggestedZ?, collidingWith?}. Support failures include suggestedY (nearest valid landing). Collision failures include collidingWith (blocker brick + footprint) and suggestedX/Z (nearest open slot within 8 studs). Bounds failures include suggestedX/Z/Y clamped to valid range. Call brick_render_scene first to open the viewer. Keep batches small (~10 rows) — use the footprints in results to position your next call.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "bricks": {
+                      "description": "CSV, one brick per line. Columns: typeId,x,y,z,rotation,color\n  typeId   LDraw part number (e.g. 3001 = Brick 2x4)\n  x,y,z    integers — x/z in studs (0..47), y in plate units (0 = baseplate, +3 per brick layer)\n  rotation 0|90|180|270 (optional, default 0)\n  color    hex (optional, default #cc0000)\nSingle brick: one line. Multiple bricks: multiple lines. NO header row.\nExample:\n3001,10,0,10,0,#cc0000\n3001,10,0,14,0,#0055bf\n3001,10,3,12,0,#237841",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "bricks"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_place"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Returns the current scene state with all placed bricks and their footprints. Call this ONCE at the start of a building task — between your own brick_place calls, use the footprints in results instead.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "brick_get_scene"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true
+                },
+                "description": "Remove all bricks from the scene.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "brick_clear_scene"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true
+                },
+                "description": "Remove a single brick by its ID. Use brick_get_scene to find brick IDs. Also removes any bricks that lose support as a result.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "brickId": {
+                      "description": "ID of the brick to remove (from brick_get_scene or brick_place response)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "brickId"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_remove_brick"
+              },
+              {
+                "description": "Set the build mode and/or snap flag. 'strict' (default): bricks need support, removing a support cascades deletions. 'relaxed': floating bricks allowed (placement returns a warnings hint), no cascade on remove/move/rotate. 'snap': orthogonal flag — when a brick lacks support, auto-correct its y to the nearest landing instead of rejecting. Both fields are optional; either can be set independently.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "mode": {
+                      "description": "Build mode: 'strict' enforces support + cascades, 'relaxed' allows floating bricks and skips cascade deletion.",
+                      "enum": [
+                        "strict",
+                        "relaxed"
+                      ],
+                      "type": "string"
+                    },
+                    "snap": {
+                      "description": "Auto-correct Y to nearest supported landing when a brick would otherwise float. Placement succeeds with {snappedFrom:{y:originalY}} in the result. If the landed Y also collides, the row fails with a collision error at the landed Y.",
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "brick_set_build_mode"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true
+                },
+                "description": "Export the scene as JSON or a summary.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "format": {
+                      "default": "summary",
+                      "description": "Export format",
+                      "enum": [
+                        "json",
+                        "summary"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "brick_export_scene"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Add a single brick to the scene. The baseplate is 48×48 studs. Valid coordinates: x 0–47, z 0–47.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "color": {
+                      "default": "#cc0000",
+                      "description": "Hex color",
+                      "type": "string"
+                    },
+                    "rotation": {
+                      "default": "0",
+                      "description": "Rotation degrees",
+                      "enum": [
+                        "0",
+                        "90",
+                        "180",
+                        "270"
+                      ],
+                      "type": "string"
+                    },
+                    "typeId": {
+                      "description": "Brick type ID (LDraw part number)",
+                      "type": "string"
+                    },
+                    "x": {
+                      "description": "X position in stud units (0 to 47)",
+                      "maximum": 9007199254740991,
+                      "minimum": -9007199254740991,
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Y position (plate-height units)",
+                      "maximum": 9007199254740991,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "z": {
+                      "description": "Z position in stud units (0 to 47)",
+                      "maximum": 9007199254740991,
+                      "minimum": -9007199254740991,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "typeId",
+                    "x",
+                    "y",
+                    "z"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_add",
+                "title": "Add Brick"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Remove a brick by its ID.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "brickId": {
+                      "description": "ID of the brick to remove",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "brickId"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_remove",
+                "title": "Remove Brick"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Move a brick to a new position.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "brickId": {
+                      "description": "ID of the brick to move",
+                      "type": "string"
+                    },
+                    "x": {
+                      "description": "New X position",
+                      "maximum": 9007199254740991,
+                      "minimum": -9007199254740991,
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "New Y position",
+                      "maximum": 9007199254740991,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "z": {
+                      "description": "New Z position",
+                      "maximum": 9007199254740991,
+                      "minimum": -9007199254740991,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "brickId",
+                    "x",
+                    "y",
+                    "z"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_move",
+                "title": "Move Brick"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Set a brick's rotation.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "brickId": {
+                      "description": "ID of the brick to rotate",
+                      "type": "string"
+                    },
+                    "rotation": {
+                      "description": "New rotation in degrees",
+                      "enum": [
+                        "0",
+                        "90",
+                        "180",
+                        "270"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "brickId",
+                    "rotation"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_rotate",
+                "title": "Rotate Brick"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Change a brick's color.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "brickId": {
+                      "description": "ID of the brick to paint",
+                      "type": "string"
+                    },
+                    "color": {
+                      "description": "New hex color",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "brickId",
+                    "color"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_paint",
+                "title": "Paint Brick"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Set the camera position and look-at target.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "posX": {
+                      "description": "Camera X position",
+                      "type": "number"
+                    },
+                    "posY": {
+                      "description": "Camera Y position",
+                      "type": "number"
+                    },
+                    "posZ": {
+                      "description": "Camera Z position",
+                      "type": "number"
+                    },
+                    "targetX": {
+                      "default": 0,
+                      "description": "Look-at X",
+                      "type": "number"
+                    },
+                    "targetY": {
+                      "default": 0,
+                      "description": "Look-at Y",
+                      "type": "number"
+                    },
+                    "targetZ": {
+                      "default": 0,
+                      "description": "Look-at Z",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "posX",
+                    "posY",
+                    "posZ"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_set_camera",
+                "title": "Set Camera"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Import a scene from JSON.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "sceneJson": {
+                      "description": "Scene JSON string",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sceneJson"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_import_scene",
+                "title": "Import Scene"
+              },
+              {
+                "_meta": {
+                  "ui": {
+                    "visibility": [
+                      "app"
+                    ]
+                  }
+                },
+                "description": "Set the scene's display name.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "name": {
+                      "description": "New scene name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "name": "brick_set_scene_name",
+                "title": "Set Scene Name"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "brick_read_me"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "# Brick Builder Reference\n\nYou only need to call brick_read_me once. Do NOT call it again — you will not see anything new.\n\n## Order of Operations (MANDATORY — follow exactly)\n1. brick_read_me → Call once to learn the building format and rules (you just did this)\n2. brick_get_available → Returns a starter set of popular parts AND a category index of the full 12874-part library\n   - brick_search_parts → Get any category or search by name. Results include dimensions (studsX, studsZ, heightUnits) so you can brick_place directly. Example: brick_search_parts({category: \"Arch\"}) returns all arches; brick_search_parts({query: \"corner\"}) finds corner parts across categories.\n3. brick_render_scene → Call BEFORE placing any bricks. Opens the 3D viewer. If you skip this step, the user cannot see anything you build.\n4. brick_place → Place one or many bricks via CSV (one row per brick). They stream into the viewer live, row by row, as the tool runs. Batch cap: 200 rows / 10 new part types per call — for large builds, call it multiple times with chunks.\n5. brick_get_scene → Call anytime to inspect what's currently built\n6. brick_remove_brick → Remove a specific brick by ID (use brick_get_scene to find IDs). Also removes unsupported bricks above it.\n7. brick_clear_scene → Call to remove all bricks and start over\n\nCRITICAL: You must call brick_render_scene before your first brick_place call. Placing bricks without rendering the scene first means the user has no viewer open and sees nothing.\n\n## Brick Types\nAny LDraw part number works as a typeId. brick_get_available gives you ~30 starters plus the full category index. brick_search_parts gives you any category or name match with dimensions included — use it whenever you want a shape that isn't in the starter set. Example: need an arch for a doorway → brick_search_parts({category: \"Arch\"}) → pick one → brick_place.\n\n## Beyond standard bricks — specialty parts\n\nThe library has 12874 parts across 82 categories.\nBeyond the basic bricks/plates/slopes, reach for brick_search_parts to get:\n\n| Category | Count | Use for |\n|---|---|---|\n| Arch | ~47 | Doorways, bridges, curved openings |\n| Door | ~120 | Building facades, entrances |\n| Window | ~68 | Building facades, glazing |\n| Panel | ~113 | Thin walls, greebling |\n| Fence | ~23 | Railings, barriers |\n| Wheel | ~152 | Vehicles (see relaxed mode below) |\n| Tyre | ~90 | Vehicles (see relaxed mode below) |\n| Hinge | ~126 | Articulated joints |\n| Minifig | ~2197 | Characters |\n| Minifig Accessory | ~540 | Held items, props |\n\nExample: brick_search_parts({category: \"Arch\"}) → returns all arches with dimensions ready for brick_place.\n\n## Coordinate System\n- Baseplate: 48×48 studs on the X and Z axes\n- Y axis: height in plate units (1 standard brick = 3 Y units, 1 plate = 1 Y unit)\n- Valid ranges: X 0–47, Z 0–47, Y 0+\n- Compass: -X is East, +X is West, +Z is North, -Z is South. The viewer shows a 3D axes gizmo (bottom-right, red=X green=Y blue=Z) so the human can see which screen direction is which axis while orbiting.\n- Rotation: \"0\", \"90\", \"180\", or \"270\" (string)\n- In strict mode (default), bricks CANNOT float — they must sit on the baseplate (Y=0) or on top of another brick. In relaxed mode, floating is allowed (see Build Modes).\n- ALL positions are relative to the baseplate. A brick's entire footprint (position + size) must stay within the 48×48 baseplate. Out-of-bounds placements are rejected.\n- A brick at position (x, z) with studsX=2, studsZ=4 occupies x to x+2, z to z+4. So the maximum valid x for that brick is 46, and the maximum valid z is 44.\n- IMPORTANT: Every brick_place response includes a per-row \"footprint\" showing each brick's exact occupied area: {minX, maxX, minZ, maxZ, topY}. Use footprint.maxX/maxZ to know where to place the NEXT brick adjacent to it. Use footprint.topY for the Y value of the next layer on top.\n- You can batch many bricks in one brick_place call (one CSV row each). When tiling with a known dimension (e.g. 3001 is 2×4 → z advances by 4), compute the whole batch up front. When unsure of a part's footprint, place it alone first and read the response.\n- brick_get_scene also returns footprints for every brick. ALWAYS read footprints to position new bricks — never calculate positions from scratch when existing bricks have footprints.\n\n## Size & Scale Reference\n\nHeight is measured in bricks (1 brick = 3 plates = 3 Y units).\n| Category       | Height        | Real-world approx |\n|----------------|---------------|-------------------|\n| Short          | 1–10 bricks   | up to ~9.6 cm     |\n| Medium         | 11–30 bricks  | ~10–28 cm         |\n| Tall           | 31–60 bricks  | ~29–57 cm         |\n| Tower/Skyscraper | 60+ bricks | 57 cm+            |\n\nShort builds sit flat on a table and are viewed mostly from above (vehicles, small vignettes, garden scenes). Medium builds are eye-catching at table height and viewed straight-on. Tall builds demand vertical presence and often need internal reinforcement.\n\nWidth is measured in studs (1 stud = 8 mm).\n| Category | Width       | Real-world approx |\n|----------|-------------|-------------------|\n| Narrow   | 1–8 studs   | up to ~6.4 cm     |\n| Medium   | 9–24 studs  | ~7–19 cm          |\n| Wide     | 25–48 studs | ~20–38 cm         |\n| Massive  | 48+ studs   | 38 cm+            |\n\nNarrow builds are things like a single tower, a lamppost, or a small character model. Medium is the sweet spot for most standalone builds — a small house, a vehicle, a diorama scene. Wide and massive are dioramas, modular-style buildings, and layout sections.\n\n## Colors\nRed #cc0000 · Blue #0055bf · Green #237841 · Yellow #f2cd37 · White #ffffff · Black #1b2a34\nOrange #fe8a18 · Brown #583927 · Tan #e4cd9e · Dark grey #6b5a5a · Light grey #9ba19d · Dark blue #0a3463\n\n## Footprints\n\nEvery brick_place response and brick_get_scene response includes a \"footprint\" for each brick:\n  { minX, maxX, minZ, maxZ, topY }\n\nThis tells you the exact area the brick occupies on the baseplate after rotation is applied.\n- minX/maxX: the brick spans from minX to maxX along the X axis\n- minZ/maxZ: the brick spans from minZ to maxZ along the Z axis\n- topY: the top of the brick — use this as the Y value for stacking a brick on top\n\nUse footprints to position new bricks. Do NOT calculate positions manually — read the footprint from the response.\n- To place a brick adjacent along X: use the previous brick's footprint.maxX as the new brick's x\n- To place a brick adjacent along Z: use the previous brick's footprint.maxZ as the new brick's z\n- To stack on top: use the previous brick's footprint.topY as the new brick's y\n\nExample: you place a 2x4 brick (typeId=\"3001\") at (10, 0, 10) with rotation \"90\". The response includes:\n  footprint: { minX: 10, maxX: 14, minZ: 10, maxZ: 12, topY: 3 }\nTo place the next brick to the right: x=14 (footprint.maxX)\nTo place a brick in front: z=12 (footprint.maxZ)\nTo stack on top: y=3 (footprint.topY)\n\n## Orientation of asymmetric parts (slopes, wedges, arches)\n\nLDraw parts are rotated -90° around Y on load, so their native \"front\" (LDraw -Z) becomes our +X.\nAt rotation=0, the studded/solid end of an asymmetric part sits at the LOW-X side of its footprint. The sloped/open/pointy feature faces +X.\n\nOur rotation is COUNTER-CLOCKWISE looking down (+Y view). Each +90 turns the feature from +X → +Z → -X → -Z → +X.\n\n| rotation | feature faces | studs at | top-down view (S=stud, /=slope) |\n|----------|---------------|----------|---------------------------------|\n| 0        | +X            | low-X    | S /   (slope on the +X side)    |\n| 90       | +Z            | low-Z    | S over /  (slope on the +Z side)|\n| 180      | -X            | high-X   | / S   (slope on the -X side)    |\n| 270      | -Z            | high-Z   | / over S  (slope on the -Z side)|\n\nCRITICAL: if your 0/180 slopes look right but your 90/270 slopes point the wrong way, you have them swapped — use 90 where you used 270 and vice versa. Our 90 is COUNTER-CLOCKWISE, not clockwise.\n\n### Roof peak — ridge runs along Z (slopes face each other across X)\n  brick_place(bricks=\"3039,10,3,10,0,#cc0000\n  3039,14,3,10,180,#cc0000\")\n    # Slope at x=10 (rotation=0) faces +X. Slope at x=14 (rotation=180) faces -X. They meet at x=12.\n\n### Roof peak — ridge runs along X (slopes face each other across Z)\n  brick_place(bricks=\"3039,10,3,10,90,#cc0000\n  3039,10,3,14,270,#cc0000\")\n    # Slope at z=10 (rotation=90) faces +Z. Slope at z=14 (rotation=270) faces -Z. They meet at z=12.\n\n### Four-sided pyramid roof (slopes on all sides facing INWARD)\n  # Building center at (x=15, z=15). Each slope faces TOWARD the center.\n  # East slope (low-X side, x=10): needs to face +X (toward center) → rotation=0\n  # West slope (high-X side, x=18): needs to face -X (toward center) → rotation=180\n  # South slope (low-Z side, z=10): needs to face +Z (toward center) → rotation=90\n  # North slope (high-Z side, z=18): needs to face -Z (toward center) → rotation=270\n\n## Examples\n\nbrick_place takes CSV: typeId,x,y,z,rotation,color — one brick per line. Rows are auto-sorted by Y ascending before placement, so you don't have to order supports first — but each brick still needs valid Y (on baseplate or resting on an existing brick).\n\n### Single brick\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\")\n    → results[0].footprint: {minX:10, maxX:12, minZ:10, maxZ:14, topY:3}\n\n### Wall (4 bricks tall, one call — streams into viewer row by row)\n3008 = Brick 1x8, heightUnits=3 → y advances by 3 per layer:\n  brick_place(bricks=\"3008,10,0,10,0,#cc0000\n  3008,10,3,10,0,#cc0000\n  3008,10,6,10,0,#cc0000\n  3008,10,9,10,0,#cc0000\")\n    → results: [{row:1, ok:true, footprint:{...topY:3}}, {row:2, ok:true, footprint:{...topY:6}}, ...]\n\n### Row along Z (one call)\n3001 = Brick 2x4, studsZ=4 → z advances by 4:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,10,0,14,0,#0055bf\n  3001,10,0,18,0,#237841\")\n\n### Row along X (one call)\n3001 studsX=2 → x advances by 2:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,12,0,10,0,#0055bf\n  3001,14,0,10,0,#237841\")\n\n### Unknown part dimensions → place one, read footprint, then batch\n  brick_place(bricks=\"3003,20,0,20\")                      ← 3003 = ? place alone\n    → results[0].footprint: {minX:20, maxX:22, minZ:20, maxZ:22, topY:3}   (it's 2×2)\n  brick_place(bricks=\"3003,22,0,20\\n3003,24,0,20\\n3003,26,0,20\")   ← now batch with x+=2\n\n### Rotation changes footprint — always read it\n  3001 (Brick 2x4) at rotation \"0\":  footprint maxX = x+2, maxZ = z+4\n  3001 (Brick 2x4) at rotation \"90\": footprint maxX = x+4, maxZ = z+2  (swapped!)\n\n## Build modes\n\n- **strict** (default) — every brick needs support (y=0 or resting on a brick below). Removing a support cascades: everything above it that loses support is also removed. Use for structurally realistic builds.\n- **relaxed** — skips the support requirement. Floating bricks are allowed (placement still returns a `warnings: [\"floating\"]` hint). Removing a brick does NOT cascade. Use for staged assembly (place wheels before axles), specialty parts that attach via pins/clips, or freeform artistic builds.\n\n- **snap** (orthogonal flag) — when a brick lacks support, auto-correct its y to the nearest landing instead of rejecting. Works in both strict and relaxed mode. Result row includes `snappedFrom:{y:originalY}` and a warning. Turn on for layer-by-layer builds where you trust the server's landing math.\n\nSwitch with: brick_set_build_mode({mode: \"relaxed\"})\nSet snap with: brick_set_build_mode({snap: true})\nBoth can be set together: brick_set_build_mode({mode: \"strict\", snap: true})\nCheck current mode: brick_get_scene includes `buildMode` and `snap` in the scene data.\n\nTypical workflow for vehicles:\n1. brick_set_build_mode({mode: \"relaxed\"})\n2. brick_search_parts({category: \"Wheel\"}) → find a wheel\n3. brick_place with wheels at the right height (they'll float until step 4)\n4. brick_place the chassis/axle bricks — wheels now visually connect\n5. brick_set_build_mode({mode: \"strict\"}) to resume normal building\n\n## Rules\n- In strict mode (default), every brick needs support: y=0 (baseplate) OR resting on top of another brick. Floating bricks are rejected with a suggestedY hint. In relaxed mode, floating is allowed — see Build Modes above.\n- Use typeId values from brick_get_available for popular parts. You can also use any LDraw part number — the server will auto-detect dimensions from the LDraw library.\n- brick_place returns {summary:{placed,failed,deferred?,totalBricks,hints?}, results:[...]}. Each row result is either {ok:true, id, footprint, snappedFrom?} or {ok:false, error, line, suggestedY?, suggestedX?, suggestedZ?, collidingWith?}. Rows are auto-sorted by Y before processing. If a row fails support, its error includes suggestedY — the nearest valid landing height. Retry that row with y=suggestedY (or enable snap mode to auto-land). If several rows fail, collect all of them, apply each hint, and resend them together in ONE follow-up call — don't retry one row at a time.\n- Collision errors include `collidingWith: {id, typeId, footprint}` — use footprint.maxX or footprint.maxZ to retry adjacent to the blocker. May also include `suggestedX` or `suggestedZ` (nearest open slot within 8 studs).\n- Bounds errors include `suggestedX`/`suggestedZ`/`suggestedY` — the nearest in-bounds position for this brick's actual footprint (rotation-aware).\n- Batch cap: max 200 rows AND max 10 new part types per brick_place call. Rows beyond either cap are deferred — their error says \"Batch cap reached\" and summary.deferred counts them. Just resend those rows in the next brick_place call. Reusing a typeId already in the scene doesn't count toward the new-types cap.\n- Rotation swaps dimensions — account for this when tiling.\n- ALL bricks must fit within the 48×48 baseplate. The brick's full footprint (position + studs size) must not exceed x=47 or z=47. Out-of-bounds placements are rejected.\n- Every successful row in brick_place results includes a footprint — use results[i].footprint.topY to position the next layer. You don't need brick_get_scene between your own brick_place calls; only call it at the START of a task to see what prior turns or the human placed.\n\n## Building Strategy\n1. Call brick_get_scene ONCE at the start to see what's already built. After that, track positions from the footprints in each brick_place results array.\n2. Plan the footprint first — lay the ground floor (Y=0)\n3. Build upward layer by layer — each layer's Y = previous Y + heightUnits\n4. Send ~10 rows per brick_place call — one small section at a time. Never generate the whole build's CSV up front; plan the next section from the footprints returned in results. Rows are Y-sorted before processing so supports within a chunk land first.\n5. Alternate brick offsets between rows for realistic interlocking\n6. Use plates (heightUnits=1) for thin details, trim, and floors\n7. Use slopes for rooflines — studs are only on the flat side\n8. Build in sections: foundation → walls → roof\n\n## Best Practices\n- Work at a scale that makes sense for the detail level you want. Larger scale gives more room for realism.\n- Plan your color scheme early. Mixing too many colors by accident is a common mistake — pick 2-3 main colors and 1-2 accent colors.\n- Overlap your layers like real brickwork — never stack bricks where joints align vertically. That creates weak seam lines. Offset by half a brick length on alternating rows.\n- Distribute weight evenly and think about the base. Wide, flat bases are more stable than tall narrow towers without internal reinforcement.\n- Use Technic bricks internally for rigid structural support, especially in large builds.\n- Use consistent lighting logic — if your build has a light source, shade the darker side with darker colored bricks.\n- Finish exposed surfaces with plates for a clean, polished look. Use slopes for angled surfaces and rooflines.\n- For sci-fi and industrial builds, add small technical-looking details (greebling) with 1x1 bricks and plates, but apply with restraint so it doesn't look random.\n- Don't be afraid to use brick_clear_scene and rebuild. The best builders redo sections many times.\n- Step back and consider the build from the intended viewing angle, not just from above.\n",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "brick_read_me"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "brick_read_me",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "# Brick Builder Reference\n\nYou only need to call brick_read_me once. Do NOT call it again — you will not see anything new.\n\n## Order of Operations (MANDATORY — follow exactly)\n1. brick_read_me → Call once to learn the building format and rules (you just did this)\n2. brick_get_available → Returns a starter set of popular parts AND a category index of the full 12874-part library\n   - brick_search_parts → Get any category or search by name. Results include dimensions (studsX, studsZ, heightUnits) so you can brick_place directly. Example: brick_search_parts({category: \"Arch\"}) returns all arches; brick_search_parts({query: \"corner\"}) finds corner parts across categories.\n3. brick_render_scene → Call BEFORE placing any bricks. Opens the 3D viewer. If you skip this step, the user cannot see anything you build.\n4. brick_place → Place one or many bricks via CSV (one row per brick). They stream into the viewer live, row by row, as the tool runs. Batch cap: 200 rows / 10 new part types per call — for large builds, call it multiple times with chunks.\n5. brick_get_scene → Call anytime to inspect what's currently built\n6. brick_remove_brick → Remove a specific brick by ID (use brick_get_scene to find IDs). Also removes unsupported bricks above it.\n7. brick_clear_scene → Call to remove all bricks and start over\n\nCRITICAL: You must call brick_render_scene before your first brick_place call. Placing bricks without rendering the scene first means the user has no viewer open and sees nothing.\n\n## Brick Types\nAny LDraw part number works as a typeId. brick_get_available gives you ~30 starters plus the full category index. brick_search_parts gives you any category or name match with dimensions included — use it whenever you want a shape that isn't in the starter set. Example: need an arch for a doorway → brick_search_parts({category: \"Arch\"}) → pick one → brick_place.\n\n## Beyond standard bricks — specialty parts\n\nThe library has 12874 parts across 82 categories.\nBeyond the basic bricks/plates/slopes, reach for brick_search_parts to get:\n\n| Category | Count | Use for |\n|---|---|---|\n| Arch | ~47 | Doorways, bridges, curved openings |\n| Door | ~120 | Building facades, entrances |\n| Window | ~68 | Building facades, glazing |\n| Panel | ~113 | Thin walls, greebling |\n| Fence | ~23 | Railings, barriers |\n| Wheel | ~152 | Vehicles (see relaxed mode below) |\n| Tyre | ~90 | Vehicles (see relaxed mode below) |\n| Hinge | ~126 | Articulated joints |\n| Minifig | ~2197 | Characters |\n| Minifig Accessory | ~540 | Held items, props |\n\nExample: brick_search_parts({category: \"Arch\"}) → returns all arches with dimensions ready for brick_place.\n\n## Coordinate System\n- Baseplate: 48×48 studs on the X and Z axes\n- Y axis: height in plate units (1 standard brick = 3 Y units, 1 plate = 1 Y unit)\n- Valid ranges: X 0–47, Z 0–47, Y 0+\n- Compass: -X is East, +X is West, +Z is North, -Z is South. The viewer shows a 3D axes gizmo (bottom-right, red=X green=Y blue=Z) so the human can see which screen direction is which axis while orbiting.\n- Rotation: \"0\", \"90\", \"180\", or \"270\" (string)\n- In strict mode (default), bricks CANNOT float — they must sit on the baseplate (Y=0) or on top of another brick. In relaxed mode, floating is allowed (see Build Modes).\n- ALL positions are relative to the baseplate. A brick's entire footprint (position + size) must stay within the 48×48 baseplate. Out-of-bounds placements are rejected.\n- A brick at position (x, z) with studsX=2, studsZ=4 occupies x to x+2, z to z+4. So the maximum valid x for that brick is 46, and the maximum valid z is 44.\n- IMPORTANT: Every brick_place response includes a per-row \"footprint\" showing each brick's exact occupied area: {minX, maxX, minZ, maxZ, topY}. Use footprint.maxX/maxZ to know where to place the NEXT brick adjacent to it. Use footprint.topY for the Y value of the next layer on top.\n- You can batch many bricks in one brick_place call (one CSV row each). When tiling with a known dimension (e.g. 3001 is 2×4 → z advances by 4), compute the whole batch up front. When unsure of a part's footprint, place it alone first and read the response.\n- brick_get_scene also returns footprints for every brick. ALWAYS read footprints to position new bricks — never calculate positions from scratch when existing bricks have footprints.\n\n## Size & Scale Reference\n\nHeight is measured in bricks (1 brick = 3 plates = 3 Y units).\n| Category       | Height        | Real-world approx |\n|----------------|---------------|-------------------|\n| Short          | 1–10 bricks   | up to ~9.6 cm     |\n| Medium         | 11–30 bricks  | ~10–28 cm         |\n| Tall           | 31–60 bricks  | ~29–57 cm         |\n| Tower/Skyscraper | 60+ bricks | 57 cm+            |\n\nShort builds sit flat on a table and are viewed mostly from above (vehicles, small vignettes, garden scenes). Medium builds are eye-catching at table height and viewed straight-on. Tall builds demand vertical presence and often need internal reinforcement.\n\nWidth is measured in studs (1 stud = 8 mm).\n| Category | Width       | Real-world approx |\n|----------|-------------|-------------------|\n| Narrow   | 1–8 studs   | up to ~6.4 cm     |\n| Medium   | 9–24 studs  | ~7–19 cm          |\n| Wide     | 25–48 studs | ~20–38 cm         |\n| Massive  | 48+ studs   | 38 cm+            |\n\nNarrow builds are things like a single tower, a lamppost, or a small character model. Medium is the sweet spot for most standalone builds — a small house, a vehicle, a diorama scene. Wide and massive are dioramas, modular-style buildings, and layout sections.\n\n## Colors\nRed #cc0000 · Blue #0055bf · Green #237841 · Yellow #f2cd37 · White #ffffff · Black #1b2a34\nOrange #fe8a18 · Brown #583927 · Tan #e4cd9e · Dark grey #6b5a5a · Light grey #9ba19d · Dark blue #0a3463\n\n## Footprints\n\nEvery brick_place response and brick_get_scene response includes a \"footprint\" for each brick:\n  { minX, maxX, minZ, maxZ, topY }\n\nThis tells you the exact area the brick occupies on the baseplate after rotation is applied.\n- minX/maxX: the brick spans from minX to maxX along the X axis\n- minZ/maxZ: the brick spans from minZ to maxZ along the Z axis\n- topY: the top of the brick — use this as the Y value for stacking a brick on top\n\nUse footprints to position new bricks. Do NOT calculate positions manually — read the footprint from the response.\n- To place a brick adjacent along X: use the previous brick's footprint.maxX as the new brick's x\n- To place a brick adjacent along Z: use the previous brick's footprint.maxZ as the new brick's z\n- To stack on top: use the previous brick's footprint.topY as the new brick's y\n\nExample: you place a 2x4 brick (typeId=\"3001\") at (10, 0, 10) with rotation \"90\". The response includes:\n  footprint: { minX: 10, maxX: 14, minZ: 10, maxZ: 12, topY: 3 }\nTo place the next brick to the right: x=14 (footprint.maxX)\nTo place a brick in front: z=12 (footprint.maxZ)\nTo stack on top: y=3 (footprint.topY)\n\n## Orientation of asymmetric parts (slopes, wedges, arches)\n\nLDraw parts are rotated -90° around Y on load, so their native \"front\" (LDraw -Z) becomes our +X.\nAt rotation=0, the studded/solid end of an asymmetric part sits at the LOW-X side of its footprint. The sloped/open/pointy feature faces +X.\n\nOur rotation is COUNTER-CLOCKWISE looking down (+Y view). Each +90 turns the feature from +X → +Z → -X → -Z → +X.\n\n| rotation | feature faces | studs at | top-down view (S=stud, /=slope) |\n|----------|---------------|----------|---------------------------------|\n| 0        | +X            | low-X    | S /   (slope on the +X side)    |\n| 90       | +Z            | low-Z    | S over /  (slope on the +Z side)|\n| 180      | -X            | high-X   | / S   (slope on the -X side)    |\n| 270      | -Z            | high-Z   | / over S  (slope on the -Z side)|\n\nCRITICAL: if your 0/180 slopes look right but your 90/270 slopes point the wrong way, you have them swapped — use 90 where you used 270 and vice versa. Our 90 is COUNTER-CLOCKWISE, not clockwise.\n\n### Roof peak — ridge runs along Z (slopes face each other across X)\n  brick_place(bricks=\"3039,10,3,10,0,#cc0000\n  3039,14,3,10,180,#cc0000\")\n    # Slope at x=10 (rotation=0) faces +X. Slope at x=14 (rotation=180) faces -X. They meet at x=12.\n\n### Roof peak — ridge runs along X (slopes face each other across Z)\n  brick_place(bricks=\"3039,10,3,10,90,#cc0000\n  3039,10,3,14,270,#cc0000\")\n    # Slope at z=10 (rotation=90) faces +Z. Slope at z=14 (rotation=270) faces -Z. They meet at z=12.\n\n### Four-sided pyramid roof (slopes on all sides facing INWARD)\n  # Building center at (x=15, z=15). Each slope faces TOWARD the center.\n  # East slope (low-X side, x=10): needs to face +X (toward center) → rotation=0\n  # West slope (high-X side, x=18): needs to face -X (toward center) → rotation=180\n  # South slope (low-Z side, z=10): needs to face +Z (toward center) → rotation=90\n  # North slope (high-Z side, z=18): needs to face -Z (toward center) → rotation=270\n\n## Examples\n\nbrick_place takes CSV: typeId,x,y,z,rotation,color — one brick per line. Rows are auto-sorted by Y ascending before placement, so you don't have to order supports first — but each brick still needs valid Y (on baseplate or resting on an existing brick).\n\n### Single brick\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\")\n    → results[0].footprint: {minX:10, maxX:12, minZ:10, maxZ:14, topY:3}\n\n### Wall (4 bricks tall, one call — streams into viewer row by row)\n3008 = Brick 1x8, heightUnits=3 → y advances by 3 per layer:\n  brick_place(bricks=\"3008,10,0,10,0,#cc0000\n  3008,10,3,10,0,#cc0000\n  3008,10,6,10,0,#cc0000\n  3008,10,9,10,0,#cc0000\")\n    → results: [{row:1, ok:true, footprint:{...topY:3}}, {row:2, ok:true, footprint:{...topY:6}}, ...]\n\n### Row along Z (one call)\n3001 = Brick 2x4, studsZ=4 → z advances by 4:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,10,0,14,0,#0055bf\n  3001,10,0,18,0,#237841\")\n\n### Row along X (one call)\n3001 studsX=2 → x advances by 2:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,12,0,10,0,#0055bf\n  3001,14,0,10,0,#237841\")\n\n### Unknown part dimensions → place one, read footprint, then batch\n  brick_place(bricks=\"3003,20,0,20\")                      ← 3003 = ? place alone\n    → results[0].footprint: {minX:20, maxX:22, minZ:20, maxZ:22, topY:3}   (it's 2×2)\n  brick_place(bricks=\"3003,22,0,20\\n3003,24,0,20\\n3003,26,0,20\")   ← now batch with x+=2\n\n### Rotation changes footprint — always read it\n  3001 (Brick 2x4) at rotation \"0\":  footprint maxX = x+2, maxZ = z+4\n  3001 (Brick 2x4) at rotation \"90\": footprint maxX = x+4, maxZ = z+2  (swapped!)\n\n## Build modes\n\n- **strict** (default) — every brick needs support (y=0 or resting on a brick below). Removing a support cascades: everything above it that loses support is also removed. Use for structurally realistic builds.\n- **relaxed** — skips the support requirement. Floating bricks are allowed (placement still returns a `warnings: [\"floating\"]` hint). Removing a brick does NOT cascade. Use for staged assembly (place wheels before axles), specialty parts that attach via pins/clips, or freeform artistic builds.\n\n- **snap** (orthogonal flag) — when a brick lacks support, auto-correct its y to the nearest landing instead of rejecting. Works in both strict and relaxed mode. Result row includes `snappedFrom:{y:originalY}` and a warning. Turn on for layer-by-layer builds where you trust the server's landing math.\n\nSwitch with: brick_set_build_mode({mode: \"relaxed\"})\nSet snap with: brick_set_build_mode({snap: true})\nBoth can be set together: brick_set_build_mode({mode: \"strict\", snap: true})\nCheck current mode: brick_get_scene includes `buildMode` and `snap` in the scene data.\n\nTypical workflow for vehicles:\n1. brick_set_build_mode({mode: \"relaxed\"})\n2. brick_search_parts({category: \"Wheel\"}) → find a wheel\n3. brick_place with wheels at the right height (they'll float until step 4)\n4. brick_place the chassis/axle bricks — wheels now visually connect\n5. brick_set_build_mode({mode: \"strict\"}) to resume normal building\n\n## Rules\n- In strict mode (default), every brick needs support: y=0 (baseplate) OR resting on top of another brick. Floating bricks are rejected with a suggestedY hint. In relaxed mode, floating is allowed — see Build Modes above.\n- Use typeId values from brick_get_available for popular parts. You can also use any LDraw part number — the server will auto-detect dimensions from the LDraw library.\n- brick_place returns {summary:{placed,failed,deferred?,totalBricks,hints?}, results:[...]}. Each row result is either {ok:true, id, footprint, snappedFrom?} or {ok:false, error, line, suggestedY?, suggestedX?, suggestedZ?, collidingWith?}. Rows are auto-sorted by Y before processing. If a row fails support, its error includes suggestedY — the nearest valid landing height. Retry that row with y=suggestedY (or enable snap mode to auto-land). If several rows fail, collect all of them, apply each hint, and resend them together in ONE follow-up call — don't retry one row at a time.\n- Collision errors include `collidingWith: {id, typeId, footprint}` — use footprint.maxX or footprint.maxZ to retry adjacent to the blocker. May also include `suggestedX` or `suggestedZ` (nearest open slot within 8 studs).\n- Bounds errors include `suggestedX`/`suggestedZ`/`suggestedY` — the nearest in-bounds position for this brick's actual footprint (rotation-aware).\n- Batch cap: max 200 rows AND max 10 new part types per brick_place call. Rows beyond either cap are deferred — their error says \"Batch cap reached\" and summary.deferred counts them. Just resend those rows in the next brick_place call. Reusing a typeId already in the scene doesn't count toward the new-types cap.\n- Rotation swaps dimensions — account for this when tiling.\n- ALL bricks must fit within the 48×48 baseplate. The brick's full footprint (position + studs size) must not exceed x=47 or z=47. Out-of-bounds placements are rejected.\n- Every successful row in brick_place results includes a footprint — use results[i].footprint.topY to position the next layer. You don't need brick_get_scene between your own brick_place calls; only call it at the START of a task to see what prior turns or the human placed.\n\n## Building Strategy\n1. Call brick_get_scene ONCE at the start to see what's already built. After that, track positions from the footprints in each brick_place results array.\n2. Plan the footprint first — lay the ground floor (Y=0)\n3. Build upward layer by layer — each layer's Y = previous Y + heightUnits\n4. Send ~10 rows per brick_place call — one small section at a time. Never generate the whole build's CSV up front; plan the next section from the footprints returned in results. Rows are Y-sorted before processing so supports within a chunk land first.\n5. Alternate brick offsets between rows for realistic interlocking\n6. Use plates (heightUnits=1) for thin details, trim, and floors\n7. Use slopes for rooflines — studs are only on the flat side\n8. Build in sections: foundation → walls → roof\n\n## Best Practices\n- Work at a scale that makes sense for the detail level you want. Larger scale gives more room for realism.\n- Plan your color scheme early. Mixing too many colors by accident is a common mistake — pick 2-3 main colors and 1-2 accent colors.\n- Overlap your layers like real brickwork — never stack bricks where joints align vertically. That creates weak seam lines. Offset by half a brick length on alternating rows.\n- Distribute weight evenly and think about the base. Wide, flat bases are more stable than tall narrow towers without internal reinforcement.\n- Use Technic bricks internally for rigid structural support, especially in large builds.\n- Use consistent lighting logic — if your build has a light source, shade the darker side with darker colored bricks.\n- Finish exposed surfaces with plates for a clean, polished look. Use slopes for angled surfaces and rooflines.\n- For sci-fi and industrial builds, add small technical-looking details (greebling) with 1x1 bricks and plates, but apply with restraint so it doesn't look random.\n- Don't be afraid to use brick_clear_scene and rebuild. The best builders redo sections many times.\n- Step back and consider the build from the intended viewing angle, not just from above.\n",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "brick_read_me"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "# Brick Builder Reference\n\nYou only need to call brick_read_me once. Do NOT call it again — you will not see anything new.\n\n## Order of Operations (MANDATORY — follow exactly)\n1. brick_read_me → Call once to learn the building format and rules (you just did this)\n2. brick_get_available → Returns a starter set of popular parts AND a category index of the full 12874-part library\n   - brick_search_parts → Get any category or search by name. Results include dimensions (studsX, studsZ, heightUnits) so you can brick_place directly. Example: brick_search_parts({category: \"Arch\"}) returns all arches; brick_search_parts({query: \"corner\"}) finds corner parts across categories.\n3. brick_render_scene → Call BEFORE placing any bricks. Opens the 3D viewer. If you skip this step, the user cannot see anything you build.\n4. brick_place → Place one or many bricks via CSV (one row per brick). They stream into the viewer live, row by row, as the tool runs. Batch cap: 200 rows / 10 new part types per call — for large builds, call it multiple times with chunks.\n5. brick_get_scene → Call anytime to inspect what's currently built\n6. brick_remove_brick → Remove a specific brick by ID (use brick_get_scene to find IDs). Also removes unsupported bricks above it.\n7. brick_clear_scene → Call to remove all bricks and start over\n\nCRITICAL: You must call brick_render_scene before your first brick_place call. Placing bricks without rendering the scene first means the user has no viewer open and sees nothing.\n\n## Brick Types\nAny LDraw part number works as a typeId. brick_get_available gives you ~30 starters plus the full category index. brick_search_parts gives you any category or name match with dimensions included — use it whenever you want a shape that isn't in the starter set. Example: need an arch for a doorway → brick_search_parts({category: \"Arch\"}) → pick one → brick_place.\n\n## Beyond standard bricks — specialty parts\n\nThe library has 12874 parts across 82 categories.\nBeyond the basic bricks/plates/slopes, reach for brick_search_parts to get:\n\n| Category | Count | Use for |\n|---|---|---|\n| Arch | ~47 | Doorways, bridges, curved openings |\n| Door | ~120 | Building facades, entrances |\n| Window | ~68 | Building facades, glazing |\n| Panel | ~113 | Thin walls, greebling |\n| Fence | ~23 | Railings, barriers |\n| Wheel | ~152 | Vehicles (see relaxed mode below) |\n| Tyre | ~90 | Vehicles (see relaxed mode below) |\n| Hinge | ~126 | Articulated joints |\n| Minifig | ~2197 | Characters |\n| Minifig Accessory | ~540 | Held items, props |\n\nExample: brick_search_parts({category: \"Arch\"}) → returns all arches with dimensions ready for brick_place.\n\n## Coordinate System\n- Baseplate: 48×48 studs on the X and Z axes\n- Y axis: height in plate units (1 standard brick = 3 Y units, 1 plate = 1 Y unit)\n- Valid ranges: X 0–47, Z 0–47, Y 0+\n- Compass: -X is East, +X is West, +Z is North, -Z is South. The viewer shows a 3D axes gizmo (bottom-right, red=X green=Y blue=Z) so the human can see which screen direction is which axis while orbiting.\n- Rotation: \"0\", \"90\", \"180\", or \"270\" (string)\n- In strict mode (default), bricks CANNOT float — they must sit on the baseplate (Y=0) or on top of another brick. In relaxed mode, floating is allowed (see Build Modes).\n- ALL positions are relative to the baseplate. A brick's entire footprint (position + size) must stay within the 48×48 baseplate. Out-of-bounds placements are rejected.\n- A brick at position (x, z) with studsX=2, studsZ=4 occupies x to x+2, z to z+4. So the maximum valid x for that brick is 46, and the maximum valid z is 44.\n- IMPORTANT: Every brick_place response includes a per-row \"footprint\" showing each brick's exact occupied area: {minX, maxX, minZ, maxZ, topY}. Use footprint.maxX/maxZ to know where to place the NEXT brick adjacent to it. Use footprint.topY for the Y value of the next layer on top.\n- You can batch many bricks in one brick_place call (one CSV row each). When tiling with a known dimension (e.g. 3001 is 2×4 → z advances by 4), compute the whole batch up front. When unsure of a part's footprint, place it alone first and read the response.\n- brick_get_scene also returns footprints for every brick. ALWAYS read footprints to position new bricks — never calculate positions from scratch when existing bricks have footprints.\n\n## Size & Scale Reference\n\nHeight is measured in bricks (1 brick = 3 plates = 3 Y units).\n| Category       | Height        | Real-world approx |\n|----------------|---------------|-------------------|\n| Short          | 1–10 bricks   | up to ~9.6 cm     |\n| Medium         | 11–30 bricks  | ~10–28 cm         |\n| Tall           | 31–60 bricks  | ~29–57 cm         |\n| Tower/Skyscraper | 60+ bricks | 57 cm+            |\n\nShort builds sit flat on a table and are viewed mostly from above (vehicles, small vignettes, garden scenes). Medium builds are eye-catching at table height and viewed straight-on. Tall builds demand vertical presence and often need internal reinforcement.\n\nWidth is measured in studs (1 stud = 8 mm).\n| Category | Width       | Real-world approx |\n|----------|-------------|-------------------|\n| Narrow   | 1–8 studs   | up to ~6.4 cm     |\n| Medium   | 9–24 studs  | ~7–19 cm          |\n| Wide     | 25–48 studs | ~20–38 cm         |\n| Massive  | 48+ studs   | 38 cm+            |\n\nNarrow builds are things like a single tower, a lamppost, or a small character model. Medium is the sweet spot for most standalone builds — a small house, a vehicle, a diorama scene. Wide and massive are dioramas, modular-style buildings, and layout sections.\n\n## Colors\nRed #cc0000 · Blue #0055bf · Green #237841 · Yellow #f2cd37 · White #ffffff · Black #1b2a34\nOrange #fe8a18 · Brown #583927 · Tan #e4cd9e · Dark grey #6b5a5a · Light grey #9ba19d · Dark blue #0a3463\n\n## Footprints\n\nEvery brick_place response and brick_get_scene response includes a \"footprint\" for each brick:\n  { minX, maxX, minZ, maxZ, topY }\n\nThis tells you the exact area the brick occupies on the baseplate after rotation is applied.\n- minX/maxX: the brick spans from minX to maxX along the X axis\n- minZ/maxZ: the brick spans from minZ to maxZ along the Z axis\n- topY: the top of the brick — use this as the Y value for stacking a brick on top\n\nUse footprints to position new bricks. Do NOT calculate positions manually — read the footprint from the response.\n- To place a brick adjacent along X: use the previous brick's footprint.maxX as the new brick's x\n- To place a brick adjacent along Z: use the previous brick's footprint.maxZ as the new brick's z\n- To stack on top: use the previous brick's footprint.topY as the new brick's y\n\nExample: you place a 2x4 brick (typeId=\"3001\") at (10, 0, 10) with rotation \"90\". The response includes:\n  footprint: { minX: 10, maxX: 14, minZ: 10, maxZ: 12, topY: 3 }\nTo place the next brick to the right: x=14 (footprint.maxX)\nTo place a brick in front: z=12 (footprint.maxZ)\nTo stack on top: y=3 (footprint.topY)\n\n## Orientation of asymmetric parts (slopes, wedges, arches)\n\nLDraw parts are rotated -90° around Y on load, so their native \"front\" (LDraw -Z) becomes our +X.\nAt rotation=0, the studded/solid end of an asymmetric part sits at the LOW-X side of its footprint. The sloped/open/pointy feature faces +X.\n\nOur rotation is COUNTER-CLOCKWISE looking down (+Y view). Each +90 turns the feature from +X → +Z → -X → -Z → +X.\n\n| rotation | feature faces | studs at | top-down view (S=stud, /=slope) |\n|----------|---------------|----------|---------------------------------|\n| 0        | +X            | low-X    | S /   (slope on the +X side)    |\n| 90       | +Z            | low-Z    | S over /  (slope on the +Z side)|\n| 180      | -X            | high-X   | / S   (slope on the -X side)    |\n| 270      | -Z            | high-Z   | / over S  (slope on the -Z side)|\n\nCRITICAL: if your 0/180 slopes look right but your 90/270 slopes point the wrong way, you have them swapped — use 90 where you used 270 and vice versa. Our 90 is COUNTER-CLOCKWISE, not clockwise.\n\n### Roof peak — ridge runs along Z (slopes face each other across X)\n  brick_place(bricks=\"3039,10,3,10,0,#cc0000\n  3039,14,3,10,180,#cc0000\")\n    # Slope at x=10 (rotation=0) faces +X. Slope at x=14 (rotation=180) faces -X. They meet at x=12.\n\n### Roof peak — ridge runs along X (slopes face each other across Z)\n  brick_place(bricks=\"3039,10,3,10,90,#cc0000\n  3039,10,3,14,270,#cc0000\")\n    # Slope at z=10 (rotation=90) faces +Z. Slope at z=14 (rotation=270) faces -Z. They meet at z=12.\n\n### Four-sided pyramid roof (slopes on all sides facing INWARD)\n  # Building center at (x=15, z=15). Each slope faces TOWARD the center.\n  # East slope (low-X side, x=10): needs to face +X (toward center) → rotation=0\n  # West slope (high-X side, x=18): needs to face -X (toward center) → rotation=180\n  # South slope (low-Z side, z=10): needs to face +Z (toward center) → rotation=90\n  # North slope (high-Z side, z=18): needs to face -Z (toward center) → rotation=270\n\n## Examples\n\nbrick_place takes CSV: typeId,x,y,z,rotation,color — one brick per line. Rows are auto-sorted by Y ascending before placement, so you don't have to order supports first — but each brick still needs valid Y (on baseplate or resting on an existing brick).\n\n### Single brick\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\")\n    → results[0].footprint: {minX:10, maxX:12, minZ:10, maxZ:14, topY:3}\n\n### Wall (4 bricks tall, one call — streams into viewer row by row)\n3008 = Brick 1x8, heightUnits=3 → y advances by 3 per layer:\n  brick_place(bricks=\"3008,10,0,10,0,#cc0000\n  3008,10,3,10,0,#cc0000\n  3008,10,6,10,0,#cc0000\n  3008,10,9,10,0,#cc0000\")\n    → results: [{row:1, ok:true, footprint:{...topY:3}}, {row:2, ok:true, footprint:{...topY:6}}, ...]\n\n### Row along Z (one call)\n3001 = Brick 2x4, studsZ=4 → z advances by 4:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,10,0,14,0,#0055bf\n  3001,10,0,18,0,#237841\")\n\n### Row along X (one call)\n3001 studsX=2 → x advances by 2:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,12,0,10,0,#0055bf\n  3001,14,0,10,0,#237841\")\n\n### Unknown part dimensions → place one, read footprint, then batch\n  brick_place(bricks=\"3003,20,0,20\")                      ← 3003 = ? place alone\n    → results[0].footprint: {minX:20, maxX:22, minZ:20, maxZ:22, topY:3}   (it's 2×2)\n  brick_place(bricks=\"3003,22,0,20\\n3003,24,0,20\\n3003,26,0,20\")   ← now batch with x+=2\n\n### Rotation changes footprint — always read it\n  3001 (Brick 2x4) at rotation \"0\":  footprint maxX = x+2, maxZ = z+4\n  3001 (Brick 2x4) at rotation \"90\": footprint maxX = x+4, maxZ = z+2  (swapped!)\n\n## Build modes\n\n- **strict** (default) — every brick needs support (y=0 or resting on a brick below). Removing a support cascades: everything above it that loses support is also removed. Use for structurally realistic builds.\n- **relaxed** — skips the support requirement. Floating bricks are allowed (placement still returns a `warnings: [\"floating\"]` hint). Removing a brick does NOT cascade. Use for staged assembly (place wheels before axles), specialty parts that attach via pins/clips, or freeform artistic builds.\n\n- **snap** (orthogonal flag) — when a brick lacks support, auto-correct its y to the nearest landing instead of rejecting. Works in both strict and relaxed mode. Result row includes `snappedFrom:{y:originalY}` and a warning. Turn on for layer-by-layer builds where you trust the server's landing math.\n\nSwitch with: brick_set_build_mode({mode: \"relaxed\"})\nSet snap with: brick_set_build_mode({snap: true})\nBoth can be set together: brick_set_build_mode({mode: \"strict\", snap: true})\nCheck current mode: brick_get_scene includes `buildMode` and `snap` in the scene data.\n\nTypical workflow for vehicles:\n1. brick_set_build_mode({mode: \"relaxed\"})\n2. brick_search_parts({category: \"Wheel\"}) → find a wheel\n3. brick_place with wheels at the right height (they'll float until step 4)\n4. brick_place the chassis/axle bricks — wheels now visually connect\n5. brick_set_build_mode({mode: \"strict\"}) to resume normal building\n\n## Rules\n- In strict mode (default), every brick needs support: y=0 (baseplate) OR resting on top of another brick. Floating bricks are rejected with a suggestedY hint. In relaxed mode, floating is allowed — see Build Modes above.\n- Use typeId values from brick_get_available for popular parts. You can also use any LDraw part number — the server will auto-detect dimensions from the LDraw library.\n- brick_place returns {summary:{placed,failed,deferred?,totalBricks,hints?}, results:[...]}. Each row result is either {ok:true, id, footprint, snappedFrom?} or {ok:false, error, line, suggestedY?, suggestedX?, suggestedZ?, collidingWith?}. Rows are auto-sorted by Y before processing. If a row fails support, its error includes suggestedY — the nearest valid landing height. Retry that row with y=suggestedY (or enable snap mode to auto-land). If several rows fail, collect all of them, apply each hint, and resend them together in ONE follow-up call — don't retry one row at a time.\n- Collision errors include `collidingWith: {id, typeId, footprint}` — use footprint.maxX or footprint.maxZ to retry adjacent to the blocker. May also include `suggestedX` or `suggestedZ` (nearest open slot within 8 studs).\n- Bounds errors include `suggestedX`/`suggestedZ`/`suggestedY` — the nearest in-bounds position for this brick's actual footprint (rotation-aware).\n- Batch cap: max 200 rows AND max 10 new part types per brick_place call. Rows beyond either cap are deferred — their error says \"Batch cap reached\" and summary.deferred counts them. Just resend those rows in the next brick_place call. Reusing a typeId already in the scene doesn't count toward the new-types cap.\n- Rotation swaps dimensions — account for this when tiling.\n- ALL bricks must fit within the 48×48 baseplate. The brick's full footprint (position + studs size) must not exceed x=47 or z=47. Out-of-bounds placements are rejected.\n- Every successful row in brick_place results includes a footprint — use results[i].footprint.topY to position the next layer. You don't need brick_get_scene between your own brick_place calls; only call it at the START of a task to see what prior turns or the human placed.\n\n## Building Strategy\n1. Call brick_get_scene ONCE at the start to see what's already built. After that, track positions from the footprints in each brick_place results array.\n2. Plan the footprint first — lay the ground floor (Y=0)\n3. Build upward layer by layer — each layer's Y = previous Y + heightUnits\n4. Send ~10 rows per brick_place call — one small section at a time. Never generate the whole build's CSV up front; plan the next section from the footprints returned in results. Rows are Y-sorted before processing so supports within a chunk land first.\n5. Alternate brick offsets between rows for realistic interlocking\n6. Use plates (heightUnits=1) for thin details, trim, and floors\n7. Use slopes for rooflines — studs are only on the flat side\n8. Build in sections: foundation → walls → roof\n\n## Best Practices\n- Work at a scale that makes sense for the detail level you want. Larger scale gives more room for realism.\n- Plan your color scheme early. Mixing too many colors by accident is a common mistake — pick 2-3 main colors and 1-2 accent colors.\n- Overlap your layers like real brickwork — never stack bricks where joints align vertically. That creates weak seam lines. Offset by half a brick length on alternating rows.\n- Distribute weight evenly and think about the base. Wide, flat bases are more stable than tall narrow towers without internal reinforcement.\n- Use Technic bricks internally for rigid structural support, especially in large builds.\n- Use consistent lighting logic — if your build has a light source, shade the darker side with darker colored bricks.\n- Finish exposed surfaces with plates for a clean, polished look. Use slopes for angled surfaces and rooflines.\n- For sci-fi and industrial builds, add small technical-looking details (greebling) with 1x1 bricks and plates, but apply with restraint so it doesn't look random.\n- Don't be afraid to use brick_clear_scene and rebuild. The best builders redo sections many times.\n- Step back and consider the build from the intended viewing angle, not just from above.\n"
+        },
+        "text_len": 16437
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "# Brick Builder Reference\n\nYou only need to call brick_read_me once. Do NOT call it again — you will not see anything new.\n\n## Order of Operations (MANDATORY — follow exactly)\n1. brick_read_me → Call once to learn the building format and rules (you just did this)\n2. brick_get_available → Returns a starter set of popular parts AND a category index of the full 12874-part library\n   - brick_search_parts → Get any category or search by name. Results include dimensions (studsX, studsZ, heightUnits) so you can brick_place directly. Example: brick_search_parts({category: \"Arch\"}) returns all arches; brick_search_parts({query: \"corner\"}) finds corner parts across categories.\n3. brick_render_scene → Call BEFORE placing any bricks. Opens the 3D viewer. If you skip this step, the user cannot see anything you build.\n4. brick_place → Place one or many bricks via CSV (one row per brick). They stream into the viewer live, row by row, as the tool runs. Batch cap: 200 rows / 10 new part types per call — for large builds, call it multiple times with chunks.\n5. brick_get_scene → Call anytime to inspect what's currently built\n6. brick_remove_brick → Remove a specific brick by ID (use brick_get_scene to find IDs). Also removes unsupported bricks above it.\n7. brick_clear_scene → Call to remove all bricks and start over\n\nCRITICAL: You must call brick_render_scene before your first brick_place call. Placing bricks without rendering the scene first means the user has no viewer open and sees nothing.\n\n## Brick Types\nAny LDraw part number works as a typeId. brick_get_available gives you ~30 starters plus the full category index. brick_search_parts gives you any category or name match with dimensions included — use it whenever you want a shape that isn't in the starter set. Example: need an arch for a doorway → brick_search_parts({category: \"Arch\"}) → pick one → brick_place.\n\n## Beyond standard bricks — specialty parts\n\nThe library has 12874 parts across 82 categories.\nBeyond the basic bricks/plates/slopes, reach for brick_search_parts to get:\n\n| Category | Count | Use for |\n|---|---|---|\n| Arch | ~47 | Doorways, bridges, curved openings |\n| Door | ~120 | Building facades, entrances |\n| Window | ~68 | Building facades, glazing |\n| Panel | ~113 | Thin walls, greebling |\n| Fence | ~23 | Railings, barriers |\n| Wheel | ~152 | Vehicles (see relaxed mode below) |\n| Tyre | ~90 | Vehicles (see relaxed mode below) |\n| Hinge | ~126 | Articulated joints |\n| Minifig | ~2197 | Characters |\n| Minifig Accessory | ~540 | Held items, props |\n\nExample: brick_search_parts({category: \"Arch\"}) → returns all arches with dimensions ready for brick_place.\n\n## Coordinate System\n- Baseplate: 48×48 studs on the X and Z axes\n- Y axis: height in plate units (1 standard brick = 3 Y units, 1 plate = 1 Y unit)\n- Valid ranges: X 0–47, Z 0–47, Y 0+\n- Compass: -X is East, +X is West, +Z is North, -Z is South. The viewer shows a 3D axes gizmo (bottom-right, red=X green=Y blue=Z) so the human can see which screen direction is which axis while orbiting.\n- Rotation: \"0\", \"90\", \"180\", or \"270\" (string)\n- In strict mode (default), bricks CANNOT float — they must sit on the baseplate (Y=0) or on top of another brick. In relaxed mode, floating is allowed (see Build Modes).\n- ALL positions are relative to the baseplate. A brick's entire footprint (position + size) must stay within the 48×48 baseplate. Out-of-bounds placements are rejected.\n- A brick at position (x, z) with studsX=2, studsZ=4 occupies x to x+2, z to z+4. So the maximum valid x for that brick is 46, and the maximum valid z is 44.\n- IMPORTANT: Every brick_place response includes a per-row \"footprint\" showing each brick's exact occupied area: {minX, maxX, minZ, maxZ, topY}. Use footprint.maxX/maxZ to know where to place the NEXT brick adjacent to it. Use footprint.topY for the Y value of the next layer on top.\n- You can batch many bricks in one brick_place call (one CSV row each). When tiling with a known dimension (e.g. 3001 is 2×4 → z advances by 4), compute the whole batch up front. When unsure of a part's footprint, place it alone first and read the response.\n- brick_get_scene also returns footprints for every brick. ALWAYS read footprints to position new bricks — never calculate positions from scratch when existing bricks have footprints.\n\n## Size & Scale Reference\n\nHeight is measured in bricks (1 brick = 3 plates = 3 Y units).\n| Category       | Height        | Real-world approx |\n|----------------|---------------|-------------------|\n| Short          | 1–10 bricks   | up to ~9.6 cm     |\n| Medium         | 11–30 bricks  | ~10–28 cm         |\n| Tall           | 31–60 bricks  | ~29–57 cm         |\n| Tower/Skyscraper | 60+ bricks | 57 cm+            |\n\nShort builds sit flat on a table and are viewed mostly from above (vehicles, small vignettes, garden scenes). Medium builds are eye-catching at table height and viewed straight-on. Tall builds demand vertical presence and often need internal reinforcement.\n\nWidth is measured in studs (1 stud = 8 mm).\n| Category | Width       | Real-world approx |\n|----------|-------------|-------------------|\n| Narrow   | 1–8 studs   | up to ~6.4 cm     |\n| Medium   | 9–24 studs  | ~7–19 cm          |\n| Wide     | 25–48 studs | ~20–38 cm         |\n| Massive  | 48+ studs   | 38 cm+            |\n\nNarrow builds are things like a single tower, a lamppost, or a small character model. Medium is the sweet spot for most standalone builds — a small house, a vehicle, a diorama scene. Wide and massive are dioramas, modular-style buildings, and layout sections.\n\n## Colors\nRed #cc0000 · Blue #0055bf · Green #237841 · Yellow #f2cd37 · White #ffffff · Black #1b2a34\nOrange #fe8a18 · Brown #583927 · Tan #e4cd9e · Dark grey #6b5a5a · Light grey #9ba19d · Dark blue #0a3463\n\n## Footprints\n\nEvery brick_place response and brick_get_scene response includes a \"footprint\" for each brick:\n  { minX, maxX, minZ, maxZ, topY }\n\nThis tells you the exact area the brick occupies on the baseplate after rotation is applied.\n- minX/maxX: the brick spans from minX to maxX along the X axis\n- minZ/maxZ: the brick spans from minZ to maxZ along the Z axis\n- topY: the top of the brick — use this as the Y value for stacking a brick on top\n\nUse footprints to position new bricks. Do NOT calculate positions manually — read the footprint from the response.\n- To place a brick adjacent along X: use the previous brick's footprint.maxX as the new brick's x\n- To place a brick adjacent along Z: use the previous brick's footprint.maxZ as the new brick's z\n- To stack on top: use the previous brick's footprint.topY as the new brick's y\n\nExample: you place a 2x4 brick (typeId=\"3001\") at (10, 0, 10) with rotation \"90\". The response includes:\n  footprint: { minX: 10, maxX: 14, minZ: 10, maxZ: 12, topY: 3 }\nTo place the next brick to the right: x=14 (footprint.maxX)\nTo place a brick in front: z=12 (footprint.maxZ)\nTo stack on top: y=3 (footprint.topY)\n\n## Orientation of asymmetric parts (slopes, wedges, arches)\n\nLDraw parts are rotated -90° around Y on load, so their native \"front\" (LDraw -Z) becomes our +X.\nAt rotation=0, the studded/solid end of an asymmetric part sits at the LOW-X side of its footprint. The sloped/open/pointy feature faces +X.\n\nOur rotation is COUNTER-CLOCKWISE looking down (+Y view). Each +90 turns the feature from +X → +Z → -X → -Z → +X.\n\n| rotation | feature faces | studs at | top-down view (S=stud, /=slope) |\n|----------|---------------|----------|---------------------------------|\n| 0        | +X            | low-X    | S /   (slope on the +X side)    |\n| 90       | +Z            | low-Z    | S over /  (slope on the +Z side)|\n| 180      | -X            | high-X   | / S   (slope on the -X side)    |\n| 270      | -Z            | high-Z   | / over S  (slope on the -Z side)|\n\nCRITICAL: if your 0/180 slopes look right but your 90/270 slopes point the wrong way, you have them swapped — use 90 where you used 270 and vice versa. Our 90 is COUNTER-CLOCKWISE, not clockwise.\n\n### Roof peak — ridge runs along Z (slopes face each other across X)\n  brick_place(bricks=\"3039,10,3,10,0,#cc0000\n  3039,14,3,10,180,#cc0000\")\n    # Slope at x=10 (rotation=0) faces +X. Slope at x=14 (rotation=180) faces -X. They meet at x=12.\n\n### Roof peak — ridge runs along X (slopes face each other across Z)\n  brick_place(bricks=\"3039,10,3,10,90,#cc0000\n  3039,10,3,14,270,#cc0000\")\n    # Slope at z=10 (rotation=90) faces +Z. Slope at z=14 (rotation=270) faces -Z. They meet at z=12.\n\n### Four-sided pyramid roof (slopes on all sides facing INWARD)\n  # Building center at (x=15, z=15). Each slope faces TOWARD the center.\n  # East slope (low-X side, x=10): needs to face +X (toward center) → rotation=0\n  # West slope (high-X side, x=18): needs to face -X (toward center) → rotation=180\n  # South slope (low-Z side, z=10): needs to face +Z (toward center) → rotation=90\n  # North slope (high-Z side, z=18): needs to face -Z (toward center) → rotation=270\n\n## Examples\n\nbrick_place takes CSV: typeId,x,y,z,rotation,color — one brick per line. Rows are auto-sorted by Y ascending before placement, so you don't have to order supports first — but each brick still needs valid Y (on baseplate or resting on an existing brick).\n\n### Single brick\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\")\n    → results[0].footprint: {minX:10, maxX:12, minZ:10, maxZ:14, topY:3}\n\n### Wall (4 bricks tall, one call — streams into viewer row by row)\n3008 = Brick 1x8, heightUnits=3 → y advances by 3 per layer:\n  brick_place(bricks=\"3008,10,0,10,0,#cc0000\n  3008,10,3,10,0,#cc0000\n  3008,10,6,10,0,#cc0000\n  3008,10,9,10,0,#cc0000\")\n    → results: [{row:1, ok:true, footprint:{...topY:3}}, {row:2, ok:true, footprint:{...topY:6}}, ...]\n\n### Row along Z (one call)\n3001 = Brick 2x4, studsZ=4 → z advances by 4:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,10,0,14,0,#0055bf\n  3001,10,0,18,0,#237841\")\n\n### Row along X (one call)\n3001 studsX=2 → x advances by 2:\n  brick_place(bricks=\"3001,10,0,10,0,#cc0000\n  3001,12,0,10,0,#0055bf\n  3001,14,0,10,0,#237841\")\n\n### Unknown part dimensions → place one, read footprint, then batch\n  brick_place(bricks=\"3003,20,0,20\")                      ← 3003 = ? place alone\n    → results[0].footprint: {minX:20, maxX:22, minZ:20, maxZ:22, topY:3}   (it's 2×2)\n  brick_place(bricks=\"3003,22,0,20\\n3003,24,0,20\\n3003,26,0,20\")   ← now batch with x+=2\n\n### Rotation changes footprint — always read it\n  3001 (Brick 2x4) at rotation \"0\":  footprint maxX = x+2, maxZ = z+4\n  3001 (Brick 2x4) at rotation \"90\": footprint maxX = x+4, maxZ = z+2  (swapped!)\n\n## Build modes\n\n- **strict** (default) — every brick needs support (y=0 or resting on a brick below). Removing a support cascades: everything above it that loses support is also removed. Use for structurally realistic builds.\n- **relaxed** — skips the support requirement. Floating bricks are allowed (placement still returns a `warnings: [\"floating\"]` hint). Removing a brick does NOT cascade. Use for staged assembly (place wheels before axles), specialty parts that attach via pins/clips, or freeform artistic builds.\n\n- **snap** (orthogonal flag) — when a brick lacks support, auto-correct its y to the nearest landing instead of rejecting. Works in both strict and relaxed mode. Result row includes `snappedFrom:{y:originalY}` and a warning. Turn on for layer-by-layer builds where you trust the server's landing math.\n\nSwitch with: brick_set_build_mode({mode: \"relaxed\"})\nSet snap with: brick_set_build_mode({snap: true})\nBoth can be set together: brick_set_build_mode({mode: \"strict\", snap: true})\nCheck current mode: brick_get_scene includes `buildMode` and `snap` in the scene data.\n\nTypical workflow for vehicles:\n1. brick_set_build_mode({mode: \"relaxed\"})\n2. brick_search_parts({category: \"Wheel\"}) → find a wheel\n3. brick_place with wheels at the right height (they'll float until step 4)\n4. brick_place the chassis/axle bricks — wheels now visually connect\n5. brick_set_build_mode({mode: \"strict\"}) to resume normal building\n\n## Rules\n- In strict mode (default), every brick needs support: y=0 (baseplate) OR resting on top of another brick. Floating bricks are rejected with a suggestedY hint. In relaxed mode, floating is allowed — see Build Modes above.\n- Use typeId values from brick_get_available for popular parts. You can also use any LDraw part number — the server will auto-detect dimensions from the LDraw library.\n- brick_place returns {summary:{placed,failed,deferred?,totalBricks,hints?}, results:[...]}. Each row result is either {ok:true, id, footprint, snappedFrom?} or {ok:false, error, line, suggestedY?, suggestedX?, suggestedZ?, collidingWith?}. Rows are auto-sorted by Y before processing. If a row fails support, its error includes suggestedY — the nearest valid landing height. Retry that row with y=suggestedY (or enable snap mode to auto-land). If several rows fail, collect all of them, apply each hint, and resend them together in ONE follow-up call — don't retry one row at a time.\n- Collision errors include `collidingWith: {id, typeId, footprint}` — use footprint.maxX or footprint.maxZ to retry adjacent to the blocker. May also include `suggestedX` or `suggestedZ` (nearest open slot within 8 studs).\n- Bounds errors include `suggestedX`/`suggestedZ`/`suggestedY` — the nearest in-bounds position for this brick's actual footprint (rotation-aware).\n- Batch cap: max 200 rows AND max 10 new part types per brick_place call. Rows beyond either cap are deferred — their error says \"Batch cap reached\" and summary.deferred counts them. Just resend those rows in the next brick_place call. Reusing a typeId already in the scene doesn't count toward the new-types cap.\n- Rotation swaps dimensions — account for this when tiling.\n- ALL bricks must fit within the 48×48 baseplate. The brick's full footprint (position + studs size) must not exceed x=47 or z=47. Out-of-bounds placements are rejected.\n- Every successful row in brick_place results includes a footprint — use results[i].footprint.topY to position the next layer. You don't need brick_get_scene between your own brick_place calls; only call it at the START of a task to see what prior turns or the human placed.\n\n## Building Strategy\n1. Call brick_get_scene ONCE at the start to see what's already built. After that, track positions from the footprints in each brick_place results array.\n2. Plan the footprint first — lay the ground floor (Y=0)\n3. Build upward layer by layer — each layer's Y = previous Y + heightUnits\n4. Send ~10 rows per brick_place call — one small section at a time. Never generate the whole build's CSV up front; plan the next section from the footprints returned in results. Rows are Y-sorted before processing so supports within a chunk land first.\n5. Alternate brick offsets between rows for realistic interlocking\n6. Use plates (heightUnits=1) for thin details, trim, and floors\n7. Use slopes for rooflines — studs are only on the flat side\n8. Build in sections: foundation → walls → roof\n\n## Best Practices\n- Work at a scale that makes sense for the detail level you want. Larger scale gives more room for realism.\n- Plan your color scheme early. Mixing too many colors by accident is a common mistake — pick 2-3 main colors and 1-2 accent colors.\n- Overlap your layers like real brickwork — never stack bricks where joints align vertically. That creates weak seam lines. Offset by half a brick length on alternating rows.\n- Distribute weight evenly and think about the base. Wide, flat bases are more stable than tall narrow towers without internal reinforcement.\n- Use Technic bricks internally for rigid structural support, especially in large builds.\n- Use consistent lighting logic — if your build has a light source, shade the darker side with darker colored bricks.\n- Finish exposed surfaces with plates for a clean, polished look. Use slopes for angled surfaces and rooflines.\n- For sci-fi and industrial builds, add small technical-looking details (greebling) with 1x1 bricks and plates, but apply with restraint so it doesn't look random.\n- Don't be afraid to use brick_clear_scene and rebuild. The best builders redo sections many times.\n- Step back and consider the build from the intended viewing angle, not just from above.\n"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

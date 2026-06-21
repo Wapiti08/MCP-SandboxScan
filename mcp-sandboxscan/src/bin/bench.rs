@@ -4,10 +4,8 @@ use std::path::PathBuf;
 use anyhow::{Context, Result, bail};
 use clap::Parser;
 
-use mcp_sandboxscan::eval::{
-    run_bench, write_bench_report, SuiteId,
-};
 use mcp_sandboxscan::eval::suite::resolve_suite;
+use mcp_sandboxscan::eval::{SuiteId, run_bench, write_bench_report};
 
 #[derive(Parser, Debug)]
 #[command(name = "bench")]
@@ -93,9 +91,11 @@ fn main() -> Result<()> {
     );
 
     if let Some(p) = report.detection.precision {
-        println!("Detection: precision={p:.3} recall={:.3} f1={:.3}",
+        println!(
+            "Detection: precision={p:.3} recall={:.3} f1={:.3}",
             report.detection.recall.unwrap_or(0.0),
-            report.detection.f1.unwrap_or(0.0));
+            report.detection.f1.unwrap_or(0.0)
+        );
     }
 
     Ok(())

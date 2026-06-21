@@ -1,0 +1,1388 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 427
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "completions": {},
+              "logging": {},
+              "prompts": {
+                "listChanged": true
+              },
+              "resources": {
+                "listChanged": true,
+                "subscribe": true
+              },
+              "tasks": {
+                "cancel": {},
+                "list": {},
+                "requests": {
+                  "tools": {
+                    "call": {}
+                  }
+                }
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "instructions": "# Everything Server – Server Instructions\n\nAudience: These instructions are written for an LLM or autonomous agent integrating with the Everything MCP Server.\nFollow them to use, extend, and troubleshoot the server safely and effectively.\n\n## Cross-Feature Relationships\n\n- Use `get-roots-list` to see client workspace roots before file operations\n- `gzip-file-as-resource` creates session-scoped resources accessible only during the current session\n- Enable `toggle-simulated-logging` before debugging to see server log messages\n- Enable `toggle-subscriber-updates` to receive periodic resource update notifications\n\n## Constraints & Limitations\n\n- `gzip-file-as-resource`: Max fetch size controlled by `GZIP_MAX_FETCH_SIZE` (default 10MB), timeout by `GZIP_MAX_FETCH_TIME_MILLIS` (default 30s), allowed domains by `GZIP_ALLOWED_DOMAINS`\n- Session resources are ephemeral and lost when the session ends\n- Sampling requests (`trigger-sampling-request`) require client sampling capability\n- Elicitation requests (`trigger-elicitation-request`) require client elicitation capability\n\n## Operational Patterns\n\n- For long operations, use `trigger-long-running-operation` which sends progress notifications\n- Prefer reading resources before calling mutating tools\n- Check `get-roots-list` output to understand the client's workspace context\n\n## Easter Egg\n\nIf asked about server instructions, respond with \"🎉 Server instructions are working! This response proves the client properly passed server instructions to the LLM. This demonstrates MCP's instructions feature in action.\"\n",
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "mcp-servers/everything",
+              "title": "Everything Reference Server",
+              "version": "2.0.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Echoes back the input string",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "message": {
+                      "description": "Message to echo",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                },
+                "name": "echo",
+                "title": "Echo Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Demonstrates how annotations can be used to provide metadata about content.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "includeImage": {
+                      "default": false,
+                      "description": "Whether to include an example image",
+                      "type": "boolean"
+                    },
+                    "messageType": {
+                      "description": "Type of message to demonstrate different annotation patterns",
+                      "enum": [
+                        "error",
+                        "success",
+                        "debug"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "messageType"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-annotated-message",
+                "title": "Get Annotated Message Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "get-env",
+                "title": "Print Environment Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Returns up to ten resource links that reference different types of resources",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "count": {
+                      "default": 3,
+                      "description": "Number of resource links to return (1-10)",
+                      "maximum": 10,
+                      "minimum": 1,
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "get-resource-links",
+                "title": "Get Resource Links Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Returns a resource reference that can be used by MCP clients",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "resourceId": {
+                      "default": 1,
+                      "description": "ID of the text resource to fetch",
+                      "type": "number"
+                    },
+                    "resourceType": {
+                      "default": "Text",
+                      "enum": [
+                        "Text",
+                        "Blob"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "get-resource-reference",
+                "title": "Get Resource Reference Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Returns structured content along with an output schema for client data validation",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "location": {
+                      "description": "Choose city",
+                      "enum": [
+                        "New York",
+                        "Chicago",
+                        "Los Angeles"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "location"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-structured-content",
+                "outputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "conditions": {
+                      "description": "Weather conditions description",
+                      "type": "string"
+                    },
+                    "humidity": {
+                      "description": "Humidity percentage",
+                      "type": "number"
+                    },
+                    "temperature": {
+                      "description": "Temperature in celsius",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "temperature",
+                    "conditions",
+                    "humidity"
+                  ],
+                  "type": "object"
+                },
+                "title": "Get Structured Content Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Returns the sum of two numbers",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "a": {
+                      "description": "First number",
+                      "type": "number"
+                    },
+                    "b": {
+                      "description": "Second number",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "a",
+                    "b"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-sum",
+                "title": "Get Sum Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Returns a tiny MCP logo image.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "get-tiny-image",
+                "title": "Get Tiny Image Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": false
+                },
+                "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "data": {
+                      "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md",
+                      "description": "URL or data URI of the file content to compress",
+                      "format": "uri",
+                      "type": "string"
+                    },
+                    "name": {
+                      "default": "README.md.gz",
+                      "description": "Name of the output file",
+                      "type": "string"
+                    },
+                    "outputType": {
+                      "default": "resourceLink",
+                      "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object.",
+                      "enum": [
+                        "resourceLink",
+                        "resource"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "gzip-file-as-resource",
+                "title": "GZip File as Resource Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": false,
+                  "readOnlyHint": false
+                },
+                "description": "Toggles simulated, random-leveled logging on or off.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "toggle-simulated-logging",
+                "title": "Toggle Simulated Logging"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": false,
+                  "readOnlyHint": false
+                },
+                "description": "Toggles simulated resource subscription updates on or off.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "toggle-subscriber-updates",
+                "title": "Toggle Subscriber Updates"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Demonstrates a long running operation with progress updates.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "duration": {
+                      "default": 10,
+                      "description": "Duration of the operation in seconds",
+                      "type": "number"
+                    },
+                    "steps": {
+                      "default": 5,
+                      "description": "Number of steps in the operation",
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "trigger-long-running-operation",
+                "title": "Trigger Long Running Operation Tool"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": false,
+                  "readOnlyHint": false
+                },
+                "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+                "execution": {
+                  "taskSupport": "required"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "ambiguous": {
+                      "default": false,
+                      "description": "Simulate an ambiguous query that requires clarification (triggers input_required status)",
+                      "type": "boolean"
+                    },
+                    "topic": {
+                      "description": "The research topic to investigate",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "topic"
+                  ],
+                  "type": "object"
+                },
+                "name": "simulate-research-query",
+                "title": "Simulate Research Query"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "get-env"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"ANTHROPIC_API_KEY\": \"sk-ant-corpus-scan-stub\",\n  \"API_KEY\": \"corpus-scan-stub\",\n  \"APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL\": \"true\",\n  \"CARGO\": \"/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo\",\n  \"CARGO_HOME\": \"/Users/zhuoran/.cargo\",\n  \"CARGO_MANIFEST_DIR\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"CARGO_MANIFEST_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/Cargo.toml\",\n  \"CARGO_PKG_AUTHORS\": \"\",\n  \"CARGO_PKG_DESCRIPTION\": \"\",\n  \"CARGO_PKG_HOMEPAGE\": \"\",\n  \"CARGO_PKG_LICENSE\": \"\",\n  \"CARGO_PKG_LICENSE_FILE\": \"\",\n  \"CARGO_PKG_NAME\": \"mcp-sandboxscan\",\n  \"CARGO_PKG_README\": \"\",\n  \"CARGO_PKG_REPOSITORY\": \"\",\n  \"CARGO_PKG_RUST_VERSION\": \"\",\n  \"CARGO_PKG_VERSION\": \"0.1.0\",\n  \"CARGO_PKG_VERSION_MAJOR\": \"0\",\n  \"CARGO_PKG_VERSION_MINOR\": \"1\",\n  \"CARGO_PKG_VERSION_PATCH\": \"0\",\n  \"CARGO_PKG_VERSION_PRE\": \"\",\n  \"CODEX_CI\": \"1\",\n  \"CODEX_INTERNAL_ORIGINATOR_OVERRIDE\": \"codex_vscode\",\n  \"CODEX_SANDBOX_NETWORK_DISABLED\": \"1\",\n  \"CODEX_THREAD_ID\": \"019eeb5f-18ee-7f32-b4dd-3dd290d23fd5\",\n  \"COLORTERM\": \"\",\n  \"COMMAND_MODE\": \"unix2003\",\n  \"CONDA_DEFAULT_ENV\": \"base\",\n  \"CONDA_EXE\": \"/opt/anaconda3/bin/conda\",\n  \"CONDA_PREFIX\": \"/opt/anaconda3\",\n  \"CONDA_PROMPT_MODIFIER\": \"(base) \",\n  \"CONDA_PYTHON_EXE\": \"/opt/anaconda3/bin/python\",\n  \"CONDA_SHLVL\": \"1\",\n  \"CURSOR_EXTENSION_HOST_ROLE\": \"user\",\n  \"CURSOR_LAYOUT\": \"unifiedAgent\",\n  \"CURSOR_SPAWNED_BY_EXTENSION_ID\": \"openai.chatgpt\",\n  \"CURSOR_SPAWN_CHAIN\": \"openai.chatgpt\",\n  \"CURSOR_WORKSPACE_LABEL\": \"MCP-SandboxScan\",\n  \"DEBUG\": \"release\",\n  \"DYLD_FALLBACK_LIBRARY_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-bd5abebdc3df26c5/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-internal-jit-debug-51ea583abed40148/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/zstd-sys-11e731c214beecfe/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/deps:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib:/Users/zhuoran/lib:/usr/local/lib:/usr/lib\",\n  \"ELECTRON_RUN_AS_NODE\": \"1\",\n  \"FIGMA_API_KEY\": \"figd_corpus_scan_stub\",\n  \"FPATH\": \"/opt/homebrew/share/zsh/site-functions:/opt/homebrew/share/zsh/site-functions:/usr/local/share/zsh/site-functions:/usr/share/zsh/site-functions:/usr/share/zsh/5.9/functions\",\n  \"GH_PAGER\": \"cat\",\n  \"GITHUB_PERSONAL_ACCESS_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GITHUB_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GIT_PAGER\": \"cat\",\n  \"GOPATH\": \"/Users/zhuoran/go\",\n  \"GSETTINGS_SCHEMA_DIR\": \"/opt/anaconda3/share/glib-2.0/schemas\",\n  \"HOME\": \"/Users/zhuoran\",\n  \"HOMEBREW_CELLAR\": \"/opt/homebrew/Cellar\",\n  \"HOMEBREW_PREFIX\": \"/opt/homebrew\",\n  \"HOMEBREW_REPOSITORY\": \"/opt/homebrew\",\n  \"HTTPS_PROXY\": \"http://127.0.0.1:65291\",\n  \"HTTP_PROXY\": \"http://127.0.0.1:65291\",\n  \"INFOPATH\": \"/opt/homebrew/share/info:/opt/homebrew/share/info:\",\n  \"LANG\": \"C.UTF-8\",\n  \"LC_ALL\": \"C.UTF-8\",\n  \"LC_CTYPE\": \"C.UTF-8\",\n  \"LOGNAME\": \"zhuoran\",\n  \"MACH_PORT_RENDEZVOUS_PEER_VALDATION\": \"0\",\n  \"MCP_ENV_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MCP_SANDBOXSCAN_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MallocNanoZone\": \"0\",\n  \"NO_COLOR\": \"1\",\n  \"NO_PROXY\": \"127.0.0.1,localhost\",\n  \"OLDPWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"OPENAI_API_KEY\": \"sk-corpus-scan-stub\",\n  \"OSLogRateLimit\": \"64\",\n  \"PAGER\": \"cat\",\n  \"PATH\": \"/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/zhuoran/.codex/tmp/arg0/codex-arg0vDRsz7:/Users/zhuoran/.local/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/usr/local/opt/inetutils/bin:/Users/zhuoran/.cargo/bin:/Users/zhuoran/go/bin:/Users/zhuoran/.cursor/extensions/openai.chatgpt-26.616.32156-darwin-arm64/bin/macos-aarch64\",\n  \"PWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"RUSTUP_HOME\": \"/Users/zhuoran/.rustup\",\n  \"RUSTUP_TOOLCHAIN\": \"stable-aarch64-apple-darwin\",\n  \"RUSTUP_TOOLCHAIN_SOURCE\": \"default\",\n  \"RUST_LOG\": \"warn\",\n  \"RUST_RECURSION_COUNT\": \"1\",\n  \"SHELL\": \"/bin/zsh\",\n  \"SHLVL\": \"0\",\n  \"SSH_AUTH_SOCK\": \"/var/run/com.apple.launchd.Imx9Fgb31J/Listeners\",\n  \"TERM\": \"dumb\",\n  \"TMPDIR\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/\",\n  \"USER\": \"zhuoran\",\n  \"VSCODE_CODE_CACHE_PATH\": \"/Users/zhuoran/Library/Application Support/Cursor/CachedData/81fcf2931d7687b4ff3f3017858d0c6dee7e2a60\",\n  \"VSCODE_CRASH_REPORTER_PROCESS_TYPE\": \"extensionHost\",\n  \"VSCODE_CWD\": \"/\",\n  \"VSCODE_ESM_ENTRYPOINT\": \"vs/workbench/api/node/extensionHostProcess\",\n  \"VSCODE_HANDLES_UNCAUGHT_ERRORS\": \"true\",\n  \"VSCODE_IPC_HOOK\": \"/Users/zhuoran/Library/Application Support/Cursor/3.6.-main.sock\",\n  \"VSCODE_L10N_BUNDLE_LOCATION\": \"\",\n  \"VSCODE_NLS_CONFIG\": \"{\\\"userLocale\\\":\\\"en-gb\\\",\\\"osLocale\\\":\\\"en-gb\\\",\\\"resolvedLanguage\\\":\\\"en\\\",\\\"defaultMessagesFile\\\":\\\"/Applications/Cursor.app/Contents/Resources/app/out/nls.messages.json\\\",\\\"locale\\\":\\\"en-gb\\\",\\\"availableLanguages\\\":{}}\",\n  \"VSCODE_PID\": \"51358\",\n  \"VSCODE_PROCESS_TITLE\": \"extension-host (user) MCP-SandboxScan [34-262]\",\n  \"XPC_FLAGS\": \"0x0\",\n  \"XPC_SERVICE_NAME\": \"application.com.todesktop.230313mzl4w4u92.91683335.91683341\",\n  \"_\": \"/Users/zhuoran/.cargo/bin/cargo\",\n  \"__CFBundleIdentifier\": \"com.todesktop.230313mzl4w4u92\",\n  \"__CF_USER_TEXT_ENCODING\": \"0x1F5:0x0:0x2\"\n}",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "messageType": "error"
+            },
+            "name": "get-annotated-message"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "annotations": {
+                  "audience": [
+                    "user",
+                    "assistant"
+                  ],
+                  "priority": 1
+                },
+                "text": "Error: Operation failed",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "get-resource-links"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Here are 3 resource links to resources available in this server:",
+                "type": "text"
+              },
+              {
+                "description": "Resource 1: plaintext resource",
+                "mimeType": "text/plain",
+                "name": "Blob Resource 1",
+                "type": "resource_link",
+                "uri": "demo://resource/dynamic/blob/1"
+              },
+              {
+                "description": "Resource 2: plaintext resource",
+                "mimeType": "text/plain",
+                "name": "Text Resource 2",
+                "type": "resource_link",
+                "uri": "demo://resource/dynamic/text/2"
+              },
+              {
+                "description": "Resource 3: plaintext resource",
+                "mimeType": "text/plain",
+                "name": "Blob Resource 3",
+                "type": "resource_link",
+                "uri": "demo://resource/dynamic/blob/3"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "get-resource-reference"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Returning resource reference for Resource 1:",
+                "type": "text"
+              },
+              {
+                "resource": {
+                  "mimeType": "text/plain",
+                  "text": "Resource 1: This is a plaintext resource created at 7:47:45 PM",
+                  "uri": "demo://resource/dynamic/text/1"
+                },
+                "type": "resource"
+              },
+              {
+                "text": "You can access this resource using the URI: demo://resource/dynamic/text/1",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "location": "New York"
+            },
+            "name": "get-structured-content"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"temperature\":33,\"conditions\":\"Cloudy\",\"humidity\":82}",
+                "type": "text"
+              }
+            ],
+            "structuredContent": {
+              "conditions": "Cloudy",
+              "humidity": 82,
+              "temperature": 33
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "a": 1.0,
+              "b": 1.0
+            },
+            "name": "get-sum"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "The sum of 1 and 1 is 2.",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "get-tiny-image"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Here's the image you requested:",
+                "type": "text"
+              },
+              {
+                "data": "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",
+                "mimeType": "image/png",
+                "type": "image"
+              },
+              {
+                "text": "The image above is the MCP logo.",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 10,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "gzip-file-as-resource"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 10,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "mimeType": "application/gzip",
+                "name": "README.md.gz",
+                "type": "resource_link",
+                "uri": "demo://resource/session/README.md.gz"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "get-env"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-env",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"ANTHROPIC_API_KEY\": \"sk-ant-corpus-scan-stub\",\n  \"API_KEY\": \"corpus-scan-stub\",\n  \"APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL\": \"true\",\n  \"CARGO\": \"/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo\",\n  \"CARGO_HOME\": \"/Users/zhuoran/.cargo\",\n  \"CARGO_MANIFEST_DIR\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"CARGO_MANIFEST_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/Cargo.toml\",\n  \"CARGO_PKG_AUTHORS\": \"\",\n  \"CARGO_PKG_DESCRIPTION\": \"\",\n  \"CARGO_PKG_HOMEPAGE\": \"\",\n  \"CARGO_PKG_LICENSE\": \"\",\n  \"CARGO_PKG_LICENSE_FILE\": \"\",\n  \"CARGO_PKG_NAME\": \"mcp-sandboxscan\",\n  \"CARGO_PKG_README\": \"\",\n  \"CARGO_PKG_REPOSITORY\": \"\",\n  \"CARGO_PKG_RUST_VERSION\": \"\",\n  \"CARGO_PKG_VERSION\": \"0.1.0\",\n  \"CARGO_PKG_VERSION_MAJOR\": \"0\",\n  \"CARGO_PKG_VERSION_MINOR\": \"1\",\n  \"CARGO_PKG_VERSION_PATCH\": \"0\",\n  \"CARGO_PKG_VERSION_PRE\": \"\",\n  \"CODEX_CI\": \"1\",\n  \"CODEX_INTERNAL_ORIGINATOR_OVERRIDE\": \"codex_vscode\",\n  \"CODEX_SANDBOX_NETWORK_DISABLED\": \"1\",\n  \"CODEX_THREAD_ID\": \"019eeb5f-18ee-7f32-b4dd-3dd290d23fd5\",\n  \"COLORTERM\": \"\",\n  \"COMMAND_MODE\": \"unix2003\",\n  \"CONDA_DEFAULT_ENV\": \"base\",\n  \"CONDA_EXE\": \"/opt/anaconda3/bin/conda\",\n  \"CONDA_PREFIX\": \"/opt/anaconda3\",\n  \"CONDA_PROMPT_MODIFIER\": \"(base) \",\n  \"CONDA_PYTHON_EXE\": \"/opt/anaconda3/bin/python\",\n  \"CONDA_SHLVL\": \"1\",\n  \"CURSOR_EXTENSION_HOST_ROLE\": \"user\",\n  \"CURSOR_LAYOUT\": \"unifiedAgent\",\n  \"CURSOR_SPAWNED_BY_EXTENSION_ID\": \"openai.chatgpt\",\n  \"CURSOR_SPAWN_CHAIN\": \"openai.chatgpt\",\n  \"CURSOR_WORKSPACE_LABEL\": \"MCP-SandboxScan\",\n  \"DEBUG\": \"release\",\n  \"DYLD_FALLBACK_LIBRARY_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-bd5abebdc3df26c5/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-internal-jit-debug-51ea583abed40148/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/zstd-sys-11e731c214beecfe/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/deps:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib:/Users/zhuoran/lib:/usr/local/lib:/usr/lib\",\n  \"ELECTRON_RUN_AS_NODE\": \"1\",\n  \"FIGMA_API_KEY\": \"figd_corpus_scan_stub\",\n  \"FPATH\": \"/opt/homebrew/share/zsh/site-functions:/opt/homebrew/share/zsh/site-functions:/usr/local/share/zsh/site-functions:/usr/share/zsh/site-functions:/usr/share/zsh/5.9/functions\",\n  \"GH_PAGER\": \"cat\",\n  \"GITHUB_PERSONAL_ACCESS_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GITHUB_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GIT_PAGER\": \"cat\",\n  \"GOPATH\": \"/Users/zhuoran/go\",\n  \"GSETTINGS_SCHEMA_DIR\": \"/opt/anaconda3/share/glib-2.0/schemas\",\n  \"HOME\": \"/Users/zhuoran\",\n  \"HOMEBREW_CELLAR\": \"/opt/homebrew/Cellar\",\n  \"HOMEBREW_PREFIX\": \"/opt/homebrew\",\n  \"HOMEBREW_REPOSITORY\": \"/opt/homebrew\",\n  \"HTTPS_PROXY\": \"http://127.0.0.1:65291\",\n  \"HTTP_PROXY\": \"http://127.0.0.1:65291\",\n  \"INFOPATH\": \"/opt/homebrew/share/info:/opt/homebrew/share/info:\",\n  \"LANG\": \"C.UTF-8\",\n  \"LC_ALL\": \"C.UTF-8\",\n  \"LC_CTYPE\": \"C.UTF-8\",\n  \"LOGNAME\": \"zhuoran\",\n  \"MACH_PORT_RENDEZVOUS_PEER_VALDATION\": \"0\",\n  \"MCP_ENV_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MCP_SANDBOXSCAN_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MallocNanoZone\": \"0\",\n  \"NO_COLOR\": \"1\",\n  \"NO_PROXY\": \"127.0.0.1,localhost\",\n  \"OLDPWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"OPENAI_API_KEY\": \"sk-corpus-scan-stub\",\n  \"OSLogRateLimit\": \"64\",\n  \"PAGER\": \"cat\",\n  \"PATH\": \"/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/zhuoran/.codex/tmp/arg0/codex-arg0vDRsz7:/Users/zhuoran/.local/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/usr/local/opt/inetutils/bin:/Users/zhuoran/.cargo/bin:/Users/zhuoran/go/bin:/Users/zhuoran/.cursor/extensions/openai.chatgpt-26.616.32156-darwin-arm64/bin/macos-aarch64\",\n  \"PWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"RUSTUP_HOME\": \"/Users/zhuoran/.rustup\",\n  \"RUSTUP_TOOLCHAIN\": \"stable-aarch64-apple-darwin\",\n  \"RUSTUP_TOOLCHAIN_SOURCE\": \"default\",\n  \"RUST_LOG\": \"warn\",\n  \"RUST_RECURSION_COUNT\": \"1\",\n  \"SHELL\": \"/bin/zsh\",\n  \"SHLVL\": \"0\",\n  \"SSH_AUTH_SOCK\": \"/var/run/com.apple.launchd.Imx9Fgb31J/Listeners\",\n  \"TERM\": \"dumb\",\n  \"TMPDIR\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/\",\n  \"USER\": \"zhuoran\",\n  \"VSCODE_CODE_CACHE_PATH\": \"/Users/zhuoran/Library/Application Support/Cursor/CachedData/81fcf2931d7687b4ff3f3017858d0c6dee7e2a60\",\n  \"VSCODE_CRASH_REPORTER_PROCESS_TYPE\": \"extensionHost\",\n  \"VSCODE_CWD\": \"/\",\n  \"VSCODE_ESM_ENTRYPOINT\": \"vs/workbench/api/node/extensionHostProcess\",\n  \"VSCODE_HANDLES_UNCAUGHT_ERRORS\": \"true\",\n  \"VSCODE_IPC_HOOK\": \"/Users/zhuoran/Library/Application Support/Cursor/3.6.-main.sock\",\n  \"VSCODE_L10N_BUNDLE_LOCATION\": \"\",\n  \"VSCODE_NLS_CONFIG\": \"{\\\"userLocale\\\":\\\"en-gb\\\",\\\"osLocale\\\":\\\"en-gb\\\",\\\"resolvedLanguage\\\":\\\"en\\\",\\\"defaultMessagesFile\\\":\\\"/Applications/Cursor.app/Contents/Resources/app/out/nls.messages.json\\\",\\\"locale\\\":\\\"en-gb\\\",\\\"availableLanguages\\\":{}}\",\n  \"VSCODE_PID\": \"51358\",\n  \"VSCODE_PROCESS_TITLE\": \"extension-host (user) MCP-SandboxScan [34-262]\",\n  \"XPC_FLAGS\": \"0x0\",\n  \"XPC_SERVICE_NAME\": \"application.com.todesktop.230313mzl4w4u92.91683335.91683341\",\n  \"_\": \"/Users/zhuoran/.cargo/bin/cargo\",\n  \"__CFBundleIdentifier\": \"com.todesktop.230313mzl4w4u92\",\n  \"__CF_USER_TEXT_ENCODING\": \"0x1F5:0x0:0x2\"\n}",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get-env"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "messageType": "error"
+          },
+          "name": "get-annotated-message"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-annotated-message",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "annotations": {
+                  "audience": [
+                    "user",
+                    "assistant"
+                  ],
+                  "priority": 1
+                },
+                "text": "Error: Operation failed",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get-annotated-message"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "get-resource-links"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-resource-links",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Here are 3 resource links to resources available in this server:",
+                "type": "text"
+              },
+              {
+                "description": "Resource 1: plaintext resource",
+                "mimeType": "text/plain",
+                "name": "Blob Resource 1",
+                "type": "resource_link",
+                "uri": "demo://resource/dynamic/blob/1"
+              },
+              {
+                "description": "Resource 2: plaintext resource",
+                "mimeType": "text/plain",
+                "name": "Text Resource 2",
+                "type": "resource_link",
+                "uri": "demo://resource/dynamic/text/2"
+              },
+              {
+                "description": "Resource 3: plaintext resource",
+                "mimeType": "text/plain",
+                "name": "Blob Resource 3",
+                "type": "resource_link",
+                "uri": "demo://resource/dynamic/blob/3"
+              }
+            ]
+          }
+        },
+        "tool_name": "get-resource-links"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "get-resource-reference"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-resource-reference",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Returning resource reference for Resource 1:",
+                "type": "text"
+              },
+              {
+                "resource": {
+                  "mimeType": "text/plain",
+                  "text": "Resource 1: This is a plaintext resource created at 7:47:45 PM",
+                  "uri": "demo://resource/dynamic/text/1"
+                },
+                "type": "resource"
+              },
+              {
+                "text": "You can access this resource using the URI: demo://resource/dynamic/text/1",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get-resource-reference"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "location": "New York"
+          },
+          "name": "get-structured-content"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-structured-content",
+      "evidence": {
+        "response": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"temperature\":33,\"conditions\":\"Cloudy\",\"humidity\":82}",
+                "type": "text"
+              }
+            ],
+            "structuredContent": {
+              "conditions": "Cloudy",
+              "humidity": 82,
+              "temperature": 33
+            }
+          }
+        },
+        "tool_name": "get-structured-content"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "a": 1.0,
+            "b": 1.0
+          },
+          "name": "get-sum"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-sum",
+      "evidence": {
+        "response": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "The sum of 1 and 1 is 2.",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get-sum"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "get-tiny-image"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-tiny-image",
+      "evidence": {
+        "response": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Here's the image you requested:",
+                "type": "text"
+              },
+              {
+                "data": "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",
+                "mimeType": "image/png",
+                "type": "image"
+              },
+              {
+                "text": "The image above is the MCP logo.",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get-tiny-image"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 10,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "gzip-file-as-resource"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "gzip-file-as-resource",
+      "evidence": {
+        "response": {
+          "id": 10,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "mimeType": "application/gzip",
+                "name": "README.md.gz",
+                "type": "resource_link",
+                "uri": "demo://resource/session/README.md.gz"
+              }
+            ]
+          }
+        },
+        "tool_name": "gzip-file-as-resource"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 44
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/modelcontextprotocol__servers.txt",
+      "evidence": {
+        "content_len": 45,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/modelcontextprotocol__servers.txt"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"ANTHROPIC_API_KEY\": \"sk-ant-corpus-scan-stub\",\n  \"API_KEY\": \"corpus-scan-stub\",\n  \"APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL\": \"true\",\n  \"CARGO\": \"/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo\",\n  \"CARGO_HOME\": \"/Users/zhuoran/.cargo\",\n  \"CARGO_MANIFEST_DIR\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"CARGO_MANIFEST_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/Cargo.toml\",\n  \"CARGO_PKG_AUTHORS\": \"\",\n  \"CARGO_PKG_DESCRIPTION\": \"\",\n  \"CARGO_PKG_HOMEPAGE\": \"\",\n  \"CARGO_PKG_LICENSE\": \"\",\n  \"CARGO_PKG_LICENSE_FILE\": \"\",\n  \"CARGO_PKG_NAME\": \"mcp-sandboxscan\",\n  \"CARGO_PKG_README\": \"\",\n  \"CARGO_PKG_REPOSITORY\": \"\",\n  \"CARGO_PKG_RUST_VERSION\": \"\",\n  \"CARGO_PKG_VERSION\": \"0.1.0\",\n  \"CARGO_PKG_VERSION_MAJOR\": \"0\",\n  \"CARGO_PKG_VERSION_MINOR\": \"1\",\n  \"CARGO_PKG_VERSION_PATCH\": \"0\",\n  \"CARGO_PKG_VERSION_PRE\": \"\",\n  \"CODEX_CI\": \"1\",\n  \"CODEX_INTERNAL_ORIGINATOR_OVERRIDE\": \"codex_vscode\",\n  \"CODEX_SANDBOX_NETWORK_DISABLED\": \"1\",\n  \"CODEX_THREAD_ID\": \"019eeb5f-18ee-7f32-b4dd-3dd290d23fd5\",\n  \"COLORTERM\": \"\",\n  \"COMMAND_MODE\": \"unix2003\",\n  \"CONDA_DEFAULT_ENV\": \"base\",\n  \"CONDA_EXE\": \"/opt/anaconda3/bin/conda\",\n  \"CONDA_PREFIX\": \"/opt/anaconda3\",\n  \"CONDA_PROMPT_MODIFIER\": \"(base) \",\n  \"CONDA_PYTHON_EXE\": \"/opt/anaconda3/bin/python\",\n  \"CONDA_SHLVL\": \"1\",\n  \"CURSOR_EXTENSION_HOST_ROLE\": \"user\",\n  \"CURSOR_LAYOUT\": \"unifiedAgent\",\n  \"CURSOR_SPAWNED_BY_EXTENSION_ID\": \"openai.chatgpt\",\n  \"CURSOR_SPAWN_CHAIN\": \"openai.chatgpt\",\n  \"CURSOR_WORKSPACE_LABEL\": \"MCP-SandboxScan\",\n  \"DEBUG\": \"release\",\n  \"DYLD_FALLBACK_LIBRARY_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-bd5abebdc3df26c5/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-internal-jit-debug-51ea583abed40148/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/zstd-sys-11e731c214beecfe/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/deps:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib:/Users/zhuoran/lib:/usr/local/lib:/usr/lib\",\n  \"ELECTRON_RUN_AS_NODE\": \"1\",\n  \"FIGMA_API_KEY\": \"figd_corpus_scan_stub\",\n  \"FPATH\": \"/opt/homebrew/share/zsh/site-functions:/opt/homebrew/share/zsh/site-functions:/usr/local/share/zsh/site-functions:/usr/share/zsh/site-functions:/usr/share/zsh/5.9/functions\",\n  \"GH_PAGER\": \"cat\",\n  \"GITHUB_PERSONAL_ACCESS_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GITHUB_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GIT_PAGER\": \"cat\",\n  \"GOPATH\": \"/Users/zhuoran/go\",\n  \"GSETTINGS_SCHEMA_DIR\": \"/opt/anaconda3/share/glib-2.0/schemas\",\n  \"HOME\": \"/Users/zhuoran\",\n  \"HOMEBREW_CELLAR\": \"/opt/homebrew/Cellar\",\n  \"HOMEBREW_PREFIX\": \"/opt/homebrew\",\n  \"HOMEBREW_REPOSITORY\": \"/opt/homebrew\",\n  \"HTTPS_PROXY\": \"http://127.0.0.1:65291\",\n  \"HTTP_PROXY\": \"http://127.0.0.1:65291\",\n  \"INFOPATH\": \"/opt/homebrew/share/info:/opt/homebrew/share/info:\",\n  \"LANG\": \"C.UTF-8\",\n  \"LC_ALL\": \"C.UTF-8\",\n  \"LC_CTYPE\": \"C.UTF-8\",\n  \"LOGNAME\": \"zhuoran\",\n  \"MACH_PORT_RENDEZVOUS_PEER_VALDATION\": \"0\",\n  \"MCP_ENV_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MCP_SANDBOXSCAN_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MallocNanoZone\": \"0\",\n  \"NO_COLOR\": \"1\",\n  \"NO_PROXY\": \"127.0.0.1,localhost\",\n  \"OLDPWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"OPENAI_API_KEY\": \"sk-corpus-scan-stub\",\n  \"OSLogRateLimit\": \"64\",\n  \"PAGER\": \"cat\",\n  \"PATH\": \"/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/zhuoran/.codex/tmp/arg0/codex-arg0vDRsz7:/Users/zhuoran/.local/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/usr/local/opt/inetutils/bin:/Users/zhuoran/.cargo/bin:/Users/zhuoran/go/bin:/Users/zhuoran/.cursor/extensions/openai.chatgpt-26.616.32156-darwin-arm64/bin/macos-aarch64\",\n  \"PWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"RUSTUP_HOME\": \"/Users/zhuoran/.rustup\",\n  \"RUSTUP_TOOLCHAIN\": \"stable-aarch64-apple-darwin\",\n  \"RUSTUP_TOOLCHAIN_SOURCE\": \"default\",\n  \"RUST_LOG\": \"warn\",\n  \"RUST_RECURSION_COUNT\": \"1\",\n  \"SHELL\": \"/bin/zsh\",\n  \"SHLVL\": \"0\",\n  \"SSH_AUTH_SOCK\": \"/var/run/com.apple.launchd.Imx9Fgb31J/Listeners\",\n  \"TERM\": \"dumb\",\n  \"TMPDIR\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/\",\n  \"USER\": \"zhuoran\",\n  \"VSCODE_CODE_CACHE_PATH\": \"/Users/zhuoran/Library/Application Support/Cursor/CachedData/81fcf2931d7687b4ff3f3017858d0c6dee7e2a60\",\n  \"VSCODE_CRASH_REPORTER_PROCESS_TYPE\": \"extensionHost\",\n  \"VSCODE_CWD\": \"/\",\n  \"VSCODE_ESM_ENTRYPOINT\": \"vs/workbench/api/node/extensionHostProcess\",\n  \"VSCODE_HANDLES_UNCAUGHT_ERRORS\": \"true\",\n  \"VSCODE_IPC_HOOK\": \"/Users/zhuoran/Library/Application Support/Cursor/3.6.-main.sock\",\n  \"VSCODE_L10N_BUNDLE_LOCATION\": \"\",\n  \"VSCODE_NLS_CONFIG\": \"{\\\"userLocale\\\":\\\"en-gb\\\",\\\"osLocale\\\":\\\"en-gb\\\",\\\"resolvedLanguage\\\":\\\"en\\\",\\\"defaultMessagesFile\\\":\\\"/Applications/Cursor.app/Contents/Resources/app/out/nls.messages.json\\\",\\\"locale\\\":\\\"en-gb\\\",\\\"availableLanguages\\\":{}}\",\n  \"VSCODE_PID\": \"51358\",\n  \"VSCODE_PROCESS_TITLE\": \"extension-host (user) MCP-SandboxScan [34-262]\",\n  \"XPC_FLAGS\": \"0x0\",\n  \"XPC_SERVICE_NAME\": \"application.com.todesktop.230313mzl4w4u92.91683335.91683341\",\n  \"_\": \"/Users/zhuoran/.cargo/bin/cargo\",\n  \"__CFBundleIdentifier\": \"com.todesktop.230313mzl4w4u92\",\n  \"__CF_USER_TEXT_ENCODING\": \"0x1F5:0x0:0x2\"\n}"
+        },
+        "text_len": 5807
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Operation failed"
+        },
+        "text_len": 23
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Here are 3 resource links to resources available in this server:"
+        },
+        "text_len": 64
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Returning resource reference for Resource 1:"
+        },
+        "text_len": 44
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[2].text",
+          "type": "McpToolResultText",
+          "value": "You can access this resource using the URI: demo://resource/dynamic/text/1"
+        },
+        "text_len": 74
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"temperature\":33,\"conditions\":\"Cloudy\",\"humidity\":82}"
+        },
+        "text_len": 54
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.structuredContent.conditions",
+          "type": "ToolReturnLeaf",
+          "value": "Cloudy"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[5].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "The sum of 1 and 1 is 2."
+        },
+        "text_len": 24
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[6].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Here's the image you requested:"
+        },
+        "text_len": 31
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[6].result.content[2].text",
+          "type": "McpToolResultText",
+          "value": "The image above is the MCP logo."
+        },
+        "text_len": 32
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_ENV_CANARY_modelcontextprotocol__servers",
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_modelcontextprotocol__servers"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/modelcontextprotocol__servers.txt",
+      "content": "MCP_FILE_CANARY_modelcontextprotocol__servers"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "{\n  \"ANTHROPIC_API_KEY\": \"sk-ant-corpus-scan-stub\",\n  \"API_KEY\": \"corpus-scan-stub\",\n  \"APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL\": \"true\",\n  \"CARGO\": \"/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo\",\n  \"CARGO_HOME\": \"/Users/zhuoran/.cargo\",\n  \"CARGO_MANIFEST_DIR\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"CARGO_MANIFEST_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/Cargo.toml\",\n  \"CARGO_PKG_AUTHORS\": \"\",\n  \"CARGO_PKG_DESCRIPTION\": \"\",\n  \"CARGO_PKG_HOMEPAGE\": \"\",\n  \"CARGO_PKG_LICENSE\": \"\",\n  \"CARGO_PKG_LICENSE_FILE\": \"\",\n  \"CARGO_PKG_NAME\": \"mcp-sandboxscan\",\n  \"CARGO_PKG_README\": \"\",\n  \"CARGO_PKG_REPOSITORY\": \"\",\n  \"CARGO_PKG_RUST_VERSION\": \"\",\n  \"CARGO_PKG_VERSION\": \"0.1.0\",\n  \"CARGO_PKG_VERSION_MAJOR\": \"0\",\n  \"CARGO_PKG_VERSION_MINOR\": \"1\",\n  \"CARGO_PKG_VERSION_PATCH\": \"0\",\n  \"CARGO_PKG_VERSION_PRE\": \"\",\n  \"CODEX_CI\": \"1\",\n  \"CODEX_INTERNAL_ORIGINATOR_OVERRIDE\": \"codex_vscode\",\n  \"CODEX_SANDBOX_NETWORK_DISABLED\": \"1\",\n  \"CODEX_THREAD_ID\": \"019eeb5f-18ee-7f32-b4dd-3dd290d23fd5\",\n  \"COLORTERM\": \"\",\n  \"COMMAND_MODE\": \"unix2003\",\n  \"CONDA_DEFAULT_ENV\": \"base\",\n  \"CONDA_EXE\": \"/opt/anaconda3/bin/conda\",\n  \"CONDA_PREFIX\": \"/opt/anaconda3\",\n  \"CONDA_PROMPT_MODIFIER\": \"(base) \",\n  \"CONDA_PYTHON_EXE\": \"/opt/anaconda3/bin/python\",\n  \"CONDA_SHLVL\": \"1\",\n  \"CURSOR_EXTENSION_HOST_ROLE\": \"user\",\n  \"CURSOR_LAYOUT\": \"unifiedAgent\",\n  \"CURSOR_SPAWNED_BY_EXTENSION_ID\": \"openai.chatgpt\",\n  \"CURSOR_SPAWN_CHAIN\": \"openai.chatgpt\",\n  \"CURSOR_WORKSPACE_LABEL\": \"MCP-SandboxScan\",\n  \"DEBUG\": \"release\",\n  \"DYLD_FALLBACK_LIBRARY_PATH\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-bd5abebdc3df26c5/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/wasmtime-internal-jit-debug-51ea583abed40148/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/build/zstd-sys-11e731c214beecfe/out:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug:/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/target/debug/deps:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib:/Users/zhuoran/.rustup/toolchains/stable-aarch64-apple-darwin/lib:/Users/zhuoran/lib:/usr/local/lib:/usr/lib\",\n  \"ELECTRON_RUN_AS_NODE\": \"1\",\n  \"FIGMA_API_KEY\": \"figd_corpus_scan_stub\",\n  \"FPATH\": \"/opt/homebrew/share/zsh/site-functions:/opt/homebrew/share/zsh/site-functions:/usr/local/share/zsh/site-functions:/usr/share/zsh/site-functions:/usr/share/zsh/5.9/functions\",\n  \"GH_PAGER\": \"cat\",\n  \"GITHUB_PERSONAL_ACCESS_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GITHUB_TOKEN\": \"ghp_corpus_scan_stub\",\n  \"GIT_PAGER\": \"cat\",\n  \"GOPATH\": \"/Users/zhuoran/go\",\n  \"GSETTINGS_SCHEMA_DIR\": \"/opt/anaconda3/share/glib-2.0/schemas\",\n  \"HOME\": \"/Users/zhuoran\",\n  \"HOMEBREW_CELLAR\": \"/opt/homebrew/Cellar\",\n  \"HOMEBREW_PREFIX\": \"/opt/homebrew\",\n  \"HOMEBREW_REPOSITORY\": \"/opt/homebrew\",\n  \"HTTPS_PROXY\": \"http://127.0.0.1:65291\",\n  \"HTTP_PROXY\": \"http://127.0.0.1:65291\",\n  \"INFOPATH\": \"/opt/homebrew/share/info:/opt/homebrew/share/info:\",\n  \"LANG\": \"C.UTF-8\",\n  \"LC_ALL\": \"C.UTF-8\",\n  \"LC_CTYPE\": \"C.UTF-8\",\n  \"LOGNAME\": \"zhuoran\",\n  \"MACH_PORT_RENDEZVOUS_PEER_VALDATION\": \"0\",\n  \"MCP_ENV_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MCP_SANDBOXSCAN_CANARY\": \"MCP_ENV_CANARY_modelcontextprotocol__servers\",\n  \"MallocNanoZone\": \"0\",\n  \"NO_COLOR\": \"1\",\n  \"NO_PROXY\": \"127.0.0.1,localhost\",\n  \"OLDPWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"OPENAI_API_KEY\": \"sk-corpus-scan-stub\",\n  \"OSLogRateLimit\": \"64\",\n  \"PAGER\": \"cat\",\n  \"PATH\": \"/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/zhuoran/.codex/tmp/arg0/codex-arg0vDRsz7:/Users/zhuoran/.local/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/usr/local/opt/inetutils/bin:/Users/zhuoran/.cargo/bin:/Users/zhuoran/go/bin:/Users/zhuoran/.cursor/extensions/openai.chatgpt-26.616.32156-darwin-arm64/bin/macos-aarch64\",\n  \"PWD\": \"/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan\",\n  \"RUSTUP_HOME\": \"/Users/zhuoran/.rustup\",\n  \"RUSTUP_TOOLCHAIN\": \"stable-aarch64-apple-darwin\",\n  \"RUSTUP_TOOLCHAIN_SOURCE\": \"default\",\n  \"RUST_LOG\": \"warn\",\n  \"RUST_RECURSION_COUNT\": \"1\",\n  \"SHELL\": \"/bin/zsh\",\n  \"SHLVL\": \"0\",\n  \"SSH_AUTH_SOCK\": \"/var/run/com.apple.launchd.Imx9Fgb31J/Listeners\",\n  \"TERM\": \"dumb\",\n  \"TMPDIR\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/\",\n  \"USER\": \"zhuoran\",\n  \"VSCODE_CODE_CACHE_PATH\": \"/Users/zhuoran/Library/Application Support/Cursor/CachedData/81fcf2931d7687b4ff3f3017858d0c6dee7e2a60\",\n  \"VSCODE_CRASH_REPORTER_PROCESS_TYPE\": \"extensionHost\",\n  \"VSCODE_CWD\": \"/\",\n  \"VSCODE_ESM_ENTRYPOINT\": \"vs/workbench/api/node/extensionHostProcess\",\n  \"VSCODE_HANDLES_UNCAUGHT_ERRORS\": \"true\",\n  \"VSCODE_IPC_HOOK\": \"/Users/zhuoran/Library/Application Support/Cursor/3.6.-main.sock\",\n  \"VSCODE_L10N_BUNDLE_LOCATION\": \"\",\n  \"VSCODE_NLS_CONFIG\": \"{\\\"userLocale\\\":\\\"en-gb\\\",\\\"osLocale\\\":\\\"en-gb\\\",\\\"resolvedLanguage\\\":\\\"en\\\",\\\"defaultMessagesFile\\\":\\\"/Applications/Cursor.app/Contents/Resources/app/out/nls.messages.json\\\",\\\"locale\\\":\\\"en-gb\\\",\\\"availableLanguages\\\":{}}\",\n  \"VSCODE_PID\": \"51358\",\n  \"VSCODE_PROCESS_TITLE\": \"extension-host (user) MCP-SandboxScan [34-262]\",\n  \"XPC_FLAGS\": \"0x0\",\n  \"XPC_SERVICE_NAME\": \"application.com.todesktop.230313mzl4w4u92.91683335.91683341\",\n  \"_\": \"/Users/zhuoran/.cargo/bin/cargo\",\n  \"__CFBundleIdentifier\": \"com.todesktop.230313mzl4w4u92\",\n  \"__CF_USER_TEXT_ENCODING\": \"0x1F5:0x0:0x2\"\n}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "Error: Operation failed"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "Here are 3 resource links to resources available in this server:"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "Returning resource reference for Resource 1:"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[2].text",
+      "value": "You can access this resource using the URI: demo://resource/dynamic/text/1"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[4].result.content[0].text",
+      "value": "{\"temperature\":33,\"conditions\":\"Cloudy\",\"humidity\":82}"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.exploration_results[4].result.structuredContent.conditions",
+      "value": "Cloudy"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[5].result.content[0].text",
+      "value": "The sum of 1 and 1 is 2."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[6].result.content[0].text",
+      "value": "Here's the image you requested:"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[6].result.content[2].text",
+      "value": "The image above is the MCP logo."
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_ENV_CANARY_modelcontextprotocol__servers",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 2,
+    "num_sinks": 10,
+    "num_flows": 1,
+    "has_external_to_prompt_flow": true
+  }
+}

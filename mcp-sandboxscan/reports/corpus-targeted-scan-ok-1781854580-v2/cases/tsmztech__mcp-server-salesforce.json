@@ -1,0 +1,1264 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 253
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {}
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "salesforce-mcp-server",
+              "version": "1.0.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Search for Salesforce standard and custom objects by name pattern. Examples: 'Account' will find Account, AccountHistory; 'Order' will find WorkOrder, ServiceOrder__c etc.",
+                "inputSchema": {
+                  "properties": {
+                    "searchPattern": {
+                      "description": "Search pattern to find objects (e.g., 'Account Coverage' will find objects like 'AccountCoverage__c')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "searchPattern"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_search_objects"
+              },
+              {
+                "description": "Get detailed schema metadata including all fields, relationships, and field properties of any Salesforce object. Examples: 'Account' shows all Account fields including custom fields; 'Case' shows all Case fields including relationships to Account, Contact etc.",
+                "inputSchema": {
+                  "properties": {
+                    "objectName": {
+                      "description": "API name of the object (e.g., 'Account', 'Contact', 'Custom_Object__c')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "objectName"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_describe_object"
+              },
+              {
+                "description": "Query records from any Salesforce object using SOQL, including relationship queries.\n\nNOTE: For queries with GROUP BY, aggregate functions (COUNT, SUM, AVG, etc.), or HAVING clauses, use salesforce_aggregate_query instead.\n\nExamples:\n1. Parent-to-child query (e.g., Account with Contacts):\n   - objectName: \"Account\"\n   - fields: [\"Name\", \"(SELECT Id, FirstName, LastName FROM Contacts)\"]\n\n2. Child-to-parent query (e.g., Contact with Account details):\n   - objectName: \"Contact\"\n   - fields: [\"FirstName\", \"LastName\", \"Account.Name\", \"Account.Industry\"]\n\n3. Multiple level query (e.g., Contact -> Account -> Owner):\n   - objectName: \"Contact\"\n   - fields: [\"Name\", \"Account.Name\", \"Account.Owner.Name\"]\n\n4. Related object filtering:\n   - objectName: \"Contact\"\n   - fields: [\"Name\", \"Account.Name\"]\n   - whereClause: \"Account.Industry = 'Technology'\"\n\nNote: When using relationship fields:\n- Use dot notation for parent relationships (e.g., \"Account.Name\")\n- Use subqueries in parentheses for child relationships (e.g., \"(SELECT Id FROM Contacts)\")\n- Custom relationship fields end in \"__r\" (e.g., \"CustomObject__r.Name\")",
+                "inputSchema": {
+                  "properties": {
+                    "fields": {
+                      "description": "List of fields to retrieve, including relationship fields",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "limit": {
+                      "description": "Maximum number of records to return",
+                      "optional": true,
+                      "type": "number"
+                    },
+                    "objectName": {
+                      "description": "API name of the object to query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "ORDER BY clause, can include fields from related objects",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "whereClause": {
+                      "description": "WHERE clause, can include conditions on related objects",
+                      "optional": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "objectName",
+                    "fields"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_query_records"
+              },
+              {
+                "description": "Execute SOQL queries with GROUP BY, aggregate functions, and statistical analysis. Use this tool for queries that summarize and group data rather than returning individual records.\n\nNOTE: For regular queries without GROUP BY or aggregates, use salesforce_query_records instead.\n\nThis tool handles:\n1. GROUP BY queries (single/multiple fields, related objects, date functions)\n2. Aggregate functions: COUNT(), COUNT_DISTINCT(), SUM(), AVG(), MIN(), MAX()\n3. HAVING clauses for filtering grouped results\n4. Date/time grouping: CALENDAR_YEAR(), CALENDAR_MONTH(), CALENDAR_QUARTER(), FISCAL_YEAR(), FISCAL_QUARTER()\n\nExamples:\n1. Count opportunities by stage:\n   - objectName: \"Opportunity\"\n   - selectFields: [\"StageName\", \"COUNT(Id) OpportunityCount\"]\n   - groupByFields: [\"StageName\"]\n\n2. Analyze cases by priority and status:\n   - objectName: \"Case\"\n   - selectFields: [\"Priority\", \"Status\", \"COUNT(Id) CaseCount\", \"AVG(Days_Open__c) AvgDaysOpen\"]\n   - groupByFields: [\"Priority\", \"Status\"]\n\n3. Count contacts by account industry:\n   - objectName: \"Contact\"\n   - selectFields: [\"Account.Industry\", \"COUNT(Id) ContactCount\"]\n   - groupByFields: [\"Account.Industry\"]\n\n4. Quarterly opportunity analysis:\n   - objectName: \"Opportunity\"\n   - selectFields: [\"CALENDAR_YEAR(CloseDate) Year\", \"CALENDAR_QUARTER(CloseDate) Quarter\", \"SUM(Amount) Revenue\"]\n   - groupByFields: [\"CALENDAR_YEAR(CloseDate)\", \"CALENDAR_QUARTER(CloseDate)\"]\n\n5. Find accounts with more than 10 opportunities:\n   - objectName: \"Opportunity\"\n   - selectFields: [\"Account.Name\", \"COUNT(Id) OpportunityCount\"]\n   - groupByFields: [\"Account.Name\"]\n   - havingClause: \"COUNT(Id) > 10\"\n\nImportant Rules:\n- All non-aggregate fields in selectFields MUST be included in groupByFields\n- Use whereClause to filter rows BEFORE grouping\n- Use havingClause to filter AFTER grouping (for aggregate conditions)\n- ORDER BY can only use fields from groupByFields or aggregate functions\n- OFFSET is not supported with GROUP BY in Salesforce",
+                "inputSchema": {
+                  "properties": {
+                    "groupByFields": {
+                      "description": "Fields to group by - must include all non-aggregate fields from selectFields",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "havingClause": {
+                      "description": "HAVING clause to filter results AFTER grouping (use for aggregate conditions)",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "Maximum number of grouped results to return",
+                      "optional": true,
+                      "type": "number"
+                    },
+                    "objectName": {
+                      "description": "API name of the object to query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "ORDER BY clause - can only use grouped fields or aggregate functions",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "selectFields": {
+                      "description": "Fields to select - mix of group fields and aggregates. Format: 'FieldName' or 'COUNT(Id) AliasName'",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "whereClause": {
+                      "description": "WHERE clause to filter rows BEFORE grouping (cannot contain aggregate functions)",
+                      "optional": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "objectName",
+                    "selectFields",
+                    "groupByFields"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_aggregate_query"
+              },
+              {
+                "description": "Perform data manipulation operations on Salesforce records:\n  - insert: Create new records\n  - update: Modify existing records (requires Id)\n  - delete: Remove records (requires Id)\n  - upsert: Insert or update based on external ID field\n  Examples: Insert new Accounts, Update Case status, Delete old records, Upsert based on custom external ID",
+                "inputSchema": {
+                  "properties": {
+                    "externalIdField": {
+                      "description": "External ID field name for upsert operations",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "objectName": {
+                      "description": "API name of the object",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Type of DML operation to perform",
+                      "enum": [
+                        "insert",
+                        "update",
+                        "delete",
+                        "upsert"
+                      ],
+                      "type": "string"
+                    },
+                    "records": {
+                      "description": "Array of records to process",
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "objectName",
+                    "records"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_dml_records"
+              },
+              {
+                "description": "Create new custom objects or modify existing ones in Salesforce:\n  - Create: New custom objects with fields, relationships, and settings\n  - Update: Modify existing object settings, labels, sharing model\n  Examples: Create Customer_Feedback__c object, Update object sharing settings\n  Note: Changes affect metadata and require proper permissions",
+                "inputSchema": {
+                  "properties": {
+                    "description": {
+                      "description": "Description of the object",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "label": {
+                      "description": "Label for the object",
+                      "type": "string"
+                    },
+                    "nameFieldFormat": {
+                      "description": "Display format for AutoNumber field (e.g., 'A-{0000}')",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "nameFieldLabel": {
+                      "description": "Label for the name field",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "nameFieldType": {
+                      "description": "Type of the name field",
+                      "enum": [
+                        "Text",
+                        "AutoNumber"
+                      ],
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "objectName": {
+                      "description": "API name for the object (without __c suffix)",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Whether to create new object or update existing",
+                      "enum": [
+                        "create",
+                        "update"
+                      ],
+                      "type": "string"
+                    },
+                    "pluralLabel": {
+                      "description": "Plural label for the object",
+                      "type": "string"
+                    },
+                    "sharingModel": {
+                      "description": "Sharing model for the object",
+                      "enum": [
+                        "ReadWrite",
+                        "Read",
+                        "Private",
+                        "ControlledByParent"
+                      ],
+                      "optional": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "objectName"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_manage_object"
+              },
+              {
+                "description": "Create new custom fields or modify existing fields on any Salesforce object:\n  - Field Types: Text, Number, Date, Lookup, Master-Detail, Picklist etc.\n  - Properties: Required, Unique, External ID, Length, Scale etc.\n  - Relationships: Create lookups and master-detail relationships\n  - Automatically grants Field Level Security to System Administrator (or specified profiles)\n  Examples: Add Rating__c picklist to Account, Create Account lookup on Custom Object\n  Note: Use grantAccessTo parameter to specify profiles, defaults to System Administrator",
+                "inputSchema": {
+                  "properties": {
+                    "deleteConstraint": {
+                      "description": "Delete constraint for Lookup fields",
+                      "enum": [
+                        "Cascade",
+                        "Restrict",
+                        "SetNull"
+                      ],
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "Description of the field",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "externalId": {
+                      "description": "Whether the field is an external ID",
+                      "optional": true,
+                      "type": "boolean"
+                    },
+                    "fieldName": {
+                      "description": "API name for the field (without __c suffix)",
+                      "type": "string"
+                    },
+                    "grantAccessTo": {
+                      "description": "Profile names to grant field access to (defaults to ['System Administrator'])",
+                      "items": {
+                        "type": "string"
+                      },
+                      "optional": true,
+                      "type": "array"
+                    },
+                    "label": {
+                      "description": "Label for the field",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "length": {
+                      "description": "Length for text fields",
+                      "optional": true,
+                      "type": "number"
+                    },
+                    "objectName": {
+                      "description": "API name of the object to add/modify the field",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Whether to create new field or update existing",
+                      "enum": [
+                        "create",
+                        "update"
+                      ],
+                      "type": "string"
+                    },
+                    "picklistValues": {
+                      "description": "Values for Picklist/MultiselectPicklist fields",
+                      "items": {
+                        "properties": {
+                          "isDefault": {
+                            "optional": true,
+                            "type": "boolean"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "optional": true,
+                      "type": "array"
+                    },
+                    "precision": {
+                      "description": "Precision for numeric fields",
+                      "optional": true,
+                      "type": "number"
+                    },
+                    "referenceTo": {
+                      "description": "API name of the object to reference (for Lookup/MasterDetail)",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "relationshipLabel": {
+                      "description": "Label for the relationship (for Lookup/MasterDetail)",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "relationshipName": {
+                      "description": "API name for the relationship (for Lookup/MasterDetail)",
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "required": {
+                      "description": "Whether the field is required",
+                      "optional": true,
+                      "type": "boolean"
+                    },
+                    "scale": {
+                      "description": "Scale for numeric fields",
+                      "optional": true,
+                      "type": "number"
+                    },
+                    "type": {
+                      "description": "Field type (required for create)",
+                      "enum": [
+                        "Checkbox",
+                        "Currency",
+                        "Date",
+                        "DateTime",
+                        "Email",
+                        "Number",
+                        "Percent",
+                        "Phone",
+                        "Picklist",
+                        "MultiselectPicklist",
+                        "Text",
+                        "TextArea",
+                        "LongTextArea",
+                        "Html",
+                        "Url",
+                        "Lookup",
+                        "MasterDetail"
+                      ],
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "unique": {
+                      "description": "Whether the field value must be unique",
+                      "optional": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "objectName",
+                    "fieldName"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_manage_field"
+              },
+              {
+                "description": "Manage Field Level Security (Field Permissions) for custom and standard fields.\n  - Grant or revoke read/edit access to fields for specific profiles or permission sets\n  - View current field permissions\n  - Bulk update permissions for multiple profiles\n  \n  Examples:\n  1. Grant System Administrator access to a field\n  2. Give read-only access to a field for specific profiles\n  3. Check which profiles have access to a field",
+                "inputSchema": {
+                  "properties": {
+                    "editable": {
+                      "description": "Grant/revoke edit access (default: true)",
+                      "optional": true,
+                      "type": "boolean"
+                    },
+                    "fieldName": {
+                      "description": "API name of the field (e.g., 'Custom_Field__c')",
+                      "type": "string"
+                    },
+                    "objectName": {
+                      "description": "API name of the object (e.g., 'Account', 'Custom_Object__c')",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Operation to perform on field permissions",
+                      "enum": [
+                        "grant",
+                        "revoke",
+                        "view"
+                      ],
+                      "type": "string"
+                    },
+                    "profileNames": {
+                      "description": "Names of profiles to grant/revoke access (e.g., ['System Administrator', 'Sales User'])",
+                      "items": {
+                        "type": "string"
+                      },
+                      "optional": true,
+                      "type": "array"
+                    },
+                    "readable": {
+                      "description": "Grant/revoke read access (default: true)",
+                      "optional": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "objectName",
+                    "fieldName"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_manage_field_permissions"
+              },
+              {
+                "description": "Search across multiple Salesforce objects using SOSL (Salesforce Object Search Language).\n  \nExamples:\n1. Basic search across all objects:\n   {\n     \"searchTerm\": \"John\",\n     \"objects\": [\n       { \"name\": \"Account\", \"fields\": [\"Name\"], \"limit\": 10 },\n       { \"name\": \"Contact\", \"fields\": [\"FirstName\", \"LastName\", \"Email\"] }\n     ]\n   }\n\n2. Advanced search with filters:\n   {\n     \"searchTerm\": \"Cloud*\",\n     \"searchIn\": \"NAME FIELDS\",\n     \"objects\": [\n       { \n         \"name\": \"Account\", \n         \"fields\": [\"Name\", \"Industry\"], \n         \"orderBy\": \"Name DESC\",\n         \"where\": \"Industry = 'Technology'\"\n       }\n     ],\n     \"withClauses\": [\n       { \"type\": \"NETWORK\", \"value\": \"ALL NETWORKS\" },\n       { \"type\": \"SNIPPET\", \"fields\": [\"Description\"] }\n     ]\n   }\n\nNotes:\n- Use * and ? for wildcards in search terms\n- Each object can have its own WHERE, ORDER BY, and LIMIT clauses\n- Support for WITH clauses: DATA CATEGORY, DIVISION, METADATA, NETWORK, PRICEBOOKID, SNIPPET, SECURITY_ENFORCED\n- \"updateable\" and \"viewable\" options control record access filtering",
+                "inputSchema": {
+                  "properties": {
+                    "objects": {
+                      "description": "List of objects to search and their return fields",
+                      "items": {
+                        "properties": {
+                          "fields": {
+                            "description": "Fields to return for this object",
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "limit": {
+                            "description": "Maximum number of records to return for this object",
+                            "optional": true,
+                            "type": "number"
+                          },
+                          "name": {
+                            "description": "API name of the object",
+                            "type": "string"
+                          },
+                          "orderBy": {
+                            "description": "ORDER BY clause for this object",
+                            "optional": true,
+                            "type": "string"
+                          },
+                          "where": {
+                            "description": "WHERE clause for this object",
+                            "optional": true,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "fields"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "searchIn": {
+                      "description": "Which fields to search in",
+                      "enum": [
+                        "ALL FIELDS",
+                        "NAME FIELDS",
+                        "EMAIL FIELDS",
+                        "PHONE FIELDS",
+                        "SIDEBAR FIELDS"
+                      ],
+                      "optional": true,
+                      "type": "string"
+                    },
+                    "searchTerm": {
+                      "description": "Text to search for (supports wildcards * and ?)",
+                      "type": "string"
+                    },
+                    "updateable": {
+                      "description": "Return only updateable records",
+                      "optional": true,
+                      "type": "boolean"
+                    },
+                    "viewable": {
+                      "description": "Return only viewable records",
+                      "optional": true,
+                      "type": "boolean"
+                    },
+                    "withClauses": {
+                      "description": "Additional WITH clauses for the search",
+                      "items": {
+                        "properties": {
+                          "fields": {
+                            "description": "Fields for SNIPPET clause",
+                            "items": {
+                              "type": "string"
+                            },
+                            "optional": true,
+                            "type": "array"
+                          },
+                          "type": {
+                            "enum": [
+                              "DATA CATEGORY",
+                              "DIVISION",
+                              "METADATA",
+                              "NETWORK",
+                              "PRICEBOOKID",
+                              "SNIPPET",
+                              "SECURITY_ENFORCED"
+                            ],
+                            "type": "string"
+                          },
+                          "value": {
+                            "description": "Value for the WITH clause",
+                            "optional": true,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "type": "object"
+                      },
+                      "optional": true,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "searchTerm",
+                    "objects"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_search_all"
+              },
+              {
+                "description": "Read Apex classes from Salesforce.\n  \nExamples:\n1. Read a specific Apex class by name:\n   {\n     \"className\": \"AccountController\"\n   }\n\n2. List all Apex classes with an optional name pattern:\n   {\n     \"namePattern\": \"Controller\"\n   }\n\n3. Get metadata about Apex classes:\n   {\n     \"includeMetadata\": true,\n     \"namePattern\": \"Trigger\"\n   }\n\n4. Use wildcards in name patterns:\n   {\n     \"namePattern\": \"Account*Cont*\"\n   }\n\nNotes:\n- When className is provided, the full body of that specific class is returned\n- When namePattern is provided, all matching class names are returned (without body)\n- Use includeMetadata to get additional information like API version, length, and last modified date\n- If neither className nor namePattern is provided, all Apex class names will be listed\n- Wildcards are supported in namePattern: * (matches any characters) and ? (matches a single character)",
+                "inputSchema": {
+                  "properties": {
+                    "className": {
+                      "description": "Name of a specific Apex class to read",
+                      "type": "string"
+                    },
+                    "includeMetadata": {
+                      "description": "Whether to include metadata about the Apex classes",
+                      "type": "boolean"
+                    },
+                    "namePattern": {
+                      "description": "Pattern to match Apex class names (supports wildcards * and ?)",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "salesforce_read_apex"
+              },
+              {
+                "description": "Create or update Apex classes in Salesforce.\n  \nExamples:\n1. Create a new Apex class:\n   {\n     \"operation\": \"create\",\n     \"className\": \"AccountService\",\n     \"apiVersion\": \"58.0\",\n     \"body\": \"public class AccountService { public static void updateAccounts() { /* implementation */ } }\"\n   }\n\n2. Update an existing Apex class:\n   {\n     \"operation\": \"update\",\n     \"className\": \"AccountService\",\n     \"body\": \"public class AccountService { public static void updateAccounts() { /* updated implementation */ } }\"\n   }\n\nNotes:\n- The operation must be either 'create' or 'update'\n- For 'create' operations, className and body are required\n- For 'update' operations, className and body are required\n- apiVersion is optional for 'create' (defaults to the latest version)\n- The body must be valid Apex code\n- The className in the body must match the className parameter\n- Status information is returned after successful operations",
+                "inputSchema": {
+                  "properties": {
+                    "apiVersion": {
+                      "description": "API version for the Apex class (e.g., '58.0')",
+                      "type": "string"
+                    },
+                    "body": {
+                      "description": "Full body of the Apex class",
+                      "type": "string"
+                    },
+                    "className": {
+                      "description": "Name of the Apex class to create or update",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Whether to create a new class or update an existing one",
+                      "enum": [
+                        "create",
+                        "update"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "className",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_write_apex"
+              },
+              {
+                "description": "Read Apex triggers from Salesforce.\n  \nExamples:\n1. Read a specific Apex trigger by name:\n   {\n     \"triggerName\": \"AccountTrigger\"\n   }\n\n2. List all Apex triggers with an optional name pattern:\n   {\n     \"namePattern\": \"Account\"\n   }\n\n3. Get metadata about Apex triggers:\n   {\n     \"includeMetadata\": true,\n     \"namePattern\": \"Contact\"\n   }\n\n4. Use wildcards in name patterns:\n   {\n     \"namePattern\": \"Account*\"\n   }\n\nNotes:\n- When triggerName is provided, the full body of that specific trigger is returned\n- When namePattern is provided, all matching trigger names are returned (without body)\n- Use includeMetadata to get additional information like API version, object type, and last modified date\n- If neither triggerName nor namePattern is provided, all Apex trigger names will be listed\n- Wildcards are supported in namePattern: * (matches any characters) and ? (matches a single character)",
+                "inputSchema": {
+                  "properties": {
+                    "includeMetadata": {
+                      "description": "Whether to include metadata about the Apex triggers",
+                      "type": "boolean"
+                    },
+                    "namePattern": {
+                      "description": "Pattern to match Apex trigger names (supports wildcards * and ?)",
+                      "type": "string"
+                    },
+                    "triggerName": {
+                      "description": "Name of a specific Apex trigger to read",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "salesforce_read_apex_trigger"
+              },
+              {
+                "description": "Create or update Apex triggers in Salesforce.\n  \nExamples:\n1. Create a new Apex trigger:\n   {\n     \"operation\": \"create\",\n     \"triggerName\": \"AccountTrigger\",\n     \"objectName\": \"Account\",\n     \"apiVersion\": \"58.0\",\n     \"body\": \"trigger AccountTrigger on Account (before insert, before update) { /* implementation */ }\"\n   }\n\n2. Update an existing Apex trigger:\n   {\n     \"operation\": \"update\",\n     \"triggerName\": \"AccountTrigger\",\n     \"body\": \"trigger AccountTrigger on Account (before insert, before update, after update) { /* updated implementation */ }\"\n   }\n\nNotes:\n- The operation must be either 'create' or 'update'\n- For 'create' operations, triggerName, objectName, and body are required\n- For 'update' operations, triggerName and body are required\n- apiVersion is optional for 'create' (defaults to the latest version)\n- The body must be valid Apex trigger code\n- The triggerName in the body must match the triggerName parameter\n- The objectName in the body must match the objectName parameter (for 'create')\n- Status information is returned after successful operations",
+                "inputSchema": {
+                  "properties": {
+                    "apiVersion": {
+                      "description": "API version for the Apex trigger (e.g., '58.0')",
+                      "type": "string"
+                    },
+                    "body": {
+                      "description": "Full body of the Apex trigger",
+                      "type": "string"
+                    },
+                    "objectName": {
+                      "description": "Name of the Salesforce object the trigger is for (required for 'create')",
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Whether to create a new trigger or update an existing one",
+                      "enum": [
+                        "create",
+                        "update"
+                      ],
+                      "type": "string"
+                    },
+                    "triggerName": {
+                      "description": "Name of the Apex trigger to create or update",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "triggerName",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_write_apex_trigger"
+              },
+              {
+                "description": "Execute anonymous Apex code in Salesforce.\n  \nExamples:\n1. Execute simple Apex code:\n   {\n     \"apexCode\": \"System.debug('Hello World');\"\n   }\n\n2. Execute Apex code with variables:\n   {\n     \"apexCode\": \"List<Account> accounts = [SELECT Id, Name FROM Account LIMIT 5]; for(Account a : accounts) { System.debug(a.Name); }\"\n   }\n\n3. Execute Apex with debug logs:\n   {\n     \"apexCode\": \"System.debug(LoggingLevel.INFO, 'Processing accounts...'); List<Account> accounts = [SELECT Id FROM Account LIMIT 10]; System.debug(LoggingLevel.INFO, 'Found ' + accounts.size() + ' accounts');\",\n     \"logLevel\": \"DEBUG\"\n   }\n\nNotes:\n- The apexCode parameter is required and must contain valid Apex code\n- The code is executed in an anonymous context and does not persist\n- The logLevel parameter is optional (defaults to 'DEBUG')\n- Execution results include compilation success/failure, execution success/failure, and debug logs\n- For security reasons, some operations may be restricted based on user permissions\n- This tool can be used for data operations or updates when there are no other specific tools available\n- When users request data queries or updates that aren't directly supported by other tools, this tool can be used if the operation is achievable using Apex code\n",
+                "inputSchema": {
+                  "properties": {
+                    "apexCode": {
+                      "description": "Apex code to execute anonymously",
+                      "type": "string"
+                    },
+                    "logLevel": {
+                      "description": "Log level for debug logs (optional, defaults to DEBUG)",
+                      "enum": [
+                        "NONE",
+                        "ERROR",
+                        "WARN",
+                        "INFO",
+                        "DEBUG",
+                        "FINE",
+                        "FINER",
+                        "FINEST"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "apexCode"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_execute_anonymous"
+              },
+              {
+                "description": "Manage debug logs for Salesforce users - enable, disable, or retrieve logs.\n  \nExamples:\n1. Enable debug logs for a user:\n   {\n     \"operation\": \"enable\",\n     \"username\": \"user@example.com\",\n     \"logLevel\": \"DEBUG\",\n     \"expirationTime\": 30\n   }\n\n2. Disable debug logs for a user:\n   {\n     \"operation\": \"disable\",\n     \"username\": \"user@example.com\"\n   }\n\n3. Retrieve debug logs for a user:\n   {\n     \"operation\": \"retrieve\",\n     \"username\": \"user@example.com\",\n     \"limit\": 5\n   }\n\n4. Retrieve a specific log with full content:\n   {\n     \"operation\": \"retrieve\",\n     \"username\": \"user@example.com\",\n     \"logId\": \"07L1g000000XXXXEAA0\",\n     \"includeBody\": true\n   }\n\nNotes:\n- The operation must be one of: 'enable', 'disable', or 'retrieve'\n- The username parameter is required for all operations\n- For 'enable' operation, logLevel is optional (defaults to 'DEBUG')\n- Log levels: NONE, ERROR, WARN, INFO, DEBUG, FINE, FINER, FINEST\n- expirationTime is optional for 'enable' operation (minutes until expiration, defaults to 30)\n- limit is optional for 'retrieve' operation (maximum number of logs to return, defaults to 10)\n- logId is optional for 'retrieve' operation (to get a specific log)\n- includeBody is optional for 'retrieve' operation (to include the full log content, defaults to false)\n- The tool validates that the specified user exists before performing operations\n- If logLevel is not specified when enabling logs, the tool will ask for clarification",
+                "inputSchema": {
+                  "properties": {
+                    "expirationTime": {
+                      "description": "Minutes until the debug log configuration expires (optional, defaults to 30)",
+                      "type": "number"
+                    },
+                    "includeBody": {
+                      "description": "Whether to include the full log content (optional, defaults to false)",
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "description": "Maximum number of logs to retrieve (optional, defaults to 10)",
+                      "type": "number"
+                    },
+                    "logId": {
+                      "description": "ID of a specific log to retrieve (optional)",
+                      "type": "string"
+                    },
+                    "logLevel": {
+                      "description": "Log level for debug logs (required for 'enable' operation)",
+                      "enum": [
+                        "NONE",
+                        "ERROR",
+                        "WARN",
+                        "INFO",
+                        "DEBUG",
+                        "FINE",
+                        "FINER",
+                        "FINEST"
+                      ],
+                      "type": "string"
+                    },
+                    "operation": {
+                      "description": "Operation to perform on debug logs",
+                      "enum": [
+                        "enable",
+                        "disable",
+                        "retrieve"
+                      ],
+                      "type": "string"
+                    },
+                    "username": {
+                      "description": "Username of the Salesforce user",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "username"
+                  ],
+                  "type": "object"
+                },
+                "name": "salesforce_manage_debug_logs"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "salesforce_read_apex"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "salesforce_read_apex_trigger"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "operation": "enable",
+              "username": "MCP_INPUT_CANARY_tsmztech__mcp_server_salesforce"
+            },
+            "name": "salesforce_manage_debug_logs"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "objectName": "MCP_INPUT_CANARY_tsmztech__mcp_server_salesforce"
+            },
+            "name": "salesforce_describe_object"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "salesforce_read_apex"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "salesforce_read_apex",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "salesforce_read_apex"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "salesforce_read_apex_trigger"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "salesforce_read_apex_trigger",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "salesforce_read_apex_trigger"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "operation": "enable",
+            "username": "MCP_INPUT_CANARY_tsmztech__mcp_server_salesforce"
+          },
+          "name": "salesforce_manage_debug_logs"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "salesforce_manage_debug_logs",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "salesforce_manage_debug_logs"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "objectName": "MCP_INPUT_CANARY_tsmztech__mcp_server_salesforce"
+          },
+          "name": "salesforce_describe_object"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "salesforce_describe_object",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "salesforce_describe_object"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 46
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/tsmztech__mcp_server_salesforce.txt",
+      "evidence": {
+        "content_len": 47,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/tsmztech__mcp_server_salesforce.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "salesforce_manage_debug_logs:$.arguments.username",
+      "evidence": {
+        "content_len": 48,
+        "path": "$.arguments.username",
+        "source_id": "ToolInput: salesforce_manage_debug_logs $.arguments.username",
+        "tool": "salesforce_manage_debug_logs"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "salesforce_describe_object:$.arguments.objectName",
+      "evidence": {
+        "content_len": 48,
+        "path": "$.arguments.objectName",
+        "source_id": "ToolInput: salesforce_describe_object $.arguments.objectName",
+        "tool": "salesforce_describe_object"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+        },
+        "text_len": 100
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+        },
+        "text_len": 100
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+        },
+        "text_len": 100
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+        },
+        "text_len": 100
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_tsmztech__mcp_server_salesforce"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/tsmztech__mcp_server_salesforce.txt",
+      "content": "MCP_FILE_CANARY_tsmztech__mcp_server_salesforce"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "salesforce_manage_debug_logs",
+      "path": "$.arguments.username",
+      "content": "MCP_INPUT_CANARY_tsmztech__mcp_server_salesforce"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "salesforce_describe_object",
+      "path": "$.arguments.objectName",
+      "content": "MCP_INPUT_CANARY_tsmztech__mcp_server_salesforce"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "Error: SALESFORCE_USERNAME and SALESFORCE_PASSWORD are required for Username/Password authentication"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 4,
+    "num_sinks": 4,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

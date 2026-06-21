@@ -1,0 +1,1538 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 156
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "logging": {},
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tasks": {
+                "cancel": {},
+                "list": {},
+                "requests": {
+                  "tools": {
+                    "call": {}
+                  }
+                }
+              },
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "instructions": "HANA MCP Server is connected to a SAP HANA database and exposes tools for configuration, schema exploration, SQL execution, and optional business semantics. Before using the tools, ensure HANA_HOST, HANA_USER, HANA_PASSWORD and (for MDC tenants) HANA_DATABASE_NAME are configured in the server environment. Use hana_show_config, hana_test_connection, and hana_show_env_vars to inspect configuration and connectivity before running queries. hana_execute_query wraps SELECT/WITH statements with LIMIT/OFFSET (see HANA_MAX_RESULT_ROWS). structuredContent reports truncated, nextOffset, and optional snapshotId for hana_query_next_page. hana_list_schemas and hana_list_tables support prefix, limit, and offset; defaults and caps use HANA_LIST_DEFAULT_LIMIT. hana_describe_table, hana_explain_table, hana_list_indexes, and hana_describe_index accept optional catalog_database (or HANA_METADATA_CATALOG_DATABASE) to read SYS.* metadata from another MDC database (e.g. HSP) when connected to a different tenant. hana_explain_table merges SYS.TABLE_COLUMNS with optional JSON from HANA_SEMANTICS_PATH or HANA_SEMANTICS_URL. Resource reads for hana:///schemas and hana:///schemas/{schema} cap embedded lists (HANA_RESOURCE_LIST_MAX_ITEMS) and set truncated when applicable.",
+            "protocolVersion": "2025-11-25",
+            "serverInfo": {
+              "description": "Model Context Protocol server for SAP HANA databases",
+              "name": "hana-mcp-server",
+              "title": "HANA MCP Server",
+              "version": "1.0.0",
+              "websiteUrl": "https://github.com/hatrigt/hana-mcp-server"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Show the HANA database configuration",
+                "inputSchema": {
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_show_config",
+                "title": "Show HANA configuration"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Test connection to HANA database",
+                "inputSchema": {
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_test_connection",
+                "title": "Test HANA connection"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "List schemas in the HANA database with optional prefix filter and pagination (HANA_LIST_DEFAULT_LIMIT / offset).",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "description": "Max schemas to return (capped by server)",
+                      "type": "number"
+                    },
+                    "offset": {
+                      "description": "Skip this many schemas (paging)",
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Optional case-sensitive prefix filter (SQL LIKE prefix%)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_schemas",
+                "outputSchema": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "nextOffset": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "returned": {
+                      "type": "number"
+                    },
+                    "totalAvailable": {
+                      "type": "number"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "returned",
+                    "totalAvailable",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "title": "List HANA schemas"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Show all HANA-related environment variables (for debugging)",
+                "inputSchema": {
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_show_env_vars",
+                "title": "Show HANA env vars"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "List tables in a schema with optional name prefix and pagination (HANA_LIST_DEFAULT_LIMIT / offset).",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "Optional HANA database name whose SYS.TABLES catalog to read (MDC cross-tenant). Omit for connected DB. Overrides HANA_METADATA_CATALOG_DATABASE when set.",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "Max tables to return (capped by server)",
+                      "type": "number"
+                    },
+                    "offset": {
+                      "description": "Skip this many tables (paging)",
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Optional table name prefix filter (SQL LIKE prefix%)",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Name of the schema to list tables from (optional)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_tables",
+                "outputSchema": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "nextOffset": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "returned": {
+                      "type": "number"
+                    },
+                    "totalAvailable": {
+                      "type": "number"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "returned",
+                    "totalAvailable",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "title": "List tables in schema"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Describe the structure of a specific table",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "Optional HANA database for SYS.TABLE_COLUMNS (e.g. HSP when connected to another tenant). Overrides HANA_METADATA_CATALOG_DATABASE when set.",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Name of the schema containing the table (optional)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Name of the table to describe",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_describe_table",
+                "title": "Describe table structure"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Return column metadata merged with optional business semantics from HANA_SEMANTICS_PATH or HANA_SEMANTICS_URL (JSON keys: SCHEMA.TABLE or DB.SCHEMA.TABLE when catalog_database is set). Optional catalog_database reads SYS.* from another MDC database (e.g. HSP).",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "Optional HANA database for SYS.TABLE_COLUMNS (MDC cross-tenant). Overrides HANA_METADATA_CATALOG_DATABASE when set.",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema containing the table (optional if HANA_SCHEMA is set)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_explain_table",
+                "outputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "type": "string"
+                    },
+                    "columns": {
+                      "type": "array"
+                    },
+                    "schema": {
+                      "type": "string"
+                    },
+                    "table": {
+                      "type": "string"
+                    },
+                    "tableDescription": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "table",
+                    "columns"
+                  ],
+                  "type": "object"
+                },
+                "title": "Explain table with business semantics"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "List all indexes for a specific table",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "Optional HANA database for SYS.INDEXES / SYS.INDEX_COLUMNS (MDC). Overrides HANA_METADATA_CATALOG_DATABASE when set.",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Name of the schema containing the table (optional)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Name of the table to list indexes for",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_list_indexes",
+                "title": "List table indexes"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Describe the structure of a specific index",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "Optional HANA database for SYS.INDEXES / SYS.INDEX_COLUMNS (MDC). Overrides HANA_METADATA_CATALOG_DATABASE when set.",
+                      "type": "string"
+                    },
+                    "index_name": {
+                      "description": "Name of the index to describe",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Name of the schema containing the table (optional)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Name of the table containing the index",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name",
+                    "index_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_describe_index",
+                "title": "Describe table index"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "idempotentHint": false,
+                  "openWorldHint": false,
+                  "readOnlyHint": false
+                },
+                "description": "Execute SQL against HANA. When HANA_QUERY_LIMITS_ENABLED=true, SELECT/WITH queries are wrapped with LIMIT/OFFSET (HANA_MAX_RESULT_ROWS) and row/column/cell caps apply; results are returned as-is otherwise. INSERT/UPDATE/DELETE are blocked by default; set HANA_ALLOW_INSERT, HANA_ALLOW_UPDATE, HANA_ALLOW_DELETE=true individually to permit each. Use limit, offset, maxRows, includeTotal as needed. If truncated, snapshotId may be returned for hana_query_next_page.",
+                "execution": {
+                  "taskSupport": "optional"
+                },
+                "inputSchema": {
+                  "properties": {
+                    "includeTotal": {
+                      "description": "If true, run COUNT(*) on the same SELECT subquery (extra cost). Only for SELECT/WITH.",
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "description": "Deprecated alias for maxRows; prefer maxRows",
+                      "type": "number"
+                    },
+                    "maxRows": {
+                      "description": "Max data rows to return this page (capped by HANA_MAX_RESULT_ROWS)",
+                      "type": "number"
+                    },
+                    "offset": {
+                      "description": "Row offset for paged reads (SELECT/WITH only)",
+                      "type": "number"
+                    },
+                    "parameters": {
+                      "description": "Optional parameters for the query (for prepared statements)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "query": {
+                      "description": "The SQL query to execute",
+                      "type": "string"
+                    },
+                    "timeout_ms": {
+                      "description": "Query timeout in milliseconds. 0 or omitted uses HANA_QUERY_TIMEOUT_MS (default 0 = disabled).",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_execute_query",
+                "outputSchema": {
+                  "properties": {
+                    "appliedWrap": {
+                      "type": "boolean"
+                    },
+                    "columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "columnsOmitted": {
+                      "type": "number"
+                    },
+                    "elapsedMs": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "kind": {
+                      "enum": [
+                        "select",
+                        "other"
+                      ],
+                      "type": "string"
+                    },
+                    "maxRows": {
+                      "type": "number"
+                    },
+                    "nextOffset": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "returnedRows": {
+                      "type": "number"
+                    },
+                    "rows": {
+                      "type": "array"
+                    },
+                    "snapshotId": {
+                      "type": "string"
+                    },
+                    "totalRows": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "truncated",
+                    "returnedRows",
+                    "maxRows",
+                    "offset",
+                    "columns",
+                    "rows",
+                    "columnsOmitted",
+                    "appliedWrap"
+                  ],
+                  "type": "object"
+                },
+                "title": "Execute SQL query"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Fetch the next page of a truncated SELECT using snapshotId from a previous hana_execute_query result (same SQL and parameters; TTL HANA_QUERY_SNAPSHOT_TTL_MS).",
+                "inputSchema": {
+                  "properties": {
+                    "max_rows": {
+                      "description": "Optional page size override (capped by server)",
+                      "type": "number"
+                    },
+                    "offset": {
+                      "description": "Offset for this page (usually prior nextOffset)",
+                      "type": "number"
+                    },
+                    "snapshot_id": {
+                      "description": "snapshotId from structuredContent of a truncated query result",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "snapshot_id",
+                    "offset"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_query_next_page",
+                "outputSchema": {
+                  "properties": {
+                    "appliedWrap": {
+                      "type": "boolean"
+                    },
+                    "columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "columnsOmitted": {
+                      "type": "number"
+                    },
+                    "elapsedMs": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "kind": {
+                      "enum": [
+                        "select",
+                        "other"
+                      ],
+                      "type": "string"
+                    },
+                    "maxRows": {
+                      "type": "number"
+                    },
+                    "nextOffset": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "returnedRows": {
+                      "type": "number"
+                    },
+                    "rows": {
+                      "type": "array"
+                    },
+                    "snapshotId": {
+                      "type": "string"
+                    },
+                    "totalRows": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "truncated",
+                    "returnedRows",
+                    "maxRows",
+                    "offset",
+                    "columns",
+                    "rows",
+                    "columnsOmitted",
+                    "appliedWrap"
+                  ],
+                  "type": "object"
+                },
+                "title": "Continue paged query"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List primary key, unique, check, and foreign key constraints for a table (SYS.CONSTRAINTS + SYS.REFERENTIAL_CONSTRAINTS).",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "MDC catalog database for SYS.* (overrides HANA_METADATA_CATALOG_DATABASE)",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_list_constraints",
+                "title": "List table constraints"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Return row count, table type, column-store flag, primary key flag, and disk size (requires MONITORING privilege for disk size) from SYS.TABLES and SYS.M_TABLE_SIZES.",
+                "inputSchema": {
+                  "properties": {
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_get_table_stats",
+                "title": "Get table statistics"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List views in a schema from SYS.VIEWS. Supports prefix filter and pagination.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "description": "Max results (capped by HANA_LIST_DEFAULT_LIMIT)",
+                      "type": "number"
+                    },
+                    "offset": {
+                      "description": "Pagination offset",
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Filter view names by prefix",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_views",
+                "title": "List views in a schema"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Return the view definition (SQL) and column metadata from SYS.VIEWS and SYS.VIEW_COLUMNS.",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "MDC catalog database for SYS.*",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "view_name": {
+                      "description": "View name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "view_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_describe_view",
+                "title": "Describe a view"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List synonyms in a schema from SYS.SYNONYMS, showing target object schema, name, and type.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Filter synonym names by prefix",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_synonyms",
+                "title": "List synonyms in a schema"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List stored procedures and their parameter counts from SYS.PROCEDURES.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Filter procedure names by prefix",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_procedures",
+                "title": "List stored procedures in a schema"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Return parameter names, types (IN/OUT/INOUT), data types, and positions from SYS.PROCEDURE_PARAMETERS.",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "MDC catalog database for SYS.*",
+                      "type": "string"
+                    },
+                    "procedure_name": {
+                      "description": "Procedure name",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "procedure_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_describe_procedure",
+                "title": "Describe a stored procedure"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Find all columns matching a LIKE pattern across all tables (or within a schema). Uses SYS.TABLE_COLUMNS. Results capped at 1000.",
+                "inputSchema": {
+                  "properties": {
+                    "column_pattern": {
+                      "description": "LIKE pattern (e.g. %CUSTOMER_ID%, BUKRS)",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "Max results (hard cap 1000)",
+                      "type": "number"
+                    },
+                    "schema_name": {
+                      "description": "Optional schema filter",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "column_pattern"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_search_columns",
+                "title": "Search columns by name pattern"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Fetch the first N rows from a table using SELECT TOP. Result is shaped by the same row/column/cell caps as hana_execute_query.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "description": "Number of rows (default 10, max HANA_MAX_RESULT_ROWS)",
+                      "type": "number"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_get_sample_data",
+                "outputSchema": {
+                  "properties": {
+                    "appliedWrap": {
+                      "type": "boolean"
+                    },
+                    "columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "columnsOmitted": {
+                      "type": "number"
+                    },
+                    "elapsedMs": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "kind": {
+                      "enum": [
+                        "select",
+                        "other"
+                      ],
+                      "type": "string"
+                    },
+                    "maxRows": {
+                      "type": "number"
+                    },
+                    "nextOffset": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "returnedRows": {
+                      "type": "number"
+                    },
+                    "rows": {
+                      "type": "array"
+                    },
+                    "snapshotId": {
+                      "type": "string"
+                    },
+                    "totalRows": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "truncated",
+                    "returnedRows",
+                    "maxRows",
+                    "offset",
+                    "columns",
+                    "rows",
+                    "columnsOmitted",
+                    "appliedWrap"
+                  ],
+                  "type": "object"
+                },
+                "title": "Get sample rows from a table"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "readOnlyHint": false
+                },
+                "description": "Run EXPLAIN PLAN for a SELECT/WITH query and return operator tree from EXPLAIN_PLAN_TABLE. Only SELECT/WITH are accepted.",
+                "inputSchema": {
+                  "properties": {
+                    "query": {
+                      "description": "SELECT or WITH query to explain (must not contain DML/DDL)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_explain_plan",
+                "title": "Explain query execution plan"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List referential constraints (foreign keys) showing column, referenced table/column, and delete rule from SYS.REFERENTIAL_CONSTRAINTS.",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "MDC catalog database for SYS.*",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_list_foreign_keys",
+                "title": "List foreign keys on a table"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List effective privileges for a user (or CURRENT_USER if omitted) from SYS.EFFECTIVE_PRIVILEGES. Requires CATALOG READ privilege or querying own privileges.",
+                "inputSchema": {
+                  "properties": {
+                    "grantee": {
+                      "description": "Database user to query. Omit for current user.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_privileges",
+                "title": "List effective privileges"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Retrieve the DDL (CREATE statement) for a TABLE, VIEW, PROCEDURE, FUNCTION, TRIGGER, or SEQUENCE from SYS.OBJECT_DEFINITION. Requires appropriate privileges.",
+                "inputSchema": {
+                  "properties": {
+                    "object_name": {
+                      "description": "Object name",
+                      "type": "string"
+                    },
+                    "object_type": {
+                      "description": "Optional filter: TABLE, VIEW, PROCEDURE, FUNCTION, TRIGGER, SEQUENCE",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_get_ddl",
+                "title": "Get object DDL definition"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Retrieve column statistics (distinct count, null count, min/max) from SYS.COLUMN_STATISTICS (cached) or via live COUNT queries (live=true). With live=true a specific column_name is required.",
+                "inputSchema": {
+                  "properties": {
+                    "column_name": {
+                      "description": "Optional: single column to inspect. Required when live=true.",
+                      "type": "string"
+                    },
+                    "live": {
+                      "description": "If true, run live COUNT(*)/COUNT(DISTINCT) queries instead of reading SYS.COLUMN_STATISTICS.",
+                      "type": "boolean"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_get_column_stats",
+                "title": "Get column statistics"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List scalar and table functions from SYS.FUNCTIONS. Supports prefix filter and pagination.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Filter function names by prefix",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_functions",
+                "title": "List functions in a schema"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Return parameter names, types, data types, and positions for a function from SYS.FUNCTION_PARAMETERS.",
+                "inputSchema": {
+                  "properties": {
+                    "catalog_database": {
+                      "description": "MDC catalog database for SYS.*",
+                      "type": "string"
+                    },
+                    "function_name": {
+                      "description": "Function name",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "function_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_describe_function",
+                "title": "Describe a function"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List calculation views from the _SYS_BIC schema (SAP BW/S4 analytical views). Supports prefix filter and pagination.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Filter view names by prefix",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_calculation_views",
+                "title": "List SAP calculation views"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Return CURRENT_USER, CURRENT_SCHEMA, connected database name, SYSTEM_ID, and HANA version from DUMMY and M_DATABASE.",
+                "inputSchema": {
+                  "properties": {},
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_get_session_info",
+                "title": "Get current session info"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Find all tables matching a LIKE pattern across all schemas (or within a specific schema). Uses SYS.TABLES. Results capped at 2000.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "description": "Max results (hard cap 2000)",
+                      "type": "number"
+                    },
+                    "schema_name": {
+                      "description": "Optional schema filter",
+                      "type": "string"
+                    },
+                    "table_pattern": {
+                      "description": "LIKE pattern (e.g. %ORDERS%, BKPF)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_pattern"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_search_tables",
+                "title": "Search tables by name pattern"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "readOnlyHint": true
+                },
+                "description": "Return the most expensive statements from M_EXPENSIVE_STATEMENTS ordered by duration. Requires MONITORING privilege.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "description": "Number of statements to return (default 20, max 100)",
+                      "type": "number"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_get_expensive_queries",
+                "title": "Get top expensive queries"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Show what an object depends on or what depends on it, from SYS.OBJECT_DEPENDENCIES. Capped at 200 rows.",
+                "inputSchema": {
+                  "properties": {
+                    "direction": {
+                      "description": "base (what this depends on), dependent (what depends on this), both (default)",
+                      "type": "string"
+                    },
+                    "object_name": {
+                      "description": "Object name",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_get_dependencies",
+                "title": "Get object dependencies"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Return partition metadata (type, level, record count, loaded state) from SYS.TABLE_PARTITIONS. Returns empty result for unpartitioned tables.",
+                "inputSchema": {
+                  "properties": {
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    },
+                    "table_name": {
+                      "description": "Table name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "hana_get_partition_info",
+                "title": "Get table partition info"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "List sequences from SYS.SEQUENCES, showing start, min, max, increment, cycle, and cache settings.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "prefix": {
+                      "description": "Filter sequence names by prefix",
+                      "type": "string"
+                    },
+                    "schema_name": {
+                      "description": "Schema name (defaults to HANA_SCHEMA)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "name": "hana_list_sequences",
+                "title": "List sequences in a schema"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "hana_show_config"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "HANA Configuration:\n\nHost: NOT SET\nPort: 443\nUser: NOT SET\nPassword: NOT SET\nSchema: NOT SET\nSSL: true\n\nStatus: MISSING REQUIRED VALUES",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "hana_show_config"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "hana_show_config",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "HANA Configuration:\n\nHost: NOT SET\nPort: 443\nUser: NOT SET\nPassword: NOT SET\nSchema: NOT SET\nSSL: true\n\nStatus: MISSING REQUIRED VALUES",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "hana_show_config"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "HANA Configuration:\n\nHost: NOT SET\nPort: 443\nUser: NOT SET\nPassword: NOT SET\nSchema: NOT SET\nSSL: true\n\nStatus: MISSING REQUIRED VALUES"
+        },
+        "text_len": 135
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "HANA Configuration:\n\nHost: NOT SET\nPort: 443\nUser: NOT SET\nPassword: NOT SET\nSchema: NOT SET\nSSL: true\n\nStatus: MISSING REQUIRED VALUES"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

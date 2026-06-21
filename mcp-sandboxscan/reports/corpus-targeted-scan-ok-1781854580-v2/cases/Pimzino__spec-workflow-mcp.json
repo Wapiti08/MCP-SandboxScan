@@ -1,0 +1,584 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 510
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "prompts": {
+                "listChanged": true
+              },
+              "tools": {
+                "approvals": {},
+                "log-implementation": {},
+                "spec-status": {},
+                "spec-workflow-guide": {},
+                "steering-guide": {}
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "spec-workflow-mcp",
+              "version": "2.2.7"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Spec Workflow Guide"
+                },
+                "description": "Load essential spec workflow instructions to guide feature development from idea to implementation.\n\n# Instructions\nCall this tool FIRST when users request spec creation, feature development, or mention specifications. This provides the complete workflow sequence (Requirements → Design → Tasks → Implementation) that must be followed. Always load before any other spec tools to ensure proper workflow understanding. Its important that you follow this workflow exactly to avoid errors.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "spec-workflow-guide"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Steering Guide"
+                },
+                "description": "Load guide for creating project steering documents.\n\n# Instructions\nCall ONLY when user explicitly requests steering document creation or asks about project architecture docs. Not part of standard spec workflow. Provides templates and guidance for product.md, tech.md, and structure.md creation. Its important that you follow this workflow exactly to avoid errors.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "steering-guide"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Spec Status"
+                },
+                "description": "Display comprehensive specification progress overview.\n\n# Instructions\nCall when resuming work on a spec or checking overall completion status. Shows which phases are complete and task implementation progress. After viewing status, read tasks.md directly to see all tasks and their status markers ([ ] pending, [-] in-progress, [x] completed).",
+                "inputSchema": {
+                  "properties": {
+                    "projectPath": {
+                      "description": "Absolute path to the project root (optional - uses server context path if not provided)",
+                      "type": "string"
+                    },
+                    "specName": {
+                      "description": "Name of the specification",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "specName"
+                  ],
+                  "type": "object"
+                },
+                "name": "spec-status"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Approvals"
+                },
+                "description": "Manage approval requests through the dashboard interface.\n\n# Instructions\nUse this tool to request, check status, or delete approval requests. The action parameter determines the operation:\n- 'request': Create a new approval request after creating each document\n- 'status': Check the current status of an approval request\n- 'delete': Clean up completed, rejected, or needs-revision approval requests (cannot delete pending requests)\n\nCRITICAL: Only provide filePath parameter for requests - the dashboard reads files directly. Never include document content. Wait for user to review and approve before continuing.",
+                "inputSchema": {
+                  "properties": {
+                    "action": {
+                      "description": "The action to perform: request, status, or delete",
+                      "enum": [
+                        "request",
+                        "status",
+                        "delete"
+                      ],
+                      "type": "string"
+                    },
+                    "approvalId": {
+                      "description": "The ID of the approval request (required for status and delete actions)",
+                      "type": "string"
+                    },
+                    "category": {
+                      "description": "Category of the approval request - \"spec\" for specifications, \"steering\" for steering documents (required for request)",
+                      "enum": [
+                        "spec",
+                        "steering"
+                      ],
+                      "type": "string"
+                    },
+                    "categoryName": {
+                      "description": "Name of the spec or \"steering\" for steering documents (required for request)",
+                      "type": "string"
+                    },
+                    "filePath": {
+                      "description": "Path to the file that needs approval, relative to project root (required for request action)",
+                      "type": "string"
+                    },
+                    "projectPath": {
+                      "description": "Absolute path to the project root (optional - uses server context path if not provided)",
+                      "type": "string"
+                    },
+                    "title": {
+                      "description": "Brief title describing what needs approval (required for request action)",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "Type of approval request - \"document\" for content approval, \"action\" for action approval (required for request)",
+                      "enum": [
+                        "document",
+                        "action"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "approvals"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "title": "Log Implementation"
+                },
+                "description": "Record comprehensive implementation details for a completed task.\n\n⚠️ CRITICAL: Artifacts are REQUIRED. This creates a searchable knowledge base that future AI agents use to discover existing code and avoid duplication.\n\n# WHY DETAILED LOGGING MATTERS\n\nFuture AI agents (and future you) will use grep/ripgrep to search implementation logs before implementing new tasks. Complete logs prevent:\n- ❌ Creating duplicate API endpoints\n- ❌ Reimplementing existing components\n- ❌ Duplicating utility functions and business logic\n- ❌ Breaking established integration patterns\n\nIncomplete logs = Duplicated code = Technical debt\n\n# REQUIRED FIELDS\n\n## artifacts (REQUIRED - Object)\n\nContains structured data about what was implemented. Must include relevant artifact types:\n\n### apiEndpoints (array of API endpoint objects)\nWhen new API endpoints are created/modified, document:\n- method: HTTP method (GET, POST, PUT, DELETE, PATCH)\n- path: Route path (e.g., \"/api/specs/:name/logs\")\n- purpose: What this endpoint does\n- requestFormat: Request body/query params format (JSON schema or example)\n- responseFormat: Response structure (JSON schema or example)\n- location: File path and line number (e.g., \"src/server.ts:245\")\n\nExample:\n```\n{\n  \"method\": \"GET\",\n  \"path\": \"/api/specs/:name/implementation-log\",\n  \"purpose\": \"Retrieve implementation logs with optional filtering\",\n  \"requestFormat\": \"Query params: taskId (string, optional), search (string, optional)\",\n  \"responseFormat\": \"{ entries: ImplementationLogEntry[] }\",\n  \"location\": \"src/dashboard/server.ts:245\"\n}\n```\n\n### components (array of component objects)\nWhen reusable UI components are created, document:\n- name: Component name\n- type: Framework type (React, Vue, Svelte, etc.)\n- purpose: What the component does\n- location: File path\n- props: Props interface or type signature\n- exports: What it exports (array of export names)\n\nExample:\n```\n{\n  \"name\": \"LogsPage\",\n  \"type\": \"React\",\n  \"purpose\": \"Main dashboard page for viewing implementation logs with search and filtering\",\n  \"location\": \"src/modules/pages/LogsPage.tsx\",\n  \"props\": \"{ specs: any[], selectedSpec: string, onSelect: (value: string) => void }\",\n  \"exports\": [\"LogsPage (default)\"]\n}\n```\n\n### functions (array of function objects)\nWhen utility functions are created, document:\n- name: Function name\n- purpose: What it does\n- location: File path and line\n- signature: Function signature (params and return type)\n- isExported: Whether it can be imported\n\nExample:\n```\n{\n  \"name\": \"searchLogs\",\n  \"purpose\": \"Search implementation logs by keyword\",\n  \"location\": \"src/dashboard/implementation-log-manager.ts:156\",\n  \"signature\": \"(searchTerm: string) => Promise<ImplementationLogEntry[]>\",\n  \"isExported\": true\n}\n```\n\n### classes (array of class objects)\nWhen classes are created, document:\n- name: Class name\n- purpose: What the class does\n- location: File path\n- methods: List of public methods\n- isExported: Whether it can be imported\n\nExample:\n```\n{\n  \"name\": \"ImplementationLogManager\",\n  \"purpose\": \"Manages CRUD operations for implementation logs\",\n  \"location\": \"src/dashboard/implementation-log-manager.ts\",\n  \"methods\": [\"loadLog\", \"addLogEntry\", \"getAllLogs\", \"searchLogs\", \"getTaskStats\"],\n  \"isExported\": true\n}\n```\n\n### integrations (array of integration objects)\nDocument how frontend connects to backend:\n- description: How components connect to APIs\n- frontendComponent: Which component initiates the connection\n- backendEndpoint: Which API endpoint is called\n- dataFlow: Describe the data flow (e.g., \"User clicks → API call → State update → Re-render\")\n\nExample:\n```\n{\n  \"description\": \"LogsPage fetches logs via REST API and subscribes to WebSocket for real-time updates\",\n  \"frontendComponent\": \"LogsPage\",\n  \"backendEndpoint\": \"GET /api/specs/:name/implementation-log\",\n  \"dataFlow\": \"Component mount → API fetch → Display logs → WebSocket subscription → Real-time updates on new entries\"\n}\n```\n\n# GOOD EXAMPLE (Include ALL relevant artifacts)\n\nTask: \"Implemented logs dashboard with real-time updates\"\n\n```json\n{\n  \"taskId\": \"2.3\",\n  \"summary\": \"Implemented real-time implementation logs dashboard with filtering, search, and WebSocket updates\",\n  \"artifacts\": {\n    \"apiEndpoints\": [\n      {\n        \"method\": \"GET\",\n        \"path\": \"/api/specs/:name/implementation-log\",\n        \"purpose\": \"Retrieve implementation logs with optional filtering\",\n        \"requestFormat\": \"Query params: taskId (string, optional), search (string, optional)\",\n        \"responseFormat\": \"{ entries: ImplementationLogEntry[] }\",\n        \"location\": \"src/dashboard/server.ts:245\"\n      }\n    ],\n    \"components\": [\n      {\n        \"name\": \"LogsPage\",\n        \"type\": \"React\",\n        \"purpose\": \"Main dashboard page for viewing implementation logs with search and filtering\",\n        \"location\": \"src/modules/pages/LogsPage.tsx\",\n        \"props\": \"None (uses React Router params)\",\n        \"exports\": [\"LogsPage (default)\"]\n      }\n    ],\n    \"classes\": [\n      {\n        \"name\": \"ImplementationLogManager\",\n        \"purpose\": \"Manages CRUD operations for implementation logs\",\n        \"location\": \"src/dashboard/implementation-log-manager.ts\",\n        \"methods\": [\"loadLog\", \"addLogEntry\", \"getAllLogs\", \"searchLogs\", \"getTaskStats\"],\n        \"isExported\": true\n      }\n    ],\n    \"integrations\": [\n      {\n        \"description\": \"LogsPage fetches logs via REST API and subscribes to WebSocket for real-time updates\",\n        \"frontendComponent\": \"LogsPage\",\n        \"backendEndpoint\": \"GET /api/specs/:name/implementation-log\",\n        \"dataFlow\": \"Component mount → API fetch → Display logs → WebSocket subscription → Real-time updates on new entries\"\n      }\n    ]\n  },\n  \"filesModified\": [\"src/dashboard/server.ts\"],\n  \"filesCreated\": [\"src/modules/pages/LogsPage.tsx\"],\n  \"statistics\": { \"linesAdded\": 650, \"linesRemoved\": 15, \"filesChanged\": 2 }\n}\n```\n\n# BAD EXAMPLE (Don't do this)\n\n❌ Empty artifacts - Future agents learn nothing:\n```json\n{\n  \"taskId\": \"2.3\",\n  \"summary\": \"Added endpoint and page\",\n  \"artifacts\": {},\n  \"filesModified\": [\"server.ts\"],\n  \"filesCreated\": [\"LogsPage.tsx\"]\n}\n```\n\n❌ Vague summary with no structured data:\n```json\n{\n  \"taskId\": \"2.3\",\n  \"summary\": \"Implemented features\",\n  \"artifacts\": {},\n  \"filesModified\": [\"server.ts\", \"app.tsx\"]\n}\n```\n\n# Instructions\n\n1. After completing a task, review what you implemented\n2. Identify all artifacts (APIs, components, functions, classes, integrations)\n3. Document each with full details and locations\n4. Include ALL the information - be thorough!\n5. Future agents depend on this data quality",
+                "inputSchema": {
+                  "properties": {
+                    "artifacts": {
+                      "description": "REQUIRED: Structured data about implemented artifacts (APIs, components, functions, classes, integrations). See tool description for detailed format.",
+                      "properties": {
+                        "apiEndpoints": {
+                          "description": "API endpoints created or modified",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "classes": {
+                          "description": "Classes created",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "components": {
+                          "description": "Reusable UI components created",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "functions": {
+                          "description": "Utility functions or methods created",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "integrations": {
+                          "description": "Frontend-backend integration patterns",
+                          "items": {
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "filesCreated": {
+                      "description": "List of files that were created",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "filesModified": {
+                      "description": "List of files that were modified",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "projectPath": {
+                      "description": "Absolute path to the project root (optional - uses server context path if not provided)",
+                      "type": "string"
+                    },
+                    "specName": {
+                      "description": "Name of the specification",
+                      "type": "string"
+                    },
+                    "statistics": {
+                      "description": "Code statistics for the implementation",
+                      "properties": {
+                        "linesAdded": {
+                          "description": "Number of lines added",
+                          "type": "number"
+                        },
+                        "linesRemoved": {
+                          "description": "Number of lines removed",
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "linesAdded",
+                        "linesRemoved"
+                      ],
+                      "type": "object"
+                    },
+                    "summary": {
+                      "description": "Brief summary of what was implemented",
+                      "type": "string"
+                    },
+                    "taskId": {
+                      "description": "Task ID (e.g., \"1\", \"1.2\", \"3.1.4\")",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "specName",
+                    "taskId",
+                    "summary",
+                    "filesModified",
+                    "filesCreated",
+                    "statistics",
+                    "artifacts"
+                  ],
+                  "type": "object"
+                },
+                "name": "log-implementation"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "specName": "MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp"
+            },
+            "name": "spec-status"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "success: false\nmessage: Specification 'MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp' not found\nnextSteps[3]: Check spec name,Use spec-list for available specs,Create spec with create-spec-doc",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "steering-guide"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "success: true\nmessage: Steering workflow guide loaded - follow this workflow exactly to avoid errors\ndata:\n  guide: \"# Steering Workflow\\n\\n## Overview\\n\\nCreate project-level guidance documents when explicitly requested. Steering docs establish vision, architecture, and conventions for established codebases. Its important that you follow this workflow exactly to avoid errors.\\n\\n## Workflow Diagram\\n\\n```mermaid\\nflowchart TD\\n    Start([Start: Setup steering docs]) --> Guide[steering-guide<br/>Load workflow instructions]\\n\\n    %% Phase 1: Product\\n    Guide --> P1_Template[Check user-templates first,<br/>then read template:<br/>product-template.md]\\n    P1_Template --> P1_Generate[Generate vision & goals]\\n    P1_Generate --> P1_Create[Create file:<br/>.spec-workflow/steering/<br/>product.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments for guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Tech\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>tech-template.md]\\n    P2_Template --> P2_Analyze[Analyze tech stack]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/steering/<br/>tech.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments for guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Structure\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>structure-template.md]\\n    P3_Template --> P3_Analyze[Analyze codebase structure]\\n    P3_Analyze --> P3_Create[Create file:<br/>.spec-workflow/steering/<br/>structure.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments for guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    P3_Clean -->|success| Complete([Steering docs complete])\\n\\n    style Start fill:#e6f3ff\\n    style Complete fill:#e6f3ff\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n```\\n\\n## Steering Workflow Phases\\n\\n### Phase 1: Product Document\\n**Purpose**: Define vision, goals, and user outcomes.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/product-template.md`\\n- Read template: `.spec-workflow/templates/product-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/product.md`\\n\\n**Tools**:\\n- steering-guide: Load workflow instructions\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Load steering guide for workflow overview\\n2. Check for custom template at `.spec-workflow/user-templates/product-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/product-template.md`\\n4. Generate product vision and goals\\n5. Create `product.md` at `.spec-workflow/steering/product.md`\\n6. Request approval using approvals tool with action:'request' (filePath only)\\n7. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 2: Tech Document\\n**Purpose**: Document technology decisions and architecture.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tech-template.md`\\n- Read template: `.spec-workflow/templates/tech-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/tech.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tech-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tech-template.md`\\n3. Analyze existing technology stack\\n4. Document architectural decisions and patterns\\n5. Create `tech.md` at `.spec-workflow/steering/tech.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 3: Structure Document\\n**Purpose**: Map codebase organization and patterns.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/structure-template.md`\\n- Read template: `.spec-workflow/templates/structure-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/structure.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/structure-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/structure-template.md`\\n3. Analyze directory structure and file organization\\n4. Document coding patterns and conventions\\n5. Create `structure.md` at `.spec-workflow/steering/structure.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n11. After successful cleanup: \\\"Steering docs complete. Ready for spec creation?\\\"\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Check for custom templates in `.spec-workflow/user-templates/` first\\n- Read templates from `.spec-workflow/templates/` directory if no custom template exists\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\nnextSteps[5]: Only proceed if user requested steering docs,Create product.md first,Then tech.md and structure.md,Reference in future specs,\"Start the dashboard with: spec-workflow-mcp --dashboard\"",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "specName": "MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp"
+          },
+          "name": "spec-status"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "spec-status",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "success: false\nmessage: Specification 'MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp' not found\nnextSteps[3]: Check spec name,Use spec-list for available specs,Create spec with create-spec-doc",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "spec-status"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "steering-guide"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "steering-guide",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "success: true\nmessage: Steering workflow guide loaded - follow this workflow exactly to avoid errors\ndata:\n  guide: \"# Steering Workflow\\n\\n## Overview\\n\\nCreate project-level guidance documents when explicitly requested. Steering docs establish vision, architecture, and conventions for established codebases. Its important that you follow this workflow exactly to avoid errors.\\n\\n## Workflow Diagram\\n\\n```mermaid\\nflowchart TD\\n    Start([Start: Setup steering docs]) --> Guide[steering-guide<br/>Load workflow instructions]\\n\\n    %% Phase 1: Product\\n    Guide --> P1_Template[Check user-templates first,<br/>then read template:<br/>product-template.md]\\n    P1_Template --> P1_Generate[Generate vision & goals]\\n    P1_Generate --> P1_Create[Create file:<br/>.spec-workflow/steering/<br/>product.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments for guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Tech\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>tech-template.md]\\n    P2_Template --> P2_Analyze[Analyze tech stack]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/steering/<br/>tech.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments for guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Structure\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>structure-template.md]\\n    P3_Template --> P3_Analyze[Analyze codebase structure]\\n    P3_Analyze --> P3_Create[Create file:<br/>.spec-workflow/steering/<br/>structure.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments for guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    P3_Clean -->|success| Complete([Steering docs complete])\\n\\n    style Start fill:#e6f3ff\\n    style Complete fill:#e6f3ff\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n```\\n\\n## Steering Workflow Phases\\n\\n### Phase 1: Product Document\\n**Purpose**: Define vision, goals, and user outcomes.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/product-template.md`\\n- Read template: `.spec-workflow/templates/product-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/product.md`\\n\\n**Tools**:\\n- steering-guide: Load workflow instructions\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Load steering guide for workflow overview\\n2. Check for custom template at `.spec-workflow/user-templates/product-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/product-template.md`\\n4. Generate product vision and goals\\n5. Create `product.md` at `.spec-workflow/steering/product.md`\\n6. Request approval using approvals tool with action:'request' (filePath only)\\n7. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 2: Tech Document\\n**Purpose**: Document technology decisions and architecture.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tech-template.md`\\n- Read template: `.spec-workflow/templates/tech-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/tech.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tech-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tech-template.md`\\n3. Analyze existing technology stack\\n4. Document architectural decisions and patterns\\n5. Create `tech.md` at `.spec-workflow/steering/tech.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 3: Structure Document\\n**Purpose**: Map codebase organization and patterns.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/structure-template.md`\\n- Read template: `.spec-workflow/templates/structure-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/structure.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/structure-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/structure-template.md`\\n3. Analyze directory structure and file organization\\n4. Document coding patterns and conventions\\n5. Create `structure.md` at `.spec-workflow/steering/structure.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n11. After successful cleanup: \\\"Steering docs complete. Ready for spec creation?\\\"\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Check for custom templates in `.spec-workflow/user-templates/` first\\n- Read templates from `.spec-workflow/templates/` directory if no custom template exists\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\nnextSteps[5]: Only proceed if user requested steering docs,Create product.md first,Then tech.md and structure.md,Reference in future specs,\"Start the dashboard with: spec-workflow-mcp --dashboard\"",
+                "type": "text"
+              }
+            ],
+            "isError": false
+          }
+        },
+        "tool_name": "steering-guide"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 41
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/Pimzino__spec_workflow_mcp.txt",
+      "evidence": {
+        "content_len": 42,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/Pimzino__spec_workflow_mcp.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "spec-status:$.arguments.specName",
+      "evidence": {
+        "content_len": 43,
+        "path": "$.arguments.specName",
+        "source_id": "ToolInput: spec-status $.arguments.specName",
+        "tool": "spec-status"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "success: false\nmessage: Specification 'MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp' not found\nnextSteps[3]: Check spec name,Use spec-list for available specs,Create spec with create-spec-doc"
+        },
+        "text_len": 190
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "success: true\nmessage: Steering workflow guide loaded - follow this workflow exactly to avoid errors\ndata:\n  guide: \"# Steering Workflow\\n\\n## Overview\\n\\nCreate project-level guidance documents when explicitly requested. Steering docs establish vision, architecture, and conventions for established codebases. Its important that you follow this workflow exactly to avoid errors.\\n\\n## Workflow Diagram\\n\\n```mermaid\\nflowchart TD\\n    Start([Start: Setup steering docs]) --> Guide[steering-guide<br/>Load workflow instructions]\\n\\n    %% Phase 1: Product\\n    Guide --> P1_Template[Check user-templates first,<br/>then read template:<br/>product-template.md]\\n    P1_Template --> P1_Generate[Generate vision & goals]\\n    P1_Generate --> P1_Create[Create file:<br/>.spec-workflow/steering/<br/>product.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments for guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Tech\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>tech-template.md]\\n    P2_Template --> P2_Analyze[Analyze tech stack]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/steering/<br/>tech.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments for guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Structure\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>structure-template.md]\\n    P3_Template --> P3_Analyze[Analyze codebase structure]\\n    P3_Analyze --> P3_Create[Create file:<br/>.spec-workflow/steering/<br/>structure.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments for guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    P3_Clean -->|success| Complete([Steering docs complete])\\n\\n    style Start fill:#e6f3ff\\n    style Complete fill:#e6f3ff\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n```\\n\\n## Steering Workflow Phases\\n\\n### Phase 1: Product Document\\n**Purpose**: Define vision, goals, and user outcomes.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/product-template.md`\\n- Read template: `.spec-workflow/templates/product-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/product.md`\\n\\n**Tools**:\\n- steering-guide: Load workflow instructions\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Load steering guide for workflow overview\\n2. Check for custom template at `.spec-workflow/user-templates/product-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/product-template.md`\\n4. Generate product vision and goals\\n5. Create `product.md` at `.spec-workflow/steering/product.md`\\n6. Request approval using approvals tool with action:'request' (filePath only)\\n7. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 2: Tech Document\\n**Purpose**: Document technology decisions and architecture.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tech-template.md`\\n- Read template: `.spec-workflow/templates/tech-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/tech.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tech-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tech-template.md`\\n3. Analyze existing technology stack\\n4. Document architectural decisions and patterns\\n5. Create `tech.md` at `.spec-workflow/steering/tech.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 3: Structure Document\\n**Purpose**: Map codebase organization and patterns.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/structure-template.md`\\n- Read template: `.spec-workflow/templates/structure-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/structure.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/structure-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/structure-template.md`\\n3. Analyze directory structure and file organization\\n4. Document coding patterns and conventions\\n5. Create `structure.md` at `.spec-workflow/steering/structure.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n11. After successful cleanup: \\\"Steering docs complete. Ready for spec creation?\\\"\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Check for custom templates in `.spec-workflow/user-templates/` first\\n- Read templates from `.spec-workflow/templates/` directory if no custom template exists\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\nnextSteps[5]: Only proceed if user requested steering docs,Create product.md first,Then tech.md and structure.md,Reference in future specs,\"Start the dashboard with: spec-workflow-mcp --dashboard\""
+        },
+        "text_len": 7785
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp",
+        "source_id": "ToolInput: spec-status $.arguments.specName"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_Pimzino__spec_workflow_mcp"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/Pimzino__spec_workflow_mcp.txt",
+      "content": "MCP_FILE_CANARY_Pimzino__spec_workflow_mcp"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "spec-status",
+      "path": "$.arguments.specName",
+      "content": "MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "success: false\nmessage: Specification 'MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp' not found\nnextSteps[3]: Check spec name,Use spec-list for available specs,Create spec with create-spec-doc"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "success: true\nmessage: Steering workflow guide loaded - follow this workflow exactly to avoid errors\ndata:\n  guide: \"# Steering Workflow\\n\\n## Overview\\n\\nCreate project-level guidance documents when explicitly requested. Steering docs establish vision, architecture, and conventions for established codebases. Its important that you follow this workflow exactly to avoid errors.\\n\\n## Workflow Diagram\\n\\n```mermaid\\nflowchart TD\\n    Start([Start: Setup steering docs]) --> Guide[steering-guide<br/>Load workflow instructions]\\n\\n    %% Phase 1: Product\\n    Guide --> P1_Template[Check user-templates first,<br/>then read template:<br/>product-template.md]\\n    P1_Template --> P1_Generate[Generate vision & goals]\\n    P1_Generate --> P1_Create[Create file:<br/>.spec-workflow/steering/<br/>product.md]\\n    P1_Create --> P1_Approve[approvals<br/>action: request<br/>filePath only]\\n    P1_Approve --> P1_Status[approvals<br/>action: status<br/>poll status]\\n    P1_Status --> P1_Check{Status?}\\n    P1_Check -->|needs-revision| P1_Update[Update document using user comments for guidance]\\n    P1_Update --> P1_Create\\n    P1_Check -->|approved| P1_Clean[approvals<br/>action: delete]\\n    P1_Clean -->|failed| P1_Status\\n\\n    %% Phase 2: Tech\\n    P1_Clean -->|success| P2_Template[Check user-templates first,<br/>then read template:<br/>tech-template.md]\\n    P2_Template --> P2_Analyze[Analyze tech stack]\\n    P2_Analyze --> P2_Create[Create file:<br/>.spec-workflow/steering/<br/>tech.md]\\n    P2_Create --> P2_Approve[approvals<br/>action: request<br/>filePath only]\\n    P2_Approve --> P2_Status[approvals<br/>action: status<br/>poll status]\\n    P2_Status --> P2_Check{Status?}\\n    P2_Check -->|needs-revision| P2_Update[Update document using user comments for guidance]\\n    P2_Update --> P2_Create\\n    P2_Check -->|approved| P2_Clean[approvals<br/>action: delete]\\n    P2_Clean -->|failed| P2_Status\\n\\n    %% Phase 3: Structure\\n    P2_Clean -->|success| P3_Template[Check user-templates first,<br/>then read template:<br/>structure-template.md]\\n    P3_Template --> P3_Analyze[Analyze codebase structure]\\n    P3_Analyze --> P3_Create[Create file:<br/>.spec-workflow/steering/<br/>structure.md]\\n    P3_Create --> P3_Approve[approvals<br/>action: request<br/>filePath only]\\n    P3_Approve --> P3_Status[approvals<br/>action: status<br/>poll status]\\n    P3_Status --> P3_Check{Status?}\\n    P3_Check -->|needs-revision| P3_Update[Update document using user comments for guidance]\\n    P3_Update --> P3_Create\\n    P3_Check -->|approved| P3_Clean[approvals<br/>action: delete]\\n    P3_Clean -->|failed| P3_Status\\n\\n    P3_Clean -->|success| Complete([Steering docs complete])\\n\\n    style Start fill:#e6f3ff\\n    style Complete fill:#e6f3ff\\n    style P1_Check fill:#ffe6e6\\n    style P2_Check fill:#ffe6e6\\n    style P3_Check fill:#ffe6e6\\n```\\n\\n## Steering Workflow Phases\\n\\n### Phase 1: Product Document\\n**Purpose**: Define vision, goals, and user outcomes.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/product-template.md`\\n- Read template: `.spec-workflow/templates/product-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/product.md`\\n\\n**Tools**:\\n- steering-guide: Load workflow instructions\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Load steering guide for workflow overview\\n2. Check for custom template at `.spec-workflow/user-templates/product-template.md`\\n3. If no custom template, read from `.spec-workflow/templates/product-template.md`\\n4. Generate product vision and goals\\n5. Create `product.md` at `.spec-workflow/steering/product.md`\\n6. Request approval using approvals tool with action:'request' (filePath only)\\n7. Poll status using approvals with action:'status' until approved/needs-revision (NEVER accept verbal approval)\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 2: Tech Document\\n**Purpose**: Document technology decisions and architecture.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/tech-template.md`\\n- Read template: `.spec-workflow/templates/tech-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/tech.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/tech-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/tech-template.md`\\n3. Analyze existing technology stack\\n4. Document architectural decisions and patterns\\n5. Create `tech.md` at `.spec-workflow/steering/tech.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n\\n### Phase 3: Structure Document\\n**Purpose**: Map codebase organization and patterns.\\n\\n**File Operations**:\\n- Check for custom template: `.spec-workflow/user-templates/structure-template.md`\\n- Read template: `.spec-workflow/templates/structure-template.md` (if no custom template)\\n- Create document: `.spec-workflow/steering/structure.md`\\n\\n**Tools**:\\n- approvals: Manage approval workflow (actions: request, status, delete)\\n\\n**Process**:\\n1. Check for custom template at `.spec-workflow/user-templates/structure-template.md`\\n2. If no custom template, read from `.spec-workflow/templates/structure-template.md`\\n3. Analyze directory structure and file organization\\n4. Document coding patterns and conventions\\n5. Create `structure.md` at `.spec-workflow/steering/structure.md`\\n6. Request approval using approvals tool with action:'request'\\n7. Poll status using approvals with action:'status' until approved/needs-revision\\n8. If needs-revision: update document using comments, create NEW approval, do NOT proceed\\n9. Once approved: use approvals with action:'delete' (must succeed) before proceeding\\n10. If delete fails: STOP - return to polling\\n11. After successful cleanup: \\\"Steering docs complete. Ready for spec creation?\\\"\\n\\n## Workflow Rules\\n\\n- Create documents directly at specified file paths\\n- Check for custom templates in `.spec-workflow/user-templates/` first\\n- Read templates from `.spec-workflow/templates/` directory if no custom template exists\\n- Follow exact template structures\\n- Get explicit user approval between phases (using approvals tool with action:'request')\\n- Complete phases in sequence (no skipping)\\n- Approval requests: provide filePath only, never content\\n- BLOCKING: Never proceed if approval delete fails\\n- CRITICAL: Must have approved status AND successful cleanup before next phase\\n- CRITICAL: Verbal approval is NEVER accepted - dashboard or VS Code extension only\\n- NEVER proceed on user saying \\\"approved\\\" - check system status only\\n\\n## File Structure\\n```\\n.spec-workflow/\\n├── templates/           # Auto-populated on server start\\n│   ├── product-template.md\\n│   ├── tech-template.md\\n│   └── structure-template.md\\n└── steering/\\n    ├── product.md\\n    ├── tech.md\\n    └── structure.md\\n```\"\n  dashboardUrl: null\nnextSteps[5]: Only proceed if user requested steering docs,Create product.md first,Then tech.md and structure.md,Reference in future specs,\"Start the dashboard with: spec-workflow-mcp --dashboard\""
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "ToolInput: spec-status $.arguments.specName",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_Pimzino__spec_workflow_mcp",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 3,
+    "num_sinks": 2,
+    "num_flows": 1,
+    "has_external_to_prompt_flow": true
+  }
+}

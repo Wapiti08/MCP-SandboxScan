@@ -111,7 +111,10 @@ fn sink_candidates(sink_text: &str, config: &FlowConfig) -> Vec<(String, String)
     let mut out = vec![(sink_text.to_string(), "exact-substring".to_string())];
 
     if config.enable_separator_normalization {
-        let normalized: String = sink_text.chars().filter(|c| c.is_ascii_alphanumeric()).collect();
+        let normalized: String = sink_text
+            .chars()
+            .filter(|c| c.is_ascii_alphanumeric())
+            .collect();
         if normalized != sink_text {
             out.push((normalized, "separator-normalized".to_string()));
         }
@@ -153,10 +156,7 @@ fn rot13(input: &str) -> String {
 }
 
 fn try_hex_decode_tokens(text: &str, min_len: usize) -> Option<String> {
-    let hex: String = text
-        .chars()
-        .filter(|c| c.is_ascii_hexdigit())
-        .collect();
+    let hex: String = text.chars().filter(|c| c.is_ascii_hexdigit()).collect();
     if hex.len() < min_len * 2 || hex.len() % 2 != 0 {
         return None;
     }
@@ -195,7 +195,11 @@ pub fn apply_transform(secret: &str, transform: &str) -> String {
             String::from_utf8_lossy(&bytes[bytes.len().saturating_sub(16)..]).into_owned()
         }
         "rot13" => rot13(secret),
-        "hex" => secret.as_bytes().iter().map(|b| format!("{b:02x}")).collect(),
+        "hex" => secret
+            .as_bytes()
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect(),
         "base64" => base64::engine::general_purpose::STANDARD.encode(secret),
         "chunked" => secret
             .as_bytes()

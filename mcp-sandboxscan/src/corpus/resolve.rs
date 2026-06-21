@@ -6,10 +6,12 @@ use anyhow::{Context, Result, bail};
 
 use crate::subject::Language;
 
+use super::deps::{self, Ecosystem};
 use super::go_resolve;
 use super::model::{CorpusFile, RepoEntry};
 use super::npm_resolve;
-use super::deps::{self, Ecosystem};
+use super::python_resolve;
+use super::tier::assign_tiers;
 
 pub struct ResolveOptions {
     pub corpus_dir: PathBuf,
@@ -52,6 +54,7 @@ pub fn resolve_corpus(corpus: &mut CorpusFile, opts: &ResolveOptions) -> Result<
             }
         }
     }
+    assign_tiers(&mut corpus.repos);
     Ok(())
 }
 
@@ -77,7 +80,7 @@ fn resolve_one(repo: &RepoEntry, clones: &Path, manifests: &Path) -> Result<(Str
     let lang = detect_language(&dest, repo.language.as_deref());
     let toml = match lang {
         Language::TypeScript | Language::JavaScript => npm_resolve::resolve_npm(&dest, &slug)?,
-        Language::Python => resolve_python(&dest, &slug)?,
+        Language::Python => python_resolve::resolve_python_manifest(&dest, &slug)?,
         Language::Rust => resolve_rust(&dest, &slug)?,
         Language::Go => go_resolve::resolve_go(&dest, &slug)?,
         _ => bail!("unsupported language for {}", repo.id),
@@ -108,46 +111,6 @@ fn detect_language(root: &Path, github_lang: Option<&str>) -> Language {
         "typescript" | "javascript" => Language::TypeScript,
         _ => Language::Unknown,
     }
-}
-
-fn resolve_python(root: &Path, slug: &str) -> Result<String> {
-    let dir = root.to_string_lossy();
-    let entry = if root.join("server.py").exists() {
-        "server.py"
-    } else if root.join("src").join("server.py").exists() {
-        "src/server.py"
-    } else if root.join("main.py").exists() {
-        "main.py"
-    } else {
-        bail!("no obvious python entrypoint under {dir}");
-    };
-
-    let source_dir = root
-        .canonicalize()
-        .unwrap_or_else(|_| root.to_path_buf())
-        .display()
-        .to_string();
-
-    Ok(format!(
-        r#"name = "{slug}"
-language = "python"
-source_dir = "{source_dir}"
-entrypoint = "{entry}"
-capabilities = ["stdio", "mcp-protocol"]
-
-[build]
-command = "bash"
-args = ["-c", "python3 -m venv .venv && (.venv/bin/pip install -e . -q || .venv/bin/pip install -r requirements.txt -q)"]
-
-[run]
-command = ".venv/bin/python"
-args = ["-u", "{entry}"]
-
-[mcp]
-tool = "echo"
-arguments = {{}}
-"#
-    ))
 }
 
 fn resolve_rust(root: &Path, slug: &str) -> Result<String> {

@@ -8,6 +8,7 @@ use std::time::Duration;
 use anyhow::{Context, Result, bail};
 
 use crate::mcp::driver::{McpCallPlan, McpDriver, McpDriverResult};
+use crate::mcp::explore::{ExplorationConfig, build_exploration_plans};
 use crate::mcp::jsonrpc::{
     initialize_request, initialized_notification, tools_call_request, tools_list_request,
 };
@@ -86,9 +87,57 @@ impl McpDriver for NativeStdioMcpDriver {
 }
 
 impl NativeStdioMcpDriver {
+    pub fn call_tool_with_exploration(
+        &self,
+        plan: &McpCallPlan,
+        exploration: &ExplorationConfig,
+    ) -> Result<McpDriverResult> {
+        let Some(timeout) = self.mcp_timeout else {
+            return self.call_tools_inner(plan, Some(exploration), None);
+        };
+
+        let driver = self.clone();
+        let plan = plan.clone();
+        let exploration = exploration.clone();
+        let child_holder: Arc<Mutex<Option<Child>>> = Arc::new(Mutex::new(None));
+        let child_holder_worker = child_holder.clone();
+        let (tx, rx) = mpsc::channel();
+
+        std::thread::spawn(move || {
+            let result =
+                driver.call_tools_inner(&plan, Some(&exploration), Some(child_holder_worker));
+            let _ = tx.send(result);
+        });
+
+        match rx.recv_timeout(timeout) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                if let Ok(mut slot) = child_holder.lock() {
+                    if let Some(mut child) = slot.take() {
+                        let _ = child.kill();
+                        let _ = child.wait();
+                    }
+                }
+                bail!("MCP server timed out after {}s", timeout.as_secs());
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                bail!("MCP scan thread exited unexpectedly");
+            }
+        }
+    }
+
     fn call_tool_inner(
         &self,
         plan: &McpCallPlan,
+        child_holder: Option<Arc<Mutex<Option<Child>>>>,
+    ) -> Result<McpDriverResult> {
+        self.call_tools_inner(plan, None, child_holder)
+    }
+
+    fn call_tools_inner(
+        &self,
+        plan: &McpCallPlan,
+        exploration: Option<&ExplorationConfig>,
         child_holder: Option<Arc<Mutex<Option<Child>>>>,
     ) -> Result<McpDriverResult> {
         let started = std::time::Instant::now();
@@ -149,22 +198,72 @@ impl NativeStdioMcpDriver {
                 &tools_response,
             );
 
-            let tool_name = pick_tool_name(&tools_response, &plan.tool_name);
-            let call = tools_call_request(3, &tool_name, plan.arguments.clone());
-            send_message(&mut stdin, &call, self.framing)?;
-            record(&mut transcript, McpDirection::ClientToServer, &call);
+            let exploration_enabled = matches!(exploration, Some(config) if config.enabled);
+            let plans = match exploration {
+                Some(config) if config.enabled => {
+                    let mut plans = build_exploration_plans(&tools_response, config);
+                    if plans.is_empty() {
+                        plans.push(McpCallPlan {
+                            tool_name: pick_tool_name(&tools_response, &plan.tool_name),
+                            arguments: plan.arguments.clone(),
+                        });
+                    }
+                    plans
+                }
+                _ => vec![McpCallPlan {
+                    tool_name: pick_tool_name(&tools_response, &plan.tool_name),
+                    arguments: plan.arguments.clone(),
+                }],
+            };
 
-            let call_response = read_response_with_id(&mut reader, 3, self.framing)?;
-            record(
-                &mut transcript,
-                McpDirection::ServerToClient,
-                &call_response,
-            );
+            let mut results = Vec::new();
+            for (idx, selected_plan) in plans.iter().enumerate() {
+                let request_id = 3 + idx as u64;
+                let call = tools_call_request(
+                    request_id,
+                    &selected_plan.tool_name,
+                    selected_plan.arguments.clone(),
+                );
+                send_message(&mut stdin, &call, self.framing)?;
+                record(&mut transcript, McpDirection::ClientToServer, &call);
 
-            let tool_result_payload = call_response
-                .get("result")
-                .cloned()
-                .context("tools/call response missing result")?;
+                let call_response = read_response_with_id(&mut reader, request_id, self.framing)?;
+                record(
+                    &mut transcript,
+                    McpDirection::ServerToClient,
+                    &call_response,
+                );
+
+                let result = if let Some(result) = call_response.get("result").cloned() {
+                    result
+                } else if exploration_enabled {
+                    serde_json::json!({
+                        "isError": true,
+                        "error": call_response.get("error").cloned().unwrap_or_else(|| {
+                            serde_json::json!({
+                                "message": "tools/call response missing result"
+                            })
+                        })
+                    })
+                } else {
+                    bail!("tools/call response missing result");
+                };
+                results.push(serde_json::json!({
+                    "tool": selected_plan.tool_name,
+                    "arguments": selected_plan.arguments.clone(),
+                    "result": result,
+                }));
+            }
+
+            let tool_result_payload = if results.len() == 1 && exploration.is_none() {
+                results
+                    .into_iter()
+                    .next()
+                    .and_then(|r| r.get("result").cloned())
+                    .context("tools/call response missing result")?
+            } else {
+                serde_json::json!({ "exploration_results": results })
+            };
 
             Ok(McpDriverResult {
                 exec: ExecutionEvidence {

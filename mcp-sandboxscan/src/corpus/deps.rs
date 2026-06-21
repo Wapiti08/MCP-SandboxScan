@@ -55,7 +55,12 @@ fn count_npm_deps(root: &Path) -> u32 {
         return 0;
     };
     let mut n = 0u32;
-    for key in ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"] {
+    for key in [
+        "dependencies",
+        "devDependencies",
+        "peerDependencies",
+        "optionalDependencies",
+    ] {
         if let Some(obj) = pkg.get(key).and_then(|v| v.as_object()) {
             n += obj.len() as u32;
         }

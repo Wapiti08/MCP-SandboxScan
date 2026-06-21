@@ -1,0 +1,3 @@
+run_id=run-1781817704
+suite=wasi-core
+path=reports/run-1781817704

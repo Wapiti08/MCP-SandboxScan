@@ -97,6 +97,106 @@ pub fn reject_reason(repo_id: &str, topics: &[String]) -> Option<RejectReason> {
     None
 }
 
+/// Stricter filter: likely resolvable dedicated MCP server repos only.
+pub fn reject_reason_strict(
+    repo_id: &str,
+    topics: &[String],
+    language: Option<&str>,
+) -> Option<RejectReason> {
+    if let Some(reason) = reject_reason(repo_id, topics) {
+        return Some(reason);
+    }
+
+    if let Some(lang) = language {
+        match lang.to_lowercase().as_str() {
+            "java" | "c" | "c++" | "c#" | "shell" | "kotlin" | "swift" | "ruby" | "php"
+            | "dart" | "scala" => {
+                return Some(RejectReason("unsupported-language"));
+            }
+            _ => {}
+        }
+    }
+
+    let lower = repo_id.to_lowercase();
+    let name = lower.split('/').nth(1).unwrap_or(lower.as_str());
+
+    if name == "mcp" {
+        return Some(RejectReason("umbrella-mcp-repo"));
+    }
+
+    const BLOCK_NAME_SUBSTR: &[&str] = &[
+        "headroom",
+        "mcp-use",
+        "mockserver",
+        "jscpd",
+        "hexstrike",
+        "-client",
+        "client-sdk",
+        "monorepo",
+        "notebooklm-mcp-cli",
+        "codebase-memory",
+        "mcp-for-beginners",
+        "-beginners",
+        "gpt-researcher",
+        "openmetadata",
+        "funasr",
+        "maxkb",
+        "trigger.dev",
+        "nuclear",
+        "trendradar",
+        "scrapling",
+        "nginx-ui",
+        "xiaozhi-esp32",
+    ];
+
+    for pat in BLOCK_NAME_SUBSTR {
+        if name.contains(pat) {
+            return Some(RejectReason("not-mcp-server"));
+        }
+    }
+
+    if name.ends_with("-cli") && !name.contains("mcp-server") {
+        return Some(RejectReason("cli-tool"));
+    }
+
+    if name == "sandbox" || (name.ends_with("-sandbox") && !name.contains("mcp-server")) {
+        return Some(RejectReason("sandbox-repo"));
+    }
+
+    if !looks_like_dedicated_server(repo_id, name, topics) {
+        return Some(RejectReason("not-dedicated-server"));
+    }
+
+    // Avoid giant platform repos that only mention MCP in docs/topics.
+    if !name.contains("mcp") {
+        let has_mcp_server_topic = topics.iter().any(|t| t.to_lowercase() == "mcp-server");
+        if !has_mcp_server_topic {
+            return Some(RejectReason("no-mcp-in-name"));
+        }
+    }
+
+    None
+}
+
+fn looks_like_dedicated_server(repo_id: &str, name: &str, topics: &[String]) -> bool {
+    if repo_id == "modelcontextprotocol/servers" {
+        return true;
+    }
+
+    if name.contains("mcp-server")
+        || name.ends_with("-mcp")
+        || name.contains("mcp-")
+        || (name.ends_with("mcp") && name.len() > 3)
+    {
+        return true;
+    }
+
+    topics.iter().any(|t| {
+        let tl = t.to_lowercase();
+        tl == "mcp-server" || tl.contains("mcp-server")
+    })
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct CollectFilterStats {
     pub raw: usize,
@@ -168,10 +268,7 @@ mod tests {
 
     #[test]
     fn keeps_mcp_servers_monorepo() {
-        assert_eq!(
-            reject_reason("modelcontextprotocol/servers", &[]),
-            None
-        );
+        assert_eq!(reject_reason("modelcontextprotocol/servers", &[]), None);
     }
 
     #[test]
@@ -179,6 +276,30 @@ mod tests {
         assert_eq!(
             reject_reason("someone/random-tool", &[]),
             Some(RejectReason("no-mcp-signal"))
+        );
+    }
+
+    #[test]
+    fn strict_rejects_headroom() {
+        assert_eq!(
+            reject_reason_strict("chopratejas/headroom", &[], Some("Python")),
+            Some(RejectReason("not-mcp-server"))
+        );
+    }
+
+    #[test]
+    fn strict_keeps_playwright() {
+        assert_eq!(
+            reject_reason_strict("microsoft/playwright-mcp", &[], Some("TypeScript")),
+            None
+        );
+    }
+
+    #[test]
+    fn strict_rejects_java() {
+        assert_eq!(
+            reject_reason_strict("LaurieWired/GhidraMCP", &[], Some("Java")),
+            Some(RejectReason("unsupported-language"))
         );
     }
 }

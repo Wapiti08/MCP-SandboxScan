@@ -70,11 +70,7 @@ fn compare_subject_inner(
     )
     .with_context(|| format!("failed to scan subject {}", subject.name))?;
 
-    Ok(compare_from_report(
-        &subject,
-        subject_path,
-        &result.report,
-    ))
+    Ok(compare_from_report(&subject, subject_path, &result.report))
 }
 
 pub fn compare_from_report(
@@ -144,8 +140,8 @@ pub fn compare_subjects(
 pub fn discover_case_studies(manifest_dir: &Path) -> Result<Vec<PathBuf>> {
     let root = manifest_dir.join("case_studies");
     let mut paths = Vec::new();
-    for entry in std::fs::read_dir(&root)
-        .with_context(|| format!("failed to read {}", root.display()))?
+    for entry in
+        std::fs::read_dir(&root).with_context(|| format!("failed to read {}", root.display()))?
     {
         let entry = entry?;
         let subject_toml = entry.path().join("subject.toml");

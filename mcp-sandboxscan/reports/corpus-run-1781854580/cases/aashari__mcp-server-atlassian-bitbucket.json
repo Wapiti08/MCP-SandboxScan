@@ -1,0 +1,519 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 293
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "@aashari/mcp-server-atlassian-bitbucket",
+              "version": "3.1.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Read any Bitbucket data. Returns TOON format by default (30-60% fewer tokens than JSON).\n\n**IMPORTANT - Cost Optimization:**\n- ALWAYS use `jq` param to filter response fields. Unfiltered responses are very expensive!\n- Use `pagelen` query param to restrict result count (e.g., `pagelen: \"5\"`)\n- If unsure about available fields, first fetch ONE item with `pagelen: \"1\"` and NO jq filter to explore the schema, then use jq in subsequent calls\n\n**Schema Discovery Pattern:**\n1. First call: `path: \"/workspaces\", queryParams: {\"pagelen\": \"1\"}` (no jq) - explore available fields\n2. Then use: `jq: \"values[*].{slug: slug, name: name, uuid: uuid}\"` - extract only what you need\n\n**Output format:** TOON (default, token-efficient) or JSON (`outputFormat: \"json\"`)\n\n**Common paths:**\n- `/workspaces` - list workspaces\n- `/repositories/{workspace}` - list repos in workspace\n- `/repositories/{workspace}/{repo}` - get repo details\n- `/repositories/{workspace}/{repo}/pullrequests` - list PRs\n- `/repositories/{workspace}/{repo}/pullrequests/{id}` - get PR details\n- `/repositories/{workspace}/{repo}/pullrequests/{id}/comments` - list PR comments\n- `/repositories/{workspace}/{repo}/pullrequests/{id}/diff` - get PR diff\n- `/repositories/{workspace}/{repo}/refs/branches` - list branches\n- `/repositories/{workspace}/{repo}/commits` - list commits\n- `/repositories/{workspace}/{repo}/src/{commit}/{filepath}` - get file content\n- `/repositories/{workspace}/{repo}/diff/{source}..{destination}` - compare branches/commits\n\n**Query params:** `pagelen` (page size), `page` (page number), `q` (filter), `sort` (order), `fields` (sparse response)\n\n**Example filters (q param):** `state=\"OPEN\"`, `source.branch.name=\"feature\"`, `title~\"bug\"`\n\n**JQ examples:** `values[*].slug`, `values[0]`, `values[*].{name: name, uuid: uuid}`\n\nThe `/2.0` prefix is added automatically. API reference: https://developer.atlassian.com/cloud/bitbucket/rest/",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"values[*].{name: name, slug: slug}\" (extract specific fields), \"values[0]\" (first result), \"values[*].name\" (names only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Bitbucket API endpoint path (without base URL). Must start with \"/\". Examples: \"/workspaces\", \"/repositories/{workspace}/{repo_slug}\", \"/repositories/{workspace}/{repo_slug}/pullrequests/{id}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"pagelen\": \"25\", \"page\": \"2\", \"q\": \"state=\\\"OPEN\\\"\", \"fields\": \"values.title,values.state\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "bb_get",
+                "title": "Bitbucket GET Request"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": true,
+                  "readOnlyHint": false
+                },
+                "description": "Create Bitbucket resources. Returns TOON format by default (token-efficient).\n\n**IMPORTANT - Cost Optimization:**\n- Use `jq` param to extract only needed fields from response (e.g., `jq: \"{id: id, title: title}\"`)\n- Unfiltered responses include all metadata and are expensive!\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Create PR:** `/repositories/{workspace}/{repo}/pullrequests`\n   body: `{\"title\": \"...\", \"source\": {\"branch\": {\"name\": \"feature\"}}, \"destination\": {\"branch\": {\"name\": \"main\"}}}`\n\n2. **Add PR comment:** `/repositories/{workspace}/{repo}/pullrequests/{id}/comments`\n   body: `{\"content\": {\"raw\": \"Comment text\"}}`\n\n3. **Approve PR:** `/repositories/{workspace}/{repo}/pullrequests/{id}/approve`\n   body: `{}`\n\n4. **Request changes:** `/repositories/{workspace}/{repo}/pullrequests/{id}/request-changes`\n   body: `{}`\n\n5. **Merge PR:** `/repositories/{workspace}/{repo}/pullrequests/{id}/merge`\n   body: `{\"merge_strategy\": \"squash\"}` (strategies: merge_commit, squash, fast_forward)\n\nThe `/2.0` prefix is added automatically. API reference: https://developer.atlassian.com/cloud/bitbucket/rest/",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "body": {
+                      "additionalProperties": {},
+                      "description": "Request body as a JSON object. Structure depends on the endpoint. Example for PR: {\"title\": \"My PR\", \"source\": {\"branch\": {\"name\": \"feature\"}}}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"values[*].{name: name, slug: slug}\" (extract specific fields), \"values[0]\" (first result), \"values[*].name\" (names only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Bitbucket API endpoint path (without base URL). Must start with \"/\". Examples: \"/workspaces\", \"/repositories/{workspace}/{repo_slug}\", \"/repositories/{workspace}/{repo_slug}/pullrequests/{id}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"pagelen\": \"25\", \"page\": \"2\", \"q\": \"state=\\\"OPEN\\\"\", \"fields\": \"values.title,values.state\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "bb_post",
+                "title": "Bitbucket POST Request"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": false
+                },
+                "description": "Replace Bitbucket resources (full update). Returns TOON format by default.\n\n**IMPORTANT - Cost Optimization:**\n- Use `jq` param to extract only needed fields from response\n- Example: `jq: \"{uuid: uuid, name: name}\"`\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Update repository:** `/repositories/{workspace}/{repo}`\n   body: `{\"description\": \"...\", \"is_private\": true, \"has_issues\": true}`\n\n2. **Create/update file:** `/repositories/{workspace}/{repo}/src`\n   Note: Use multipart form data for file uploads (complex - prefer PATCH for metadata)\n\n3. **Update branch restriction:** `/repositories/{workspace}/{repo}/branch-restrictions/{id}`\n   body: `{\"kind\": \"push\", \"pattern\": \"main\", \"users\": [{\"uuid\": \"...\"}]}`\n\nThe `/2.0` prefix is added automatically. API reference: https://developer.atlassian.com/cloud/bitbucket/rest/",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "body": {
+                      "additionalProperties": {},
+                      "description": "Request body as a JSON object. Structure depends on the endpoint. Example for PR: {\"title\": \"My PR\", \"source\": {\"branch\": {\"name\": \"feature\"}}}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"values[*].{name: name, slug: slug}\" (extract specific fields), \"values[0]\" (first result), \"values[*].name\" (names only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Bitbucket API endpoint path (without base URL). Must start with \"/\". Examples: \"/workspaces\", \"/repositories/{workspace}/{repo_slug}\", \"/repositories/{workspace}/{repo_slug}/pullrequests/{id}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"pagelen\": \"25\", \"page\": \"2\", \"q\": \"state=\\\"OPEN\\\"\", \"fields\": \"values.title,values.state\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "bb_put",
+                "title": "Bitbucket PUT Request"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": true,
+                  "readOnlyHint": false
+                },
+                "description": "Partially update Bitbucket resources. Returns TOON format by default.\n\n**IMPORTANT - Cost Optimization:** Use `jq` param to filter response fields.\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Update PR title/description:** `/repositories/{workspace}/{repo}/pullrequests/{id}`\n   body: `{\"title\": \"New title\", \"description\": \"Updated description\"}`\n\n2. **Update PR reviewers:** `/repositories/{workspace}/{repo}/pullrequests/{id}`\n   body: `{\"reviewers\": [{\"uuid\": \"{user-uuid}\"}]}`\n\n3. **Update repository properties:** `/repositories/{workspace}/{repo}`\n   body: `{\"description\": \"New description\"}`\n\n4. **Update comment:** `/repositories/{workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}`\n   body: `{\"content\": {\"raw\": \"Updated comment\"}}`\n\nThe `/2.0` prefix is added automatically. API reference: https://developer.atlassian.com/cloud/bitbucket/rest/",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "body": {
+                      "additionalProperties": {},
+                      "description": "Request body as a JSON object. Structure depends on the endpoint. Example for PR: {\"title\": \"My PR\", \"source\": {\"branch\": {\"name\": \"feature\"}}}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"values[*].{name: name, slug: slug}\" (extract specific fields), \"values[0]\" (first result), \"values[*].name\" (names only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Bitbucket API endpoint path (without base URL). Must start with \"/\". Examples: \"/workspaces\", \"/repositories/{workspace}/{repo_slug}\", \"/repositories/{workspace}/{repo_slug}/pullrequests/{id}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"pagelen\": \"25\", \"page\": \"2\", \"q\": \"state=\\\"OPEN\\\"\", \"fields\": \"values.title,values.state\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "body"
+                  ],
+                  "type": "object"
+                },
+                "name": "bb_patch",
+                "title": "Bitbucket PATCH Request"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "idempotentHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": false
+                },
+                "description": "Delete Bitbucket resources. Returns TOON format by default.\n\n**Output format:** TOON (default) or JSON (`outputFormat: \"json\"`)\n\n**Common operations:**\n\n1. **Delete branch:** `/repositories/{workspace}/{repo}/refs/branches/{branch_name}`\n2. **Delete PR comment:** `/repositories/{workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}`\n3. **Decline PR:** `/repositories/{workspace}/{repo}/pullrequests/{id}/decline`\n4. **Remove PR approval:** `/repositories/{workspace}/{repo}/pullrequests/{id}/approve`\n5. **Delete repository:** `/repositories/{workspace}/{repo}` (caution: irreversible)\n\nNote: Most DELETE endpoints return 204 No Content on success.\n\nThe `/2.0` prefix is added automatically. API reference: https://developer.atlassian.com/cloud/bitbucket/rest/",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"values[*].{name: name, slug: slug}\" (extract specific fields), \"values[0]\" (first result), \"values[*].name\" (names only). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "The Bitbucket API endpoint path (without base URL). Must start with \"/\". Examples: \"/workspaces\", \"/repositories/{workspace}/{repo_slug}\", \"/repositories/{workspace}/{repo_slug}/pullrequests/{id}\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "queryParams": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Optional query parameters as key-value pairs. Examples: {\"pagelen\": \"25\", \"page\": \"2\", \"q\": \"state=\\\"OPEN\\\"\", \"fields\": \"values.title,values.state\"}",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "bb_delete",
+                "title": "Bitbucket DELETE Request"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": false,
+                  "openWorldHint": true,
+                  "readOnlyHint": false
+                },
+                "description": "Clone a Bitbucket repository to your local filesystem using SSH (preferred) or HTTPS.\n\nProvide `repoSlug` and `targetPath` (absolute path). Clones into `targetPath/repoSlug`. SSH keys must be configured; falls back to HTTPS if unavailable.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "repoSlug": {
+                      "description": "Repository name/slug to clone. This is the short name of the repository. Example: \"project-api\"",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "targetPath": {
+                      "description": "Directory path where the repository will be cloned. IMPORTANT: Absolute paths are strongly recommended (e.g., \"/home/user/projects\" or \"C:\\Users\\name\\projects\"). Relative paths will be resolved relative to the server's working directory, which may not be what you expect. The repository will be cloned into a subdirectory at targetPath/repoSlug. Make sure you have write permissions to this location.",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "workspaceSlug": {
+                      "description": "Bitbucket workspace slug containing the repository. If not provided, the tool will use your default workspace (either configured via BITBUCKET_DEFAULT_WORKSPACE or the first workspace in your account). Example: \"myteam\"",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "repoSlug",
+                    "targetPath"
+                  ],
+                  "type": "object"
+                },
+                "name": "bb_clone",
+                "title": "Clone Bitbucket Repository"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "bb_get"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool bb_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "bb_get"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "bb_get",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool bb_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "bb_get"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "MCP error -32602: Input validation error: Invalid arguments for tool bb_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+        },
+        "text_len": 244
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "MCP error -32602: Input validation error: Invalid arguments for tool bb_get: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"path\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

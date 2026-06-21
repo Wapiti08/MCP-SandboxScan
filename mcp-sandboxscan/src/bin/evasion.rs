@@ -4,9 +4,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use serde::Serialize;
 
-use mcp_sandboxscan::taint::flow_config::{
-    FlowConfig, apply_transform, detect_secret_in_sink,
-};
+use mcp_sandboxscan::taint::flow_config::{FlowConfig, apply_transform, detect_secret_in_sink};
 
 #[derive(Parser, Debug)]
 #[command(name = "evasion")]

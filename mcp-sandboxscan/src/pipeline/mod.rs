@@ -75,7 +75,13 @@ pub fn scan_subject(
     data_dir: Option<&Path>,
     max_output_bytes: usize,
 ) -> Result<SubjectScanResult> {
-    scan_subject_with_limits(subject, env, data_dir, max_output_bytes, ScanLimits::default())
+    scan_subject_with_limits(
+        subject,
+        env,
+        data_dir,
+        max_output_bytes,
+        ScanLimits::default(),
+    )
 }
 
 pub fn scan_subject_with_limits(
@@ -103,7 +109,15 @@ pub fn scan_subject_with_limits(
                     adaptation.subject_name
                 );
             };
-            run_native_mcp_scan(subject, artifact, env, data_dir, limits.mcp_timeout).with_context(|| {
+            run_native_mcp_scan(
+                subject,
+                artifact,
+                env,
+                data_dir,
+                limits.mcp_timeout,
+                &limits.exploration,
+            )
+            .with_context(|| {
                 format!(
                     "failed to scan native MCP subject {}",
                     adaptation.subject_name

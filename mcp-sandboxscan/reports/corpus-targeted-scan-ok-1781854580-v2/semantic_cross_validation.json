@@ -1,0 +1,405 @@
+{
+  "dynamic_cases": 33,
+  "cases_with_called_tool_metadata": 33,
+  "declared_egress_risk": 19,
+  "observed_network_egress": 9,
+  "declared_and_observed": 5,
+  "declared_only": 14,
+  "observed_only": 4,
+  "neither": 10,
+  "cases": [
+    {
+      "repo_id": "modelcontextprotocol/servers",
+      "called_tool": "get-env",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "microsoft/playwright-mcp",
+      "called_tool": "browser_network_requests",
+      "declared_capabilities": [
+        "network",
+        "browser"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "github/github-mcp-server",
+      "called_tool": "get_me",
+      "declared_capabilities": [
+        "network",
+        "code_repo"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": true,
+      "network_events": 18,
+      "relation": "declared_and_observed"
+    },
+    {
+      "repo_id": "czlonkowski/n8n-mcp",
+      "called_tool": "get_node",
+      "declared_capabilities": [
+        "network",
+        "database",
+        "credential"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "mksglu/context-mode",
+      "called_tool": "ctx_stats",
+      "declared_capabilities": [
+        "credential"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "GLips/Figma-Context-MCP",
+      "called_tool": "get_figma_data",
+      "declared_capabilities": [
+        "network",
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "BeehiveInnovations/pal-mcp-server",
+      "called_tool": "listmodels",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": true,
+      "network_events": 2,
+      "relation": "observed_only"
+    },
+    {
+      "repo_id": "wonderwhy-er/DesktopCommanderMCP",
+      "called_tool": "get_file_info",
+      "declared_capabilities": [
+        "filesystem"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": true,
+      "network_events": 2,
+      "relation": "observed_only"
+    },
+    {
+      "repo_id": "mobile-next/mobile-mcp",
+      "called_tool": "mobile_get_crash",
+      "declared_capabilities": [
+        "code_repo"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "exa-labs/exa-mcp-server",
+      "called_tool": "web_fetch_exa",
+      "declared_capabilities": [
+        "network",
+        "browser"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": true,
+      "network_events": 2,
+      "relation": "declared_and_observed"
+    },
+    {
+      "repo_id": "makenotion/notion-mcp-server",
+      "called_tool": "API-get-self",
+      "declared_capabilities": [
+        "network",
+        "browser",
+        "database",
+        "credential",
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": true,
+      "network_events": 10,
+      "relation": "declared_and_observed"
+    },
+    {
+      "repo_id": "Coding-Solo/godot-mcp",
+      "called_tool": "get_project_info",
+      "declared_capabilities": [
+        "filesystem"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "Pimzino/spec-workflow-mcp",
+      "called_tool": "spec-status",
+      "declared_capabilities": [
+        "filesystem"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "zcaceres/markdownify-mcp",
+      "called_tool": "get-markdown-file",
+      "declared_capabilities": [
+        "filesystem"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "GongRzhe/Office-Word-MCP-Server",
+      "called_tool": "get_document_info",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": true,
+      "network_events": 2,
+      "relation": "observed_only"
+    },
+    {
+      "repo_id": "GongRzhe/Office-PowerPoint-MCP-Server",
+      "called_tool": "get_template_file_info",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "Flux159/mcp-server-kubernetes",
+      "called_tool": "kubectl_context",
+      "declared_capabilities": [
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "bitbonsai/mcpvault",
+      "called_tool": "get_notes_info",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "designcomputer/mysql_mcp_server",
+      "called_tool": "get_table_sample",
+      "declared_capabilities": [
+        "network",
+        "browser",
+        "database"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "nickclyde/duckduckgo-mcp-server",
+      "called_tool": "search",
+      "declared_capabilities": [
+        "network",
+        "browser",
+        "database"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": true,
+      "network_events": 2,
+      "relation": "declared_and_observed"
+    },
+    {
+      "repo_id": "datalayer/jupyter-mcp-server",
+      "called_tool": "list_files",
+      "declared_capabilities": [
+        "filesystem"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "strowk/mcp-k8s-go",
+      "called_tool": "list-k8s-contexts",
+      "declared_capabilities": [
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "smn2gnt/MCP-Salesforce",
+      "called_tool": "get_record",
+      "declared_capabilities": [
+        "credential",
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "tsmztech/mcp-server-salesforce",
+      "called_tool": "salesforce_read_apex",
+      "declared_capabilities": [
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-bitbucket",
+      "called_tool": "bb_clone",
+      "declared_capabilities": [
+        "filesystem",
+        "network",
+        "code_repo"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "aashari/boilerplate-mcp-server",
+      "called_tool": "ip_get_details",
+      "declared_capabilities": [
+        "network",
+        "browser",
+        "database",
+        "credential"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-jira",
+      "called_tool": "jira_get",
+      "declared_capabilities": [
+        "network",
+        "browser",
+        "database",
+        "credential",
+        "code_repo",
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "HatriGt/hana-mcp-server",
+      "called_tool": "hana_show_env_vars",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-confluence",
+      "called_tool": "conf_get",
+      "declared_capabilities": [
+        "network",
+        "browser",
+        "database",
+        "credential",
+        "cloud_saas"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "dend/brick-mcp-app",
+      "called_tool": "brick_get_available",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "neither"
+    },
+    {
+      "repo_id": "hoangsonww/GitIntel-MCP-Server",
+      "called_tool": "hotspots",
+      "declared_capabilities": [
+        "filesystem",
+        "code_repo"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": false,
+      "network_events": 0,
+      "relation": "declared_only"
+    },
+    {
+      "repo_id": "imprvhub/mcp-claude-hackernews",
+      "called_tool": "hn_best",
+      "declared_capabilities": [
+        "network"
+      ],
+      "declared_egress_risk": true,
+      "observed_network_egress": true,
+      "network_events": 8,
+      "relation": "declared_and_observed"
+    },
+    {
+      "repo_id": "jhgaylor/hirebase-mcp",
+      "called_tool": "get_job",
+      "declared_capabilities": [
+        "unknown"
+      ],
+      "declared_egress_risk": false,
+      "observed_network_egress": true,
+      "network_events": 2,
+      "relation": "observed_only"
+    }
+  ]
+}

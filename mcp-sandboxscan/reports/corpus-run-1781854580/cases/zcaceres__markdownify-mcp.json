@@ -1,0 +1,434 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 278
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {}
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "mcp-markdownify-server",
+              "version": "0.1.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Audio to Markdown"
+                },
+                "description": "Convert an audio file to markdown, including transcription if possible",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the audio file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "audio-to-markdown"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Bing Search to Markdown"
+                },
+                "description": "Convert a Bing search results page to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "url": {
+                      "description": "URL of the Bing search results page",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "bing-search-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "DOCX to Markdown"
+                },
+                "description": "Convert a DOCX file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the DOCX file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "docx-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Markdown File"
+                },
+                "description": "Get a markdown file by absolute file path",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path to file of markdown'd text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-markdown-file"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Git Repo to Markdown"
+                },
+                "description": "Convert a git repository into a single markdown document containing the file tree and source code. Supports GitHub URLs and shorthand (e.g. 'owner/repo').",
+                "inputSchema": {
+                  "properties": {
+                    "branch": {
+                      "description": "Branch, tag, or commit to use (default: repo default branch)",
+                      "type": "string"
+                    },
+                    "compress": {
+                      "description": "Use Tree-sitter compression to reduce output size (~70% reduction). Default: false",
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "description": "Git repository URL or GitHub shorthand (e.g. 'https://github.com/owner/repo' or 'owner/repo')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "git-repo-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Image to Markdown"
+                },
+                "description": "Convert an image to markdown, including metadata and description",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the image file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "image-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "PDF to Markdown"
+                },
+                "description": "Convert a PDF file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the PDF file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "pdf-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "PPTX to Markdown"
+                },
+                "description": "Convert a PPTX file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the PPTX file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "pptx-to-markdown"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Webpage to Markdown"
+                },
+                "description": "Convert a webpage to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "url": {
+                      "description": "URL of the webpage to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "webpage-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "XLSX to Markdown"
+                },
+                "description": "Convert an XLSX file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the XLSX file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "xlsx-to-markdown"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "YouTube to Markdown"
+                },
+                "description": "Convert a YouTube video to markdown, including transcript if available",
+                "inputSchema": {
+                  "properties": {
+                    "url": {
+                      "description": "URL of the YouTube video",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "youtube-to-markdown"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "audio-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: File path is required for this tool",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "audio-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "audio-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: File path is required for this tool",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "audio-to-markdown"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: File path is required for this tool"
+        },
+        "text_len": 42
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "Error: File path is required for this tool"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

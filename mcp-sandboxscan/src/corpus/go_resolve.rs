@@ -143,8 +143,7 @@ pub fn plan_go_package(root: &Path) -> Result<GoPackagePlan> {
 }
 
 fn is_main_package(main_go: &Path) -> Result<bool> {
-    let raw = fs::read_to_string(main_go)
-        .with_context(|| format!("read {}", main_go.display()))?;
+    let raw = fs::read_to_string(main_go).with_context(|| format!("read {}", main_go.display()))?;
     Ok(raw.lines().any(|line| line.trim() == "package main"))
 }
 
@@ -171,7 +170,9 @@ fn score_go_cmd(name: &str) -> i32 {
 
 fn path_relative_to(root: &Path, target: &Path) -> Result<String> {
     let root = root.canonicalize().unwrap_or_else(|_| root.to_path_buf());
-    let target = target.canonicalize().unwrap_or_else(|_| target.to_path_buf());
+    let target = target
+        .canonicalize()
+        .unwrap_or_else(|_| target.to_path_buf());
     let rel = target
         .strip_prefix(&root)
         .with_context(|| format!("{} not under {}", target.display(), root.display()))?;
@@ -190,14 +191,18 @@ mod tests {
             return;
         }
         let plan = plan_go_package(&root).expect("plan github mcp server");
-        assert!(plan.build_args.iter().any(|a| a.contains("github-mcp-server")));
+        assert!(
+            plan.build_args
+                .iter()
+                .any(|a| a.contains("github-mcp-server"))
+        );
         assert_eq!(plan.run_args, vec!["stdio".to_string()]);
     }
 
     #[test]
     fn plans_mcp_toolbox_root_main() {
-        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("corpus/clones/googleapis__mcp-toolbox");
+        let root =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("corpus/clones/googleapis__mcp-toolbox");
         if !root.exists() {
             return;
         }

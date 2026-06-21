@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CorpusFile {
@@ -27,6 +28,8 @@ pub struct RepoEntry {
     pub ecosystem: String,
     #[serde(default)]
     pub dep_count: u32,
+    #[serde(default)]
+    pub tier: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolve_error: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -56,12 +59,16 @@ pub struct CorpusScanCase {
     pub dep_count: u32,
     #[serde(default)]
     pub ecosystem: String,
+    #[serde(default)]
+    pub tier: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub build_ms: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scan_ms: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total_ms: Option<u128>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_profile: Option<ToolSemanticProfile>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -79,7 +86,21 @@ pub struct CorpusScanReport {
     pub by_failure_category: std::collections::HashMap<String, usize>,
     #[serde(default)]
     pub latency: LatencyStats,
+    #[serde(default)]
+    pub tier1: TierStats,
+    #[serde(default)]
+    pub semantic: ToolSemanticSummary,
     pub cases: Vec<CorpusScanCase>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TierStats {
+    pub resolved: usize,
+    pub scanned: usize,
+    pub scan_success_rate: f64,
+    pub suspicious: usize,
+    pub suspicious_rate: f64,
+    pub latency: LatencyStats,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -98,4 +119,30 @@ pub struct ClassStats {
     pub total: usize,
     pub scanned: usize,
     pub suspicious: usize,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ToolSemanticProfile {
+    pub tool_count: usize,
+    pub described_tools: usize,
+    pub sensitive_tools: usize,
+    #[serde(default)]
+    pub by_capability: HashMap<String, usize>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ToolSemanticAggregate {
+    pub repos_with_metadata: usize,
+    pub total_tools: usize,
+    pub described_tools: usize,
+    pub sensitive_tools: usize,
+    #[serde(default)]
+    pub by_capability: HashMap<String, usize>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ToolSemanticSummary {
+    pub all: ToolSemanticAggregate,
+    pub tier1: ToolSemanticAggregate,
+    pub tier2: ToolSemanticAggregate,
 }

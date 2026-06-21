@@ -1,0 +1,31 @@
+\begin{table}[t]
+\centering
+\caption{Cross-validation between declared tool semantics and runtime network evidence.}
+\label{tab:semantic-cross-validation}
+\begin{tabular}{lrp{0.45\linewidth}}
+\toprule
+Relation & Repos & Interpretation \\
+\midrule
+Declared egress risk and observed egress & 5 & Confirmed by runtime evidence \\
+Declared egress risk only & 17 & Declared capability was not exercised by this run \\
+Observed egress only & 2 & Potential metadata understatement or classifier miss \\
+Neither declared nor observed & 11 & No egress evidence in this run \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Anonymized real-world cases.}
+We selected three dynamically executed repositories from the 100-repository
+corpus to illustrate the evidence behind Table~\ref{tab:semantic-cross-validation}.
+Repo A exposed a code-review tool whose metadata implied GitHub/code repository
+and network capability; the invoked tool returned an error containing
+\texttt{https://api.github.com/graphql}, while the monitor recorded two denied
+connections to \texttt{api.github.com:443}. Repo B exposed a web-search tool
+classified as network/browser/database capable; even with invalid generated
+arguments, execution attempted an outbound request to a third-party capture API,
+which the monitor denied. Repo C exposed a configuration/desktop-control tool
+whose called-tool metadata did not classify as network-capable, but the runtime
+trace still showed a denied connection to an external browser-support host and
+the tool result reflected local configuration and onboarding prompt text. These
+cases are anonymized because the purpose is to validate attack-surface evidence,
+not to report repository-specific vulnerabilities.

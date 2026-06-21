@@ -1,0 +1,100 @@
+{
+  "run_id": "run-1781774525",
+  "suite": "small-ts",
+  "case_results": [
+    {
+      "subject": "ts-benign",
+      "subject_toml": "/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/case_studies/ts-benign/subject.toml",
+      "language": "TypeScript",
+      "scenario": "benign",
+      "label": "clean",
+      "wasm_status": "direct-wasm",
+      "verdict": "not-detected",
+      "rationale": "no flows (expected)",
+      "num_flows": 0,
+      "has_external_to_prompt_flow": false,
+      "protocol_wins": false,
+      "report_path": "reports/bench-smoke-test/cases/ts-benign.json"
+    },
+    {
+      "subject": "ts-env-leak",
+      "subject_toml": "/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/case_studies/ts-env-leak/subject.toml",
+      "language": "TypeScript",
+      "scenario": "env-leak",
+      "label": "malicious",
+      "wasm_status": "direct-wasm",
+      "verdict": "detected",
+      "rationale": "flow from EnvVar: DEMO_SECRET",
+      "num_flows": 1,
+      "has_external_to_prompt_flow": true,
+      "protocol_wins": true,
+      "report_path": "reports/bench-smoke-test/cases/ts-env-leak.json"
+    },
+    {
+      "subject": "ts-file-exfil",
+      "subject_toml": "/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/case_studies/ts-file-exfil/subject.toml",
+      "language": "TypeScript",
+      "scenario": "file-exfil",
+      "label": "malicious",
+      "wasm_status": "direct-wasm",
+      "verdict": "detected",
+      "rationale": "flow from secret.txt",
+      "num_flows": 1,
+      "has_external_to_prompt_flow": true,
+      "protocol_wins": true,
+      "report_path": "reports/bench-smoke-test/cases/ts-file-exfil.json"
+    },
+    {
+      "subject": "ts-c2-beacon",
+      "subject_toml": "/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/case_studies/ts-c2-beacon/subject.toml",
+      "language": "TypeScript",
+      "scenario": "c2-beacon",
+      "label": "malicious",
+      "wasm_status": "direct-wasm",
+      "verdict": "detected",
+      "rationale": "network source with beacon evidence in flows or sinks",
+      "num_flows": 1,
+      "has_external_to_prompt_flow": true,
+      "protocol_wins": true,
+      "report_path": "reports/bench-smoke-test/cases/ts-c2-beacon.json"
+    }
+  ],
+  "support": {
+    "total_cases": 4,
+    "scanned_cases": 4,
+    "failed_cases": 0,
+    "scan_success_rate": 1.0,
+    "by_language": {
+      "TypeScript": {
+        "total": 4,
+        "scanned": 4,
+        "failed": 0,
+        "direct_wasm": 4,
+        "wasm_with_shim": 0,
+        "native_only": 0,
+        "unsupported": 0
+      }
+    },
+    "by_wasm_status": {
+      "DirectWasm": 4
+    }
+  },
+  "detection": {
+    "confusion": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 1,
+      "fn_count": 0,
+      "errors": 0
+    },
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0
+  },
+  "verification": {
+    "oracle_suite": "small-ts",
+    "protocol_vs_stdout_disagreements": 3,
+    "protocol_compare_errors": 0
+  }
+}

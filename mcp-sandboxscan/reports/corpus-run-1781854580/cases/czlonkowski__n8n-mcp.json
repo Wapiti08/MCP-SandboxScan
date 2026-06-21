@@ -1,0 +1,779 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 416
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "resources": {},
+              "tools": {}
+            },
+            "protocolVersion": "2025-03-26",
+            "serverInfo": {
+              "name": "n8n-documentation-mcp",
+              "version": "2.59.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Tools Documentation"
+                },
+                "description": "Get documentation for n8n MCP tools. Call without parameters for quick start guide. Use topic parameter to get documentation for specific tools. Use depth='full' for comprehensive documentation.",
+                "inputSchema": {
+                  "properties": {
+                    "depth": {
+                      "default": "essentials",
+                      "description": "Level of detail. \"essentials\" (default) for quick reference, \"full\" for comprehensive docs.",
+                      "enum": [
+                        "essentials",
+                        "full"
+                      ],
+                      "type": "string"
+                    },
+                    "topic": {
+                      "description": "Tool name (e.g., \"search_nodes\") or \"overview\" for general guide. Leave empty for quick reference.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "tools_documentation"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Search Nodes"
+                },
+                "description": "Search n8n nodes by keyword with optional real-world examples. Pass query as string. Example: query=\"webhook\" or query=\"database\". Returns max 20 results. Use includeExamples=true to get top 2 template configs per node.",
+                "inputSchema": {
+                  "properties": {
+                    "includeExamples": {
+                      "default": false,
+                      "description": "Include top 2 real-world configuration examples from popular templates (default: false)",
+                      "type": "boolean"
+                    },
+                    "includeOperations": {
+                      "default": false,
+                      "description": "Include resource/operation tree per node. Adds ~100-300 tokens per result but saves a get_node round-trip.",
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Max results (default 20)",
+                      "type": "number"
+                    },
+                    "mode": {
+                      "default": "OR",
+                      "description": "OR=any word, AND=all words, FUZZY=typo-tolerant",
+                      "enum": [
+                        "OR",
+                        "AND",
+                        "FUZZY"
+                      ],
+                      "type": "string"
+                    },
+                    "query": {
+                      "description": "Search terms. Use quotes for exact phrase.",
+                      "type": "string"
+                    },
+                    "source": {
+                      "default": "all",
+                      "description": "Filter by node source: all=everything (default), core=n8n base nodes, community=community nodes, verified=verified community nodes only",
+                      "enum": [
+                        "all",
+                        "core",
+                        "community",
+                        "verified"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "search_nodes"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Get Node Info"
+                },
+                "description": "Get node info with progressive detail levels and multiple modes. Detail: minimal (~200 tokens), standard (~1-2K, default), full (~3-8K). Modes: info (default), docs (markdown documentation), search_properties (find properties), versions/compare/breaking/migrations (version info). Use format='docs' for readable documentation, mode='search_properties' with propertyQuery for finding specific fields.",
+                "inputSchema": {
+                  "properties": {
+                    "detail": {
+                      "default": "standard",
+                      "description": "Information detail level. standard=essential properties (recommended), full=everything",
+                      "enum": [
+                        "minimal",
+                        "standard",
+                        "full"
+                      ],
+                      "type": "string"
+                    },
+                    "fromVersion": {
+                      "description": "Source version for compare/breaking/migrations modes (e.g., \"1.0\")",
+                      "type": "string"
+                    },
+                    "includeExamples": {
+                      "default": false,
+                      "description": "Include real-world configuration examples from templates. Only applies to mode=info with detail=standard. Adds ~200-400 tokens per example.",
+                      "type": "boolean"
+                    },
+                    "includeTypeInfo": {
+                      "default": false,
+                      "description": "Include type structure metadata (type category, JS type, validation rules). Only applies to mode=info. Adds ~80-120 tokens per property.",
+                      "type": "boolean"
+                    },
+                    "maxPropertyResults": {
+                      "default": 20,
+                      "description": "For mode=search_properties: max results (default 20)",
+                      "type": "number"
+                    },
+                    "mode": {
+                      "default": "info",
+                      "description": "Operation mode. info=node schema, docs=readable markdown documentation, search_properties=find specific properties, versions/compare/breaking/migrations=version info",
+                      "enum": [
+                        "info",
+                        "docs",
+                        "search_properties",
+                        "versions",
+                        "compare",
+                        "breaking",
+                        "migrations"
+                      ],
+                      "type": "string"
+                    },
+                    "nodeType": {
+                      "description": "Full node type: \"nodes-base.httpRequest\" or \"nodes-langchain.agent\"",
+                      "type": "string"
+                    },
+                    "propertyQuery": {
+                      "description": "For mode=search_properties: search term to find properties (e.g., \"auth\", \"header\", \"body\")",
+                      "type": "string"
+                    },
+                    "toVersion": {
+                      "description": "Target version for compare mode (e.g., \"2.0\"). Defaults to latest if omitted.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeType"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_node"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Validate Node Config"
+                },
+                "description": "Validate n8n node configuration. Use mode='full' for comprehensive validation with errors/warnings/suggestions, mode='minimal' for quick required fields check. Example: nodeType=\"nodes-base.slack\", config={resource:\"channel\",operation:\"create\"}",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "config": {
+                      "description": "Configuration as object. For simple nodes use {}. For complex nodes include fields like {resource:\"channel\",operation:\"create\"}",
+                      "type": "object"
+                    },
+                    "mode": {
+                      "default": "full",
+                      "description": "Validation mode. full=comprehensive validation with errors/warnings/suggestions, minimal=quick required fields check only. Default is \"full\"",
+                      "enum": [
+                        "full",
+                        "minimal"
+                      ],
+                      "type": "string"
+                    },
+                    "nodeType": {
+                      "description": "Node type as string. Example: \"nodes-base.slack\"",
+                      "type": "string"
+                    },
+                    "profile": {
+                      "default": "ai-friendly",
+                      "description": "Profile for mode=full: \"minimal\", \"runtime\", \"ai-friendly\", or \"strict\". Default is \"ai-friendly\"",
+                      "enum": [
+                        "strict",
+                        "runtime",
+                        "ai-friendly",
+                        "minimal"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeType",
+                    "config"
+                  ],
+                  "type": "object"
+                },
+                "name": "validate_node",
+                "outputSchema": {
+                  "properties": {
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "items": {
+                        "properties": {
+                          "fix": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "property": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "missingRequiredFields": {
+                      "description": "Only present in mode=minimal",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "nodeType": {
+                      "type": "string"
+                    },
+                    "suggestions": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "summary": {
+                      "properties": {
+                        "errorCount": {
+                          "type": "number"
+                        },
+                        "hasErrors": {
+                          "type": "boolean"
+                        },
+                        "suggestionCount": {
+                          "type": "number"
+                        },
+                        "warningCount": {
+                          "type": "number"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "valid": {
+                      "type": "boolean"
+                    },
+                    "warnings": {
+                      "items": {
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          },
+                          "property": {
+                            "type": "string"
+                          },
+                          "suggestion": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "workflowNodeType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeType",
+                    "displayName",
+                    "valid"
+                  ],
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Get Template"
+                },
+                "description": "Get template by ID. Use mode to control response size: nodes_only (minimal), structure (nodes+connections), full (complete workflow).",
+                "inputSchema": {
+                  "properties": {
+                    "mode": {
+                      "default": "full",
+                      "description": "Response detail level. nodes_only: just node list, structure: nodes+connections, full: complete workflow JSON.",
+                      "enum": [
+                        "nodes_only",
+                        "structure",
+                        "full"
+                      ],
+                      "type": "string"
+                    },
+                    "templateId": {
+                      "description": "The template ID to retrieve",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "templateId"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_template"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Search Templates"
+                },
+                "description": "Search templates with multiple modes. Use searchMode='keyword' for text search, 'by_nodes' to find templates using specific nodes, 'by_task' for curated task-based templates, 'by_metadata' for filtering by complexity/setup time/services, 'patterns' for lightweight workflow pattern summaries mined from 2700+ templates.",
+                "inputSchema": {
+                  "properties": {
+                    "category": {
+                      "description": "For searchMode=by_metadata: filter by category (e.g., \"automation\", \"integration\")",
+                      "type": "string"
+                    },
+                    "complexity": {
+                      "description": "For searchMode=by_metadata: filter by complexity level",
+                      "enum": [
+                        "simple",
+                        "medium",
+                        "complex"
+                      ],
+                      "type": "string"
+                    },
+                    "fields": {
+                      "description": "For searchMode=keyword: fields to include in response. Default: all fields.",
+                      "items": {
+                        "enum": [
+                          "id",
+                          "name",
+                          "description",
+                          "author",
+                          "nodes",
+                          "views",
+                          "created",
+                          "url",
+                          "metadata"
+                        ],
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Maximum number of results. Default 20.",
+                      "maximum": 100,
+                      "minimum": 1,
+                      "type": "number"
+                    },
+                    "maxSetupMinutes": {
+                      "description": "For searchMode=by_metadata: maximum setup time in minutes",
+                      "maximum": 480,
+                      "minimum": 5,
+                      "type": "number"
+                    },
+                    "minSetupMinutes": {
+                      "description": "For searchMode=by_metadata: minimum setup time in minutes",
+                      "maximum": 480,
+                      "minimum": 5,
+                      "type": "number"
+                    },
+                    "nodeTypes": {
+                      "description": "For searchMode=by_nodes: array of node types (e.g., [\"n8n-nodes-base.httpRequest\", \"n8n-nodes-base.slack\"])",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "description": "Pagination offset. Default 0.",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "query": {
+                      "description": "For searchMode=keyword: search keyword (e.g., \"chatbot\")",
+                      "type": "string"
+                    },
+                    "requiredService": {
+                      "description": "For searchMode=by_metadata: filter by required service (e.g., \"openai\", \"slack\")",
+                      "type": "string"
+                    },
+                    "searchMode": {
+                      "default": "keyword",
+                      "description": "Search mode. keyword=text search (default), by_nodes=find by node types, by_task=curated task templates, by_metadata=filter by complexity/services, patterns=lightweight workflow pattern summaries",
+                      "enum": [
+                        "keyword",
+                        "by_nodes",
+                        "by_task",
+                        "by_metadata",
+                        "patterns"
+                      ],
+                      "type": "string"
+                    },
+                    "targetAudience": {
+                      "description": "For searchMode=by_metadata: filter by target audience (e.g., \"developers\", \"marketers\")",
+                      "type": "string"
+                    },
+                    "task": {
+                      "description": "For searchMode=by_task: the type of task. For searchMode=patterns: optional category filter (omit for overview of all categories).",
+                      "enum": [
+                        "ai_automation",
+                        "data_sync",
+                        "webhook_processing",
+                        "email_automation",
+                        "slack_integration",
+                        "data_transformation",
+                        "file_processing",
+                        "scheduling",
+                        "api_integration",
+                        "database_operations"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "search_templates"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Validate Workflow"
+                },
+                "description": "Full workflow validation: structure, connections, expressions, AI tools. Returns errors/warnings/fixes. Essential before deploy.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "options": {
+                      "description": "Optional validation settings",
+                      "properties": {
+                        "profile": {
+                          "default": "runtime",
+                          "description": "Validation profile for node validation. Default \"runtime\".",
+                          "enum": [
+                            "minimal",
+                            "runtime",
+                            "ai-friendly",
+                            "strict"
+                          ],
+                          "type": "string"
+                        },
+                        "validateConnections": {
+                          "default": true,
+                          "description": "Validate node connections and flow. Default true.",
+                          "type": "boolean"
+                        },
+                        "validateExpressions": {
+                          "default": true,
+                          "description": "Validate n8n expressions syntax and references. Default true.",
+                          "type": "boolean"
+                        },
+                        "validateNodes": {
+                          "default": true,
+                          "description": "Validate individual node configurations. Default true.",
+                          "type": "boolean"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "workflow": {
+                      "description": "The complete workflow JSON to validate. Must include nodes array and connections object.",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "workflow"
+                  ],
+                  "type": "object"
+                },
+                "name": "validate_workflow",
+                "outputSchema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "properties": {
+                          "details": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "node": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "suggestions": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "summary": {
+                      "properties": {
+                        "enabledNodes": {
+                          "type": "number"
+                        },
+                        "errorCount": {
+                          "type": "number"
+                        },
+                        "expressionsValidated": {
+                          "type": "number"
+                        },
+                        "invalidConnections": {
+                          "type": "number"
+                        },
+                        "totalNodes": {
+                          "type": "number"
+                        },
+                        "triggerNodes": {
+                          "type": "number"
+                        },
+                        "validConnections": {
+                          "type": "number"
+                        },
+                        "warningCount": {
+                          "type": "number"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "valid": {
+                      "type": "boolean"
+                    },
+                    "warnings": {
+                      "items": {
+                        "properties": {
+                          "details": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "node": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "valid",
+                    "summary"
+                  ],
+                  "type": "object"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "tools_documentation"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "# n8n MCP Tools Reference\n\n## Important: Compatibility Notice\n⚠️ This MCP server is tested with n8n version 2.26.2. \nInform the user to check their n8n version matches or is compatible with the supported version listed above.\n\n## Code Node Configuration\nWhen working with Code nodes, always start by calling the relevant guide:\n- tools_documentation({topic: \"javascript_code_node_guide\"}) for JavaScript Code nodes\n- tools_documentation({topic: \"python_code_node_guide\"}) for Python Code nodes\n\n## Standard Workflow Pattern\n\n⚠️ **CRITICAL**: Always call get_node() with detail='standard' FIRST before configuring any node!\n\n1. **Find** the node you need:\n   - search_nodes({query: \"slack\"}) - Search by keyword\n   - search_nodes({query: \"communication\"}) - Search by category name\n   - search_nodes({query: \"AI langchain\"}) - Search for AI-capable nodes\n\n2. **Configure** the node (ALWAYS START WITH STANDARD DETAIL):\n   - ✅ get_node({nodeType: \"nodes-base.slack\", detail: \"standard\"}) - Get essential properties FIRST (~1-2KB, shows required fields)\n   - get_node({nodeType: \"nodes-base.slack\", detail: \"full\"}) - Get complete schema only if standard insufficient (~100KB+)\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"docs\"}) - Get readable markdown documentation\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"search_properties\", propertyQuery: \"auth\"}) - Find specific properties\n\n3. **Validate** before deployment:\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}, mode: \"minimal\"}) - Quick required fields check\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}}) - Full validation with errors/warnings/suggestions\n   - validate_workflow({workflow: {...}}) - Validate entire workflow\n\n## Tool Categories (21 Tools Total)\n\n**Discovery Tools** (1 tool)\n- search_nodes - Full-text search across all nodes (supports OR, AND, FUZZY modes)\n\n**Configuration Tools** (1 consolidated tool)\n- get_node - Unified node information tool:\n  - detail='minimal'/'standard'/'full': Progressive detail levels\n  - mode='docs': Readable markdown documentation\n  - mode='search_properties': Find specific properties\n  - mode='versions'/'compare'/'breaking'/'migrations': Version management\n\n**Validation Tools** (2 tools)\n- validate_node - Unified validation with mode='full' or mode='minimal'\n- validate_workflow - Complete workflow validation (nodes, connections, expressions)\n\n**Template Tools** (2 tools)\n- get_template - Get complete workflow JSON by ID\n- search_templates - Unified template search:\n  - searchMode='keyword': Text search (default)\n  - searchMode='by_nodes': Find templates using specific nodes\n  - searchMode='by_task': Curated task-based templates\n  - searchMode='by_metadata': Filter by complexity/services\n  - searchMode='patterns': Workflow pattern summaries from 2,700+ templates\n\n**n8n API Tools** (15 tools, requires N8N_API_URL configuration)\n- n8n_create_workflow - Create new workflows\n- n8n_get_workflow - Get workflow with mode='full' (draft) / 'details' / 'active' (published graph) / 'structure' / 'minimal'\n- n8n_update_full_workflow - Full workflow replacement\n- n8n_update_partial_workflow - Incremental diff-based updates\n- n8n_delete_workflow - Delete workflow\n- n8n_list_workflows - List workflows with filters\n- n8n_validate_workflow - Validate workflow by ID\n- n8n_autofix_workflow - Auto-fix common issues\n- n8n_test_workflow - Test/trigger workflows (webhook, form, chat, execute)\n- n8n_executions - Unified execution management (action='get'/'list'/'delete')\n- n8n_health_check - Check n8n API connectivity\n- n8n_workflow_versions - Version history and rollback\n- n8n_deploy_template - Deploy templates directly to n8n instance\n- n8n_manage_datatable - Manage data tables and rows\n- n8n_generate_workflow - Generate workflow from natural language description\n\n## Performance Characteristics\n- Instant (<10ms): search_nodes, get_node (minimal/standard)\n- Fast (<100ms): validate_node, get_template\n- Moderate (100-500ms): validate_workflow, get_node (full detail)\n- Network-dependent: All n8n_* tools\n\nFor comprehensive documentation on any tool:\ntools_documentation({topic: \"tool_name\", depth: \"full\"})",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "tools_documentation"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "tools_documentation",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "# n8n MCP Tools Reference\n\n## Important: Compatibility Notice\n⚠️ This MCP server is tested with n8n version 2.26.2. \nInform the user to check their n8n version matches or is compatible with the supported version listed above.\n\n## Code Node Configuration\nWhen working with Code nodes, always start by calling the relevant guide:\n- tools_documentation({topic: \"javascript_code_node_guide\"}) for JavaScript Code nodes\n- tools_documentation({topic: \"python_code_node_guide\"}) for Python Code nodes\n\n## Standard Workflow Pattern\n\n⚠️ **CRITICAL**: Always call get_node() with detail='standard' FIRST before configuring any node!\n\n1. **Find** the node you need:\n   - search_nodes({query: \"slack\"}) - Search by keyword\n   - search_nodes({query: \"communication\"}) - Search by category name\n   - search_nodes({query: \"AI langchain\"}) - Search for AI-capable nodes\n\n2. **Configure** the node (ALWAYS START WITH STANDARD DETAIL):\n   - ✅ get_node({nodeType: \"nodes-base.slack\", detail: \"standard\"}) - Get essential properties FIRST (~1-2KB, shows required fields)\n   - get_node({nodeType: \"nodes-base.slack\", detail: \"full\"}) - Get complete schema only if standard insufficient (~100KB+)\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"docs\"}) - Get readable markdown documentation\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"search_properties\", propertyQuery: \"auth\"}) - Find specific properties\n\n3. **Validate** before deployment:\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}, mode: \"minimal\"}) - Quick required fields check\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}}) - Full validation with errors/warnings/suggestions\n   - validate_workflow({workflow: {...}}) - Validate entire workflow\n\n## Tool Categories (21 Tools Total)\n\n**Discovery Tools** (1 tool)\n- search_nodes - Full-text search across all nodes (supports OR, AND, FUZZY modes)\n\n**Configuration Tools** (1 consolidated tool)\n- get_node - Unified node information tool:\n  - detail='minimal'/'standard'/'full': Progressive detail levels\n  - mode='docs': Readable markdown documentation\n  - mode='search_properties': Find specific properties\n  - mode='versions'/'compare'/'breaking'/'migrations': Version management\n\n**Validation Tools** (2 tools)\n- validate_node - Unified validation with mode='full' or mode='minimal'\n- validate_workflow - Complete workflow validation (nodes, connections, expressions)\n\n**Template Tools** (2 tools)\n- get_template - Get complete workflow JSON by ID\n- search_templates - Unified template search:\n  - searchMode='keyword': Text search (default)\n  - searchMode='by_nodes': Find templates using specific nodes\n  - searchMode='by_task': Curated task-based templates\n  - searchMode='by_metadata': Filter by complexity/services\n  - searchMode='patterns': Workflow pattern summaries from 2,700+ templates\n\n**n8n API Tools** (15 tools, requires N8N_API_URL configuration)\n- n8n_create_workflow - Create new workflows\n- n8n_get_workflow - Get workflow with mode='full' (draft) / 'details' / 'active' (published graph) / 'structure' / 'minimal'\n- n8n_update_full_workflow - Full workflow replacement\n- n8n_update_partial_workflow - Incremental diff-based updates\n- n8n_delete_workflow - Delete workflow\n- n8n_list_workflows - List workflows with filters\n- n8n_validate_workflow - Validate workflow by ID\n- n8n_autofix_workflow - Auto-fix common issues\n- n8n_test_workflow - Test/trigger workflows (webhook, form, chat, execute)\n- n8n_executions - Unified execution management (action='get'/'list'/'delete')\n- n8n_health_check - Check n8n API connectivity\n- n8n_workflow_versions - Version history and rollback\n- n8n_deploy_template - Deploy templates directly to n8n instance\n- n8n_manage_datatable - Manage data tables and rows\n- n8n_generate_workflow - Generate workflow from natural language description\n\n## Performance Characteristics\n- Instant (<10ms): search_nodes, get_node (minimal/standard)\n- Fast (<100ms): validate_node, get_template\n- Moderate (100-500ms): validate_workflow, get_node (full detail)\n- Network-dependent: All n8n_* tools\n\nFor comprehensive documentation on any tool:\ntools_documentation({topic: \"tool_name\", depth: \"full\"})",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "tools_documentation"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "# n8n MCP Tools Reference\n\n## Important: Compatibility Notice\n⚠️ This MCP server is tested with n8n version 2.26.2. \nInform the user to check their n8n version matches or is compatible with the supported version listed above.\n\n## Code Node Configuration\nWhen working with Code nodes, always start by calling the relevant guide:\n- tools_documentation({topic: \"javascript_code_node_guide\"}) for JavaScript Code nodes\n- tools_documentation({topic: \"python_code_node_guide\"}) for Python Code nodes\n\n## Standard Workflow Pattern\n\n⚠️ **CRITICAL**: Always call get_node() with detail='standard' FIRST before configuring any node!\n\n1. **Find** the node you need:\n   - search_nodes({query: \"slack\"}) - Search by keyword\n   - search_nodes({query: \"communication\"}) - Search by category name\n   - search_nodes({query: \"AI langchain\"}) - Search for AI-capable nodes\n\n2. **Configure** the node (ALWAYS START WITH STANDARD DETAIL):\n   - ✅ get_node({nodeType: \"nodes-base.slack\", detail: \"standard\"}) - Get essential properties FIRST (~1-2KB, shows required fields)\n   - get_node({nodeType: \"nodes-base.slack\", detail: \"full\"}) - Get complete schema only if standard insufficient (~100KB+)\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"docs\"}) - Get readable markdown documentation\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"search_properties\", propertyQuery: \"auth\"}) - Find specific properties\n\n3. **Validate** before deployment:\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}, mode: \"minimal\"}) - Quick required fields check\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}}) - Full validation with errors/warnings/suggestions\n   - validate_workflow({workflow: {...}}) - Validate entire workflow\n\n## Tool Categories (21 Tools Total)\n\n**Discovery Tools** (1 tool)\n- search_nodes - Full-text search across all nodes (supports OR, AND, FUZZY modes)\n\n**Configuration Tools** (1 consolidated tool)\n- get_node - Unified node information tool:\n  - detail='minimal'/'standard'/'full': Progressive detail levels\n  - mode='docs': Readable markdown documentation\n  - mode='search_properties': Find specific properties\n  - mode='versions'/'compare'/'breaking'/'migrations': Version management\n\n**Validation Tools** (2 tools)\n- validate_node - Unified validation with mode='full' or mode='minimal'\n- validate_workflow - Complete workflow validation (nodes, connections, expressions)\n\n**Template Tools** (2 tools)\n- get_template - Get complete workflow JSON by ID\n- search_templates - Unified template search:\n  - searchMode='keyword': Text search (default)\n  - searchMode='by_nodes': Find templates using specific nodes\n  - searchMode='by_task': Curated task-based templates\n  - searchMode='by_metadata': Filter by complexity/services\n  - searchMode='patterns': Workflow pattern summaries from 2,700+ templates\n\n**n8n API Tools** (15 tools, requires N8N_API_URL configuration)\n- n8n_create_workflow - Create new workflows\n- n8n_get_workflow - Get workflow with mode='full' (draft) / 'details' / 'active' (published graph) / 'structure' / 'minimal'\n- n8n_update_full_workflow - Full workflow replacement\n- n8n_update_partial_workflow - Incremental diff-based updates\n- n8n_delete_workflow - Delete workflow\n- n8n_list_workflows - List workflows with filters\n- n8n_validate_workflow - Validate workflow by ID\n- n8n_autofix_workflow - Auto-fix common issues\n- n8n_test_workflow - Test/trigger workflows (webhook, form, chat, execute)\n- n8n_executions - Unified execution management (action='get'/'list'/'delete')\n- n8n_health_check - Check n8n API connectivity\n- n8n_workflow_versions - Version history and rollback\n- n8n_deploy_template - Deploy templates directly to n8n instance\n- n8n_manage_datatable - Manage data tables and rows\n- n8n_generate_workflow - Generate workflow from natural language description\n\n## Performance Characteristics\n- Instant (<10ms): search_nodes, get_node (minimal/standard)\n- Fast (<100ms): validate_node, get_template\n- Moderate (100-500ms): validate_workflow, get_node (full detail)\n- Network-dependent: All n8n_* tools\n\nFor comprehensive documentation on any tool:\ntools_documentation({topic: \"tool_name\", depth: \"full\"})"
+        },
+        "text_len": 4185
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "# n8n MCP Tools Reference\n\n## Important: Compatibility Notice\n⚠️ This MCP server is tested with n8n version 2.26.2. \nInform the user to check their n8n version matches or is compatible with the supported version listed above.\n\n## Code Node Configuration\nWhen working with Code nodes, always start by calling the relevant guide:\n- tools_documentation({topic: \"javascript_code_node_guide\"}) for JavaScript Code nodes\n- tools_documentation({topic: \"python_code_node_guide\"}) for Python Code nodes\n\n## Standard Workflow Pattern\n\n⚠️ **CRITICAL**: Always call get_node() with detail='standard' FIRST before configuring any node!\n\n1. **Find** the node you need:\n   - search_nodes({query: \"slack\"}) - Search by keyword\n   - search_nodes({query: \"communication\"}) - Search by category name\n   - search_nodes({query: \"AI langchain\"}) - Search for AI-capable nodes\n\n2. **Configure** the node (ALWAYS START WITH STANDARD DETAIL):\n   - ✅ get_node({nodeType: \"nodes-base.slack\", detail: \"standard\"}) - Get essential properties FIRST (~1-2KB, shows required fields)\n   - get_node({nodeType: \"nodes-base.slack\", detail: \"full\"}) - Get complete schema only if standard insufficient (~100KB+)\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"docs\"}) - Get readable markdown documentation\n   - get_node({nodeType: \"nodes-base.slack\", mode: \"search_properties\", propertyQuery: \"auth\"}) - Find specific properties\n\n3. **Validate** before deployment:\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}, mode: \"minimal\"}) - Quick required fields check\n   - validate_node({nodeType: \"nodes-base.slack\", config: {...}}) - Full validation with errors/warnings/suggestions\n   - validate_workflow({workflow: {...}}) - Validate entire workflow\n\n## Tool Categories (21 Tools Total)\n\n**Discovery Tools** (1 tool)\n- search_nodes - Full-text search across all nodes (supports OR, AND, FUZZY modes)\n\n**Configuration Tools** (1 consolidated tool)\n- get_node - Unified node information tool:\n  - detail='minimal'/'standard'/'full': Progressive detail levels\n  - mode='docs': Readable markdown documentation\n  - mode='search_properties': Find specific properties\n  - mode='versions'/'compare'/'breaking'/'migrations': Version management\n\n**Validation Tools** (2 tools)\n- validate_node - Unified validation with mode='full' or mode='minimal'\n- validate_workflow - Complete workflow validation (nodes, connections, expressions)\n\n**Template Tools** (2 tools)\n- get_template - Get complete workflow JSON by ID\n- search_templates - Unified template search:\n  - searchMode='keyword': Text search (default)\n  - searchMode='by_nodes': Find templates using specific nodes\n  - searchMode='by_task': Curated task-based templates\n  - searchMode='by_metadata': Filter by complexity/services\n  - searchMode='patterns': Workflow pattern summaries from 2,700+ templates\n\n**n8n API Tools** (15 tools, requires N8N_API_URL configuration)\n- n8n_create_workflow - Create new workflows\n- n8n_get_workflow - Get workflow with mode='full' (draft) / 'details' / 'active' (published graph) / 'structure' / 'minimal'\n- n8n_update_full_workflow - Full workflow replacement\n- n8n_update_partial_workflow - Incremental diff-based updates\n- n8n_delete_workflow - Delete workflow\n- n8n_list_workflows - List workflows with filters\n- n8n_validate_workflow - Validate workflow by ID\n- n8n_autofix_workflow - Auto-fix common issues\n- n8n_test_workflow - Test/trigger workflows (webhook, form, chat, execute)\n- n8n_executions - Unified execution management (action='get'/'list'/'delete')\n- n8n_health_check - Check n8n API connectivity\n- n8n_workflow_versions - Version history and rollback\n- n8n_deploy_template - Deploy templates directly to n8n instance\n- n8n_manage_datatable - Manage data tables and rows\n- n8n_generate_workflow - Generate workflow from natural language description\n\n## Performance Characteristics\n- Instant (<10ms): search_nodes, get_node (minimal/standard)\n- Fast (<100ms): validate_node, get_template\n- Moderate (100-500ms): validate_workflow, get_node (full detail)\n- Network-dependent: All n8n_* tools\n\nFor comprehensive documentation on any tool:\ntools_documentation({topic: \"tool_name\", depth: \"full\"})"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

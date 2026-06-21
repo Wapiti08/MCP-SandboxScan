@@ -3,16 +3,20 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use crate::eval::run_id;
 use crate::pipeline::case_study::{default_env_for_subject, resolve_data_dir};
-use crate::pipeline::{scan_subject_with_limits, ScanLimits};
+use crate::pipeline::{ScanLimits, scan_subject_with_limits};
+use crate::scan::report::ScanReport;
 use crate::subject::SubjectManifest;
 
 use super::model::{
-    ClassStats, CorpusFile, CorpusScanCase, CorpusScanReport, LatencyStats, RepoEntry,
+    ClassStats, CorpusFile, CorpusScanCase, CorpusScanReport, LatencyStats, RepoEntry, TierStats,
+    ToolSemanticAggregate, ToolSemanticSummary,
 };
+use super::semantic::profile_scan_report;
+use super::tier::{assign_tiers, classify_tier};
 
 pub struct ScanOptions {
     pub manifest_dir: PathBuf,
@@ -23,6 +27,7 @@ pub struct ScanOptions {
 }
 
 pub fn run_corpus_scan(corpus: &mut CorpusFile, opts: &ScanOptions) -> Result<CorpusScanReport> {
+    assign_tiers(&mut corpus.repos);
     fs::create_dir_all(&opts.out_dir)?;
     let cases_dir = opts.out_dir.join("cases");
     fs::create_dir_all(&cases_dir)?;
@@ -82,16 +87,15 @@ pub fn run_corpus_scan(corpus: &mut CorpusFile, opts: &ScanOptions) -> Result<Co
             .and_then(|c| c.total_ms)
             .map(|ms| format!(" {ms}ms"))
             .unwrap_or_default();
-        eprintln!(
-            "[{position}/{total}] {} -> {status}{latency}",
-            repo.id
-        );
+        eprintln!("[{position}/{total}] {} -> {status}{latency}", repo.id);
     }
 
     let total_repos = corpus.repos.len();
     let resolved_repos = corpus.repos.iter().filter(|r| r.resolved).count();
     let scanned_repos = cases.iter().filter(|c| c.scan_ok).count();
     let suspicious = cases.iter().filter(|c| c.has_flow).count();
+    let tier1 = compute_tier_stats(&cases, "tier1");
+    let semantic = compute_semantic_summary(&cases);
 
     Ok(CorpusScanReport {
         run_id: run_id(),
@@ -112,6 +116,8 @@ pub fn run_corpus_scan(corpus: &mut CorpusFile, opts: &ScanOptions) -> Result<Co
         by_ecosystem,
         by_failure_category,
         latency: compute_latency_stats(&cases),
+        tier1,
+        semantic,
         cases,
     })
 }
@@ -138,9 +144,15 @@ fn scan_one_repo(
         stars: repo.stars,
         dep_count: repo.dep_count,
         ecosystem: repo.ecosystem.clone(),
+        tier: if repo.tier.is_empty() {
+            classify_tier(repo).to_string()
+        } else {
+            repo.tier.clone()
+        },
         build_ms: None,
         scan_ms: None,
         total_ms: None,
+        tool_profile: None,
     };
 
     let path = PathBuf::from(toml_path);
@@ -184,6 +196,7 @@ fn scan_one_repo(
             base.has_flow = result.report.summary.has_external_to_prompt_flow;
             base.num_flows = result.report.summary.num_flows;
             base.num_sinks = result.report.summary.num_sinks;
+            base.tool_profile = profile_scan_report(&result.report);
             base.report_path = Some(report_path.to_string_lossy().into_owned());
             base
         }
@@ -192,6 +205,53 @@ fn scan_one_repo(
             fail(base, format!("{e:#}"))
         }
     }
+}
+
+pub fn enrich_corpus_report_from_path(summary_path: &Path) -> Result<CorpusScanReport> {
+    let raw = fs::read_to_string(summary_path)
+        .with_context(|| format!("read {}", summary_path.display()))?;
+    let mut report: CorpusScanReport =
+        serde_json::from_str(&raw).with_context(|| format!("parse {}", summary_path.display()))?;
+    let out_dir = summary_path
+        .parent()
+        .with_context(|| format!("missing parent directory for {}", summary_path.display()))?;
+    enrich_corpus_report(&mut report, out_dir)?;
+    Ok(report)
+}
+
+pub fn enrich_corpus_report(report: &mut CorpusScanReport, out_dir: &Path) -> Result<()> {
+    for case in &mut report.cases {
+        if !case.scan_ok {
+            continue;
+        }
+        let Some(path) = resolve_case_report_path(case, out_dir) else {
+            continue;
+        };
+        let raw = fs::read_to_string(&path)
+            .with_context(|| format!("read case report {}", path.display()))?;
+        let scan_report: ScanReport = serde_json::from_str(&raw)
+            .with_context(|| format!("parse case report {}", path.display()))?;
+        case.tool_profile = profile_scan_report(&scan_report);
+    }
+    report.semantic = compute_semantic_summary(&report.cases);
+    Ok(())
+}
+
+fn resolve_case_report_path(case: &CorpusScanCase, out_dir: &Path) -> Option<PathBuf> {
+    if let Some(report_path) = &case.report_path {
+        let direct = PathBuf::from(report_path);
+        if direct.exists() {
+            return Some(direct);
+        }
+    }
+
+    let slug = case.repo_id.replace('/', "__");
+    let local = out_dir.join("cases").join(format!("{slug}.json"));
+    if local.exists() {
+        return Some(local);
+    }
+
+    None
 }
 
 fn fail(mut case: CorpusScanCase, err: String) -> CorpusScanCase {
@@ -220,6 +280,37 @@ fn classify_failure(err: &str) -> &'static str {
     }
 }
 
+fn compute_tier_stats(cases: &[CorpusScanCase], tier: &str) -> TierStats {
+    let resolved = cases.iter().filter(|c| c.tier == tier).count();
+    let scanned = cases.iter().filter(|c| c.tier == tier && c.scan_ok).count();
+    let suspicious = cases
+        .iter()
+        .filter(|c| c.tier == tier && c.has_flow)
+        .count();
+    let ok: Vec<CorpusScanCase> = cases
+        .iter()
+        .filter(|c| c.tier == tier && c.scan_ok)
+        .cloned()
+        .collect();
+
+    TierStats {
+        resolved,
+        scanned,
+        scan_success_rate: if resolved == 0 {
+            0.0
+        } else {
+            scanned as f64 / resolved as f64
+        },
+        suspicious,
+        suspicious_rate: if scanned == 0 {
+            0.0
+        } else {
+            suspicious as f64 / scanned as f64
+        },
+        latency: compute_latency_stats(&ok),
+    }
+}
+
 fn compute_latency_stats(cases: &[CorpusScanCase]) -> LatencyStats {
     let ok: Vec<_> = cases.iter().filter(|c| c.scan_ok).collect();
     if ok.is_empty() {
@@ -244,6 +335,33 @@ fn compute_latency_stats(cases: &[CorpusScanCase]) -> LatencyStats {
     }
 }
 
+fn compute_semantic_summary(cases: &[CorpusScanCase]) -> ToolSemanticSummary {
+    ToolSemanticSummary {
+        all: aggregate_semantic(cases.iter()),
+        tier1: aggregate_semantic(cases.iter().filter(|c| c.tier == "tier1")),
+        tier2: aggregate_semantic(cases.iter().filter(|c| c.tier == "tier2")),
+    }
+}
+
+fn aggregate_semantic<'a>(
+    cases: impl Iterator<Item = &'a CorpusScanCase>,
+) -> ToolSemanticAggregate {
+    let mut out = ToolSemanticAggregate::default();
+    for case in cases {
+        let Some(profile) = &case.tool_profile else {
+            continue;
+        };
+        out.repos_with_metadata += 1;
+        out.total_tools += profile.tool_count;
+        out.described_tools += profile.described_tools;
+        out.sensitive_tools += profile.sensitive_tools;
+        for (cap, count) in &profile.by_capability {
+            *out.by_capability.entry(cap.clone()).or_default() += count;
+        }
+    }
+    out
+}
+
 fn percentile(sorted: &[u128], pct: usize) -> u128 {
     if sorted.is_empty() {
         return 0;
@@ -263,11 +381,7 @@ pub fn write_corpus_report(report: &CorpusScanReport, out_dir: &Path) -> Result<
         let latest = parent.join("CORPUS_LATEST.txt");
         fs::write(
             &latest,
-            format!(
-                "run_id={}\npath={}\n",
-                report.run_id,
-                out_dir.display()
-            ),
+            format!("run_id={}\npath={}\n", report.run_id, out_dir.display()),
         )?;
     }
     Ok(())
@@ -289,6 +403,24 @@ fn render_md(r: &CorpusScanReport) -> String {
         r.suspicious_rate * 100.0,
     );
 
+    out.push_str("## Tier-1 (dedicated MCP servers)\n\n");
+    out.push_str(&format!(
+        "- Resolved: {}\n\
+         - Scanned: {}\n\
+         - Scan success: {:.1}%\n\
+         - Suspicious rate: {:.1}%\n\n",
+        r.tier1.resolved,
+        r.tier1.scanned,
+        r.tier1.scan_success_rate * 100.0,
+        r.tier1.suspicious_rate * 100.0,
+    ));
+    if r.tier1.latency.count > 0 {
+        out.push_str(&format!(
+            "- Total latency p50/p95: {}ms / {}ms\n\n",
+            r.tier1.latency.total_ms_p50, r.tier1.latency.total_ms_p95
+        ));
+    }
+
     if r.latency.count > 0 {
         out.push_str("## Latency (successful scans)\n\n");
         out.push_str(&format!(
@@ -304,6 +436,25 @@ fn render_md(r: &CorpusScanReport) -> String {
             r.latency.total_ms_p50,
             r.latency.total_ms_p95,
         ));
+    }
+
+    if r.semantic.all.repos_with_metadata > 0 {
+        out.push_str("## Tool metadata and semantic profile\n\n");
+        out.push_str("| Subset | Repos with metadata | Tools | Described | Sensitive |\n");
+        out.push_str("|--------|---------------------|-------|-----------|-----------|\n");
+        push_semantic_row(&mut out, "All", &r.semantic.all);
+        push_semantic_row(&mut out, "Tier-1", &r.semantic.tier1);
+        push_semantic_row(&mut out, "Tier-2", &r.semantic.tier2);
+
+        out.push_str("\n### Semantic capabilities\n\n");
+        out.push_str("| Capability | Tools |\n");
+        out.push_str("|------------|-------|\n");
+        let mut caps: Vec<_> = r.semantic.all.by_capability.iter().collect();
+        caps.sort_by(|a, b| b.1.cmp(a.1).then_with(|| a.0.cmp(b.0)));
+        for (cap, count) in caps {
+            out.push_str(&format!("| {} | {} |\n", cap, count));
+        }
+        out.push('\n');
     }
 
     out.push_str("## By WASM class\n\n");
@@ -347,8 +498,8 @@ fn render_md(r: &CorpusScanReport) -> String {
     }
 
     out.push_str("\n## Cases\n\n");
-    out.push_str("| Repo | OK | Flows | Deps | Stars | Total ms | Error |\n");
-    out.push_str("|------|----|-------|------|-------|----------|-------|\n");
+    out.push_str("| Repo | Tier | OK | Flows | Deps | Stars | Total ms | Error |\n");
+    out.push_str("|------|------|----|-------|------|-------|----------|-------|\n");
     for case in &r.cases {
         let err = case.error.as_deref().unwrap_or("");
         let total_ms = case
@@ -356,8 +507,9 @@ fn render_md(r: &CorpusScanReport) -> String {
             .map(|ms| ms.to_string())
             .unwrap_or_else(|| "-".into());
         out.push_str(&format!(
-            "| {} | {} | {} | {} | {} | {} | {} |\n",
+            "| {} | {} | {} | {} | {} | {} | {} | {} |\n",
             case.repo_id,
+            case.tier,
             case.scan_ok,
             case.num_flows,
             case.dep_count,
@@ -367,6 +519,17 @@ fn render_md(r: &CorpusScanReport) -> String {
         ));
     }
     out
+}
+
+fn push_semantic_row(out: &mut String, label: &str, stats: &ToolSemanticAggregate) {
+    out.push_str(&format!(
+        "| {} | {} | {} | {} | {} |\n",
+        label,
+        stats.repos_with_metadata,
+        stats.total_tools,
+        stats.described_tools,
+        stats.sensitive_tools,
+    ));
 }
 
 #[cfg(test)]
@@ -392,5 +555,65 @@ mod tests {
     #[test]
     fn percentile_picks_median() {
         assert_eq!(percentile(&[10, 20, 30], 50), 20);
+    }
+
+    #[test]
+    fn aggregates_semantic_profiles_by_tier() {
+        let cases = vec![
+            CorpusScanCase {
+                repo_id: "a/b".into(),
+                subject_toml: "a.toml".into(),
+                language: None,
+                wasm_class: "wasm-hard".into(),
+                wasm_status: "NativeOnly".into(),
+                scan_ok: true,
+                has_flow: false,
+                num_flows: 0,
+                num_sinks: 0,
+                error: None,
+                report_path: None,
+                failure_category: None,
+                stars: 0,
+                dep_count: 0,
+                ecosystem: "npm".into(),
+                tier: "tier1".into(),
+                build_ms: None,
+                scan_ms: None,
+                total_ms: None,
+                tool_profile: Some(crate::corpus::model::ToolSemanticProfile {
+                    tool_count: 2,
+                    described_tools: 2,
+                    sensitive_tools: 1,
+                    by_capability: HashMap::from([("shell".to_string(), 1)]),
+                }),
+            },
+            CorpusScanCase {
+                repo_id: "c/d".into(),
+                subject_toml: "c.toml".into(),
+                language: None,
+                wasm_class: "wasm-hard".into(),
+                wasm_status: "NativeOnly".into(),
+                scan_ok: true,
+                has_flow: false,
+                num_flows: 0,
+                num_sinks: 0,
+                error: None,
+                report_path: None,
+                failure_category: None,
+                stars: 0,
+                dep_count: 0,
+                ecosystem: "npm".into(),
+                tier: "tier2".into(),
+                build_ms: None,
+                scan_ms: None,
+                total_ms: None,
+                tool_profile: None,
+            },
+        ];
+
+        let summary = compute_semantic_summary(&cases);
+        assert_eq!(summary.all.repos_with_metadata, 1);
+        assert_eq!(summary.tier1.total_tools, 2);
+        assert_eq!(summary.tier2.total_tools, 0);
     }
 }

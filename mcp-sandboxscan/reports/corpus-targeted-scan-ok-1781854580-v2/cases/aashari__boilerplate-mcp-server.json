@@ -1,0 +1,424 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 577
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "prompts": {
+                "listChanged": true
+              },
+              "resources": {
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "@aashari/boilerplate-mcp-server",
+              "version": "3.2.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Retrieve geolocation and network information for a public IP address. Returns TOON format by default (30-60% fewer tokens than JSON).\n\n**IMPORTANT - Cost Optimization:**\n- Use `jq` param to extract only needed fields. Unfiltered responses are expensive!\n- Example: `jq: \"{ip: query, country: country, city: city}\"` - extract specific fields\n- If unsure about available fields, first call WITHOUT jq filter to see all fields, then use jq in subsequent calls\n\n**Schema Discovery Pattern:**\n1. First call: `ipAddress: \"8.8.8.8\"` (no jq) - explore available fields\n2. Then use: `jq: \"{ip: query, location: {city: city, country: country}}\"` - extract only what you need\n\n**Output format:** TOON (default, token-efficient) or JSON (`outputFormat: \"json\"`)\n\n**Parameters:**\n- `ipAddress` - IP to lookup (omit for current device's public IP)\n- `includeExtendedData` - Include ASN, host, proxy detection (requires API token)\n- `useHttps` - Use HTTPS (default: true)\n- `jq` - JMESPath expression to filter response\n- `outputFormat` - \"toon\" (default) or \"json\"\n\n**JQ examples:** `query` (IP only), `{ip: query, country: country}`, `{location: {lat: lat, lon: lon}}`\n\n**Note:** Cannot lookup private IPs (192.168.x.x, 10.x.x.x). Powered by ip-api.com.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "includeExtendedData": {
+                      "default": false,
+                      "description": "Whether to include extended data (ASN, host, organization, etc.). Requires API token.",
+                      "type": "boolean"
+                    },
+                    "ipAddress": {
+                      "description": "IP address to lookup (omit for current IP)",
+                      "type": "string"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"{ip: query, country: country}\" (extract specific fields), \"lat\" (single field). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "useHttps": {
+                      "default": true,
+                      "description": "Whether to use HTTPS for the API call (recommended).",
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "ip_get_details",
+                "title": "IP Address Lookup"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "idempotentHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": true
+                },
+                "description": "Retrieve IP address details and return both direct content and a resource link.\n\n**Consistency with ip_get_details:**\n- Uses the same arguments: `ipAddress`, `includeExtendedData`, `useHttps`, `jq`, `outputFormat`\n- Uses the same output rendering pipeline (TOON by default, JSON when `outputFormat: \"json\"`)\n\n**What this returns:**\n- A normal text response (same rendered output as `ip_get_details`)\n- A `resource_link` entry pointing to `ip://<resolved-ip>` for resource-style clients\n\n**Note:** Cannot lookup private IPs (192.168.x.x, 10.x.x.x). Powered by ip-api.com.",
+                "execution": {
+                  "taskSupport": "forbidden"
+                },
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "includeExtendedData": {
+                      "default": false,
+                      "description": "Whether to include extended data (ASN, host, organization, etc.). Requires API token.",
+                      "type": "boolean"
+                    },
+                    "ipAddress": {
+                      "description": "IP address to lookup (omit for current IP)",
+                      "type": "string"
+                    },
+                    "jq": {
+                      "description": "JMESPath expression to filter/transform the response. IMPORTANT: Always use this to extract only needed fields and reduce token costs. Examples: \"{ip: query, country: country}\" (extract specific fields), \"lat\" (single field). See https://jmespath.org",
+                      "type": "string"
+                    },
+                    "outputFormat": {
+                      "description": "Output format: \"toon\" (default, 30-60% fewer tokens) or \"json\". TOON is optimized for LLMs with tabular arrays and minimal syntax.",
+                      "enum": [
+                        "toon",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "useHttps": {
+                      "default": true,
+                      "description": "Whether to use HTTPS for the API call (recommended).",
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "ip_get_details_link",
+                "title": "IP Address Lookup (ResourceLink)"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "ip_get_details"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "ip_get_details_link"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited",
+                "type": "text"
+              },
+              {
+                "description": "Resource link for IP lookup result 89.243.187.186",
+                "mimeType": "text/plain",
+                "name": "IP lookup 89.243.187.186",
+                "type": "resource_link",
+                "uri": "ip://89.243.187.186"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "ip_get_details"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "ip_get_details",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "ip_get_details"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "ip_get_details_link"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "ip_get_details_link",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited",
+                "type": "text"
+              },
+              {
+                "description": "Resource link for IP lookup result 89.243.187.186",
+                "mimeType": "text/plain",
+                "name": "IP lookup 89.243.187.186",
+                "type": "resource_link",
+                "uri": "ip://89.243.187.186"
+              }
+            ]
+          }
+        },
+        "tool_name": "ip_get_details_link"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 46
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/aashari__boilerplate_mcp_server.txt",
+      "evidence": {
+        "content_len": 47,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/aashari__boilerplate_mcp_server.txt"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited"
+        },
+        "text_len": 280
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited"
+        },
+        "text_len": 280
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_aashari__boilerplate_mcp_server"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/aashari__boilerplate_mcp_server.txt",
+      "content": "MCP_FILE_CANARY_aashari__boilerplate_mcp_server"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "status: success\nquery: 89.243.187.186\ncountry: United Kingdom\ncountryCode: GB\nregion: SCT\nregionName: Scotland\ncity: Edinburgh\nzip: EH3\nlat: 55.9495\nlon: -3.1983\ntimezone: Europe/London\nisp: TalkTalk\norg: TalkTalk Communications Limited\nas: AS13285 TalkTalk Communications Limited"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 2,
+    "num_sinks": 2,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

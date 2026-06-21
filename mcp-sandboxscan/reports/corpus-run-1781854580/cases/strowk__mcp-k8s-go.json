@@ -1,0 +1,442 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 1152
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "mcp-k8s-go",
+              "version": "dev20260619"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Create or modify a Kubernetes resource from a YAML manifest",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    },
+                    "manifest": {
+                      "description": "YAML manifest of the resource to apply",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "manifest"
+                  ],
+                  "type": "object"
+                },
+                "name": "apply-k8s-resource"
+              },
+              {
+                "description": "Get logs for a Kubernetes pod using specific context in a specified namespace",
+                "inputSchema": {
+                  "properties": {
+                    "containerName": {
+                      "description": "Name of the container within the pod to get logs from (optional)",
+                      "type": "string"
+                    },
+                    "context": {
+                      "description": "Name of the Kubernetes context to use",
+                      "type": "string"
+                    },
+                    "limitBytes": {
+                      "description": "Maximum bytes of logs to return. Defaults to no limit.",
+                      "type": "number"
+                    },
+                    "namespace": {
+                      "description": "Name of the namespace where the pod is located",
+                      "type": "string"
+                    },
+                    "pod": {
+                      "description": "Name of the pod to get logs from",
+                      "type": "string"
+                    },
+                    "previousContainer": {
+                      "description": "Return previous terminated container logs, defaults to false.",
+                      "type": "boolean"
+                    },
+                    "sinceDuration": {
+                      "description": "Only return logs newer than a relative duration like 5s, 2m, or 3h. Only one of sinceTime or sinceDuration may be set.",
+                      "type": "string"
+                    },
+                    "sinceTime": {
+                      "description": "Only return logs after a specific date (RFC3339). Only one of sinceTime or sinceDuration may be set.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "context",
+                    "namespace",
+                    "pod"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-k8s-pod-logs"
+              },
+              {
+                "description": "Get details of any Kubernetes resource like pod, node or service - completely as JSON or rendered using template",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    },
+                    "go_template": {
+                      "description": "Go template to render the output, if not specified, the complete JSON object will be returned",
+                      "type": "string"
+                    },
+                    "group": {
+                      "description": "API Group of the resource to get",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "description": "Kind of resource to get",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "Name of the resource to get",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "Namespace to get resource from, skip for cluster resources",
+                      "type": "string"
+                    },
+                    "version": {
+                      "description": "API Version of the resource to get",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-k8s-resource"
+              },
+              {
+                "description": "Execute command in Kubernetes pod",
+                "inputSchema": {
+                  "properties": {
+                    "command": {
+                      "description": "Command to be executed",
+                      "type": "string"
+                    },
+                    "context": {
+                      "description": "Kubernetes context name, defaults to current context",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "Namespace where pod is located",
+                      "type": "string"
+                    },
+                    "pod": {
+                      "description": "Name of the pod to execute command in",
+                      "type": "string"
+                    },
+                    "stdin": {
+                      "description": "Standard input to the command, defaults to empty string",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "namespace",
+                    "pod",
+                    "command"
+                  ],
+                  "type": "object"
+                },
+                "name": "k8s-pod-exec"
+              },
+              {
+                "description": "List Kubernetes contexts from configuration files such as kubeconfig",
+                "inputSchema": {
+                  "type": "object"
+                },
+                "name": "list-k8s-contexts"
+              },
+              {
+                "description": "List Kubernetes events using specific context in a specified namespace",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "Maximum number of events to list",
+                      "type": "number"
+                    },
+                    "namespace": {
+                      "description": "Name of the namespace to list events from",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "context",
+                    "namespace"
+                  ],
+                  "type": "object"
+                },
+                "name": "list-k8s-events"
+              },
+              {
+                "description": "List Kubernetes namespaces using specific context",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list-k8s-namespaces"
+              },
+              {
+                "description": "List Kubernetes nodes using specific context",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list-k8s-nodes"
+              },
+              {
+                "description": "List arbitrary Kubernetes resources",
+                "inputSchema": {
+                  "properties": {
+                    "context": {
+                      "description": "Name of the Kubernetes context to use, defaults to current context",
+                      "type": "string"
+                    },
+                    "group": {
+                      "description": "API Group of resources to list",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "description": "Kind of resources to list",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "Namespace to list resources from, defaults to all namespaces",
+                      "type": "string"
+                    },
+                    "version": {
+                      "description": "API Version of resources to list",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ],
+                  "type": "object"
+                },
+                "name": "list-k8s-resources"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "apply-k8s-resource"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "missing required property",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "apply-k8s-resource"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "apply-k8s-resource",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "missing required property",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "apply-k8s-resource"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "missing required property"
+        },
+        "text_len": 25
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "missing required property"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

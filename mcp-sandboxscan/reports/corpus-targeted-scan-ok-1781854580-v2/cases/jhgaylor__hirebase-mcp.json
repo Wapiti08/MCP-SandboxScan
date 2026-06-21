@@ -1,0 +1,644 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 514
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "experimental": {},
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "Hirebase",
+              "version": "1.28.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Search for jobs using the HireBase API\n\nArgs:\n    query: Full text search query\n    and_keywords: Keywords that must all appear in results\n    or_keywords: Keywords where at least one must appear\n    not_keywords: Keywords that must not appear\n    title: Job titles to search for\n    category: Job categories to filter by\n    country: Countries to filter by\n    city: Cities to filter by\n    location_type: Location types (Remote, In-Person, Hybrid)\n    company: Companies to filter by\n    salary_from: Minimum salary\n    salary_to: Maximum salary\n    salary_currency: Salary currency (e.g. USD)\n    years_from: Minimum years of experience\n    years_to: Maximum years of experience\n    visa: Whether job offers visa sponsorship\n    limit: Maximum number of results to return\n",
+                "inputSchema": {
+                  "properties": {
+                    "and_keywords": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "And Keywords"
+                    },
+                    "category": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Category"
+                    },
+                    "city": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "City"
+                    },
+                    "company": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Company"
+                    },
+                    "country": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Country"
+                    },
+                    "limit": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": 10,
+                      "title": "Limit"
+                    },
+                    "location_type": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Location Type"
+                    },
+                    "not_keywords": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Not Keywords"
+                    },
+                    "or_keywords": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Or Keywords"
+                    },
+                    "query": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Query"
+                    },
+                    "salary_currency": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Salary Currency"
+                    },
+                    "salary_from": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Salary From"
+                    },
+                    "salary_to": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Salary To"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Title"
+                    },
+                    "visa": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Visa"
+                    },
+                    "years_from": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Years From"
+                    },
+                    "years_to": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "title": "Years To"
+                    }
+                  },
+                  "title": "search_jobsArguments",
+                  "type": "object"
+                },
+                "name": "search_jobs",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "search_jobsOutput",
+                  "type": "object"
+                }
+              },
+              {
+                "description": "Get detailed information about a specific job\n\nArgs:\n    job_id: The unique identifier of the job\n",
+                "inputSchema": {
+                  "properties": {
+                    "job_id": {
+                      "title": "Job Id",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "job_id"
+                  ],
+                  "title": "get_jobArguments",
+                  "type": "object"
+                },
+                "name": "get_job",
+                "outputSchema": {
+                  "properties": {
+                    "result": {
+                      "additionalProperties": true,
+                      "title": "Result",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ],
+                  "title": "get_jobOutput",
+                  "type": "object"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "job_id": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp"
+            },
+            "name": "get_job"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"error\": \"HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "structuredContent": {
+              "result": {
+                "error": "HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "job_id": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp"
+          },
+          "name": "get_job"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_job",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"error\": \"HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "structuredContent": {
+              "result": {
+                "error": "HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
+              }
+            }
+          }
+        },
+        "tool_name": "get_job"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 37
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/jhgaylor__hirebase_mcp.txt",
+      "evidence": {
+        "content_len": 38,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/jhgaylor__hirebase_mcp.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get_job:$.arguments.job_id",
+      "evidence": {
+        "content_len": 39,
+        "path": "$.arguments.job_id",
+        "source_id": "ToolInput: get_job $.arguments.job_id",
+        "tool": "get_job"
+      }
+    },
+    {
+      "kind": "network-connect-attempt",
+      "actor": "scanner",
+      "target": "tcp-connect://data.hirebase.org:443",
+      "evidence": {
+        "content_len": 35,
+        "host": "data.hirebase.org",
+        "port": 443,
+        "protocol": "tcp-connect",
+        "source_id": "NetworkConnect: tcp-connect://data.hirebase.org:443"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"error\": \"HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))\"\n}"
+        },
+        "text_len": 258
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.structuredContent.result.error",
+          "type": "ToolReturnLeaf",
+          "value": "HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
+        },
+        "text_len": 241
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp",
+        "source_id": "ToolInput: get_job $.arguments.job_id"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "ToolReturnLeaf",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "ToolReturnLeaf",
+        "snippet": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp",
+        "source_id": "ToolInput: get_job $.arguments.job_id"
+      }
+    },
+    {
+      "kind": "network-connect-denied",
+      "actor": "network-monitor",
+      "target": "data.hirebase.org:443",
+      "evidence": {
+        "allowed": false,
+        "bytes_sent": 71,
+        "direction": "outbound",
+        "protocol": "tcp-connect",
+        "remote_host": "data.hirebase.org",
+        "remote_port": 443,
+        "url": null
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_jhgaylor__hirebase_mcp"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/jhgaylor__hirebase_mcp.txt",
+      "content": "MCP_FILE_CANARY_jhgaylor__hirebase_mcp"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get_job",
+      "path": "$.arguments.job_id",
+      "content": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp"
+    },
+    {
+      "type": "NetworkConnect",
+      "host": "data.hirebase.org",
+      "port": 443,
+      "protocol": "tcp-connect",
+      "content": "tcp-connect://data.hirebase.org:443"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "{\n  \"error\": \"HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))\"\n}"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.exploration_results[0].result.structuredContent.result.error",
+      "value": "HTTPSConnectionPool(host='data.hirebase.org', port=443): Max retries exceeded with url: /v0/jobs/MCP_INPUT_CANARY_jhgaylor__hirebase_mcp (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "ToolInput: get_job $.arguments.job_id",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: get_job $.arguments.job_id",
+      "sink_type": "ToolReturnLeaf",
+      "snippet": "MCP_INPUT_CANARY_jhgaylor__hirebase_mcp",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 4,
+    "num_sinks": 2,
+    "num_flows": 2,
+    "has_external_to_prompt_flow": true
+  }
+}

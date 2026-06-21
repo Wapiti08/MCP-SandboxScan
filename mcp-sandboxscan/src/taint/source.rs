@@ -21,6 +21,11 @@ pub enum TaintSource {
         protocol: String,
         content: String,
     },
+    ToolInput {
+        tool: String,
+        path: String,
+        content: String,
+    },
 }
 
 impl TaintSource {
@@ -30,6 +35,7 @@ impl TaintSource {
             TaintSource::EnvVar { value, .. } => value,
             TaintSource::HttpFetch { content, .. } => content,
             TaintSource::NetworkConnect { content, .. } => content,
+            TaintSource::ToolInput { content, .. } => content,
         }
     }
 
@@ -45,6 +51,9 @@ impl TaintSource {
                 ..
             } => {
                 format!("NetworkConnect: {protocol}://{host}:{port}")
+            }
+            TaintSource::ToolInput { tool, path, .. } => {
+                format!("ToolInput: {tool} {path}")
             }
         }
     }

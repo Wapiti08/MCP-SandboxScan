@@ -117,7 +117,9 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/python-mcp-server-fetch/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default()
+            .adapt(&subject)
+            .expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
@@ -132,7 +134,9 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/python-fastmcp-echo/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default()
+            .adapt(&subject)
+            .expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
@@ -147,7 +151,9 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/rust-mcp-c2-beacon/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default()
+            .adapt(&subject)
+            .expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {
@@ -162,7 +168,9 @@ mod tests {
         let raw = std::fs::read_to_string("case_studies/rust-mcp-filesystem/subject.toml")
             .expect("read subject.toml");
         let subject: SubjectManifest = toml::from_str(&raw).expect("parse subject.toml");
-        let report = NativeMcpAdapter::default().adapt(&subject).expect("adapt subject");
+        let report = NativeMcpAdapter::default()
+            .adapt(&subject)
+            .expect("adapt subject");
 
         assert!(matches!(report.status, AdaptationStatus::NativeOnly));
         let Some(BuildArtifact::NativeCommand { command, args }) = report.artifact else {

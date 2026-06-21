@@ -1,0 +1,276 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 458
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "experimental": {},
+              "prompts": {
+                "listChanged": false
+              },
+              "resources": {
+                "listChanged": false,
+                "subscribe": false
+              },
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "mysql_mcp_server",
+              "version": "1.28.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "readOnlyHint": false,
+                  "title": "Execute SQL"
+                },
+                "description": "Execute a SQL statement against the MySQL server. Use for SELECT, DML (INSERT/UPDATE/DELETE), SHOW, DESCRIBE, and ad-hoc queries. Supports cross-database queries using database.table notation. Single statements only — use fully qualified names instead of USE statements.",
+                "inputSchema": {
+                  "properties": {
+                    "query": {
+                      "description": "The SQL statement to execute. Single statements only.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "execute_sql"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "readOnlyHint": true,
+                  "title": "Get Schema Info"
+                },
+                "description": "Get column metadata for a table or all tables in the configured database: column names, data types, nullability, default values, and comments. Call this before querying an unfamiliar table. Omit table_name to see all tables at once. Accepts bare table names (uses MYSQL_DATABASE) or database.table for cross-database lookups.",
+                "inputSchema": {
+                  "properties": {
+                    "table_name": {
+                      "description": "Optional: bare table name, or database.table for a cross-database lookup.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "get_schema_info"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "readOnlyHint": true,
+                  "title": "Get Table Sample"
+                },
+                "description": "Fetch a small sample of rows from a table to understand its data format and content. Use alongside get_schema_info before writing complex queries. Accepts bare table names (uses MYSQL_DATABASE) or database.table for cross-database lookups.",
+                "inputSchema": {
+                  "properties": {
+                    "limit": {
+                      "description": "Number of rows to return (default 5, max 20).",
+                      "type": "integer"
+                    },
+                    "table_name": {
+                      "description": "Table to sample. Use database.table notation for cross-database queries.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "table_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_table_sample"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "execute_sql"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Input validation error: 'query' is a required property",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "execute_sql"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "execute_sql",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Input validation error: 'query' is a required property",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "execute_sql"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Input validation error: 'query' is a required property"
+        },
+        "text_len": 54
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "Input validation error: 'query' is a required property"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 1,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

@@ -14,8 +14,8 @@ fixtures/go_*/tool.wasm
 fixtures/go_*_tool/tool.wasm
 **/node_modules/
 docs/
-reports/
-**/reports/
+# reports/
+# **/reports/
 corpus/clones/
 clones
 manifests

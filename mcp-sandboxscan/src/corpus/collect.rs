@@ -5,17 +5,30 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use anyhow::{Context, Result, bail};
 
 use super::classify::wasm_class_from_language;
-use super::filter::{apply_collect_filter, CollectFilterStats};
+use super::filter::{CollectFilterStats, apply_collect_filter};
 use super::model::{CorpusFile, RepoEntry};
 
 const QUERIES: &[&str] = &[
     "mcp+server+stars:>10",
     "model+context+protocol+server+stars:>5",
     "topic:mcp+topic:server",
+    "topic:mcp-server",
+    "mcp-server+language:typescript+stars:>5",
+    "mcp-server+language:go+stars:>5",
+    "mcp-server+language:python+stars:>5",
+    "mcp-server+language:rust+stars:>5",
+    "model+context+protocol+in:name+stars:>3",
+    "mcp-server-tool+stars:>3",
 ];
 
 pub struct CollectOptions {
     pub limit_per_query: usize,
+    /// Stop once at least this many repos remain after filtering.
+    pub target_repos: Option<usize>,
+    /// Keep only repos that look like dedicated, resolvable MCP servers.
+    pub strict: bool,
+    /// Preserve resolve/scan fields from an existing corpus file.
+    pub merge_from: Option<std::path::PathBuf>,
 }
 
 pub struct CollectResult {
@@ -28,17 +41,58 @@ pub fn collect_github(opts: &CollectOptions) -> Result<CollectResult> {
     let mut seen = std::collections::HashSet::new();
     let mut repos = Vec::new();
 
-    for query in QUERIES {
+    if let Some(path) = &opts.merge_from {
+        if path.exists() {
+            let raw = std::fs::read_to_string(path)
+                .with_context(|| format!("read merge corpus {}", path.display()))?;
+            let existing: CorpusFile = serde_json::from_str(&raw)?;
+            for repo in existing.repos {
+                seen.insert(repo.id.clone());
+                repos.push(repo);
+            }
+        }
+    }
+
+    let mut filter_stats = CollectFilterStats {
+        raw: 0,
+        kept: repos.len(),
+        rejected: 0,
+        reasons: std::collections::HashMap::new(),
+    };
+
+    'queries: for query in QUERIES {
+        if let Some(target) = opts.target_repos {
+            if repos.len() >= target {
+                break 'queries;
+            }
+        }
+
         let batch = github_search_curl(query, opts.limit_per_query)?;
+        filter_stats.raw += batch.len();
+
         for row in batch {
             if !seen.insert(row.id.clone()) {
                 continue;
             }
+            if let Some(reason) = if opts.strict {
+                super::filter::reject_reason_strict(&row.id, &row.topics, row.language.as_deref())
+            } else {
+                super::filter::reject_reason(&row.id, &row.topics)
+            } {
+                filter_stats.record_reject(reason.0);
+                continue;
+            }
+            filter_stats.kept += 1;
             repos.push(row);
+            if opts
+                .target_repos
+                .is_some_and(|target| repos.len() >= target)
+            {
+                break 'queries;
+            }
         }
     }
 
-    let (mut repos, filter_stats) = apply_collect_filter(repos);
     repos.sort_by(|a, b| b.stars.cmp(&a.stars).then_with(|| a.id.cmp(&b.id)));
 
     Ok(CollectResult {
@@ -75,54 +129,75 @@ struct GhRepoItem {
 }
 
 fn github_search_curl(query: &str, limit: usize) -> Result<Vec<RepoEntry>> {
-    let per_page = limit.min(100).max(1);
-    let url = format!(
-        "https://api.github.com/search/repositories?q={query}&sort=stars&order=desc&per_page={per_page}"
-    );
+    let mut all = Vec::new();
+    let mut page = 1usize;
 
-    let output = Command::new("curl")
-        .args([
-            "-fsSL",
-            "-H",
-            "Accept: application/vnd.github+json",
-            "-H",
-            "User-Agent: mcp-sandboxscan-corpus",
-            &url,
-        ])
-        .output()
-        .context("run curl for GitHub search (install curl or use `corpus seed`)")?;
+    while all.len() < limit {
+        let per_page = (limit - all.len()).min(100).max(1);
+        let url = format!(
+            "https://api.github.com/search/repositories?q={query}&sort=stars&order=desc&per_page={per_page}&page={page}"
+        );
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        bail!("GitHub search failed for query `{query}`: {stderr}");
+        let output = Command::new("curl")
+            .args([
+                "-fsSL",
+                "-H",
+                "Accept: application/vnd.github+json",
+                "-H",
+                "User-Agent: mcp-sandboxscan-corpus",
+                &url,
+            ])
+            .output()
+            .with_context(|| format!("run curl for GitHub search query `{query}` page {page}"))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            if page > 1 && all.is_empty() {
+                bail!("GitHub search failed for query `{query}`: {stderr}");
+            }
+            break;
+        }
+
+        let parsed: GhSearchResponse =
+            serde_json::from_slice(&output.stdout).context("parse GitHub search JSON")?;
+
+        if parsed.items.is_empty() {
+            break;
+        }
+
+        let batch: Vec<RepoEntry> = parsed
+            .items
+            .into_iter()
+            .map(|item| {
+                let wasm_class = wasm_class_from_language(item.language.as_deref()).to_string();
+                RepoEntry {
+                    id: item.full_name,
+                    url: item.html_url,
+                    clone_url: item.clone_url,
+                    stars: item.stargazers_count,
+                    language: item.language,
+                    topics: item.topics.unwrap_or_default(),
+                    wasm_class,
+                    resolved: false,
+                    scan_status: "pending".to_string(),
+                    ecosystem: String::new(),
+                    dep_count: 0,
+                    tier: String::new(),
+                    resolve_error: None,
+                    subject_toml: None,
+                }
+            })
+            .collect();
+
+        let fetched = batch.len();
+        all.extend(batch);
+        if fetched < per_page {
+            break;
+        }
+        page += 1;
     }
 
-    let parsed: GhSearchResponse =
-        serde_json::from_slice(&output.stdout).context("parse GitHub search JSON")?;
-
-    Ok(parsed
-        .items
-        .into_iter()
-        .map(|item| {
-            let wasm_class =
-                wasm_class_from_language(item.language.as_deref()).to_string();
-            RepoEntry {
-                id: item.full_name,
-                url: item.html_url,
-                clone_url: item.clone_url,
-                stars: item.stargazers_count,
-                language: item.language,
-                topics: item.topics.unwrap_or_default(),
-                wasm_class,
-                resolved: false,
-                scan_status: "pending".to_string(),
-                ecosystem: String::new(),
-                dep_count: 0,
-                resolve_error: None,
-                subject_toml: None,
-            }
-        })
-        .collect())
+    Ok(all)
 }
 
 /// Offline seed corpus for development when GitHub/curl is unavailable.
@@ -159,6 +234,7 @@ pub fn seed_corpus() -> CollectResult {
             scan_status: "pending".to_string(),
             ecosystem: String::new(),
             dep_count: 0,
+            tier: String::new(),
             resolve_error: None,
             subject_toml: None,
         })

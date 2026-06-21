@@ -1,0 +1,38 @@
+% Semantic-only corpus evaluation tables.
+
+\begin{table}[t]
+\centering
+\caption{Semantic extraction coverage over the full MCP corpus.}
+\label{tab:semantic-full-coverage}
+\begin{tabular}{lrrrr}
+\toprule
+Source & Repos & Tools & Described & Sensitive \\
+\midrule
+Dynamic \texttt{tools/list} & 33 & 502 & 502 & 343 \\
+Static source registration & 2 & 3 & 1 & 2 \\
+\midrule
+Total tool metadata & 35 & 505 & 503 & 345 (68.3\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Semantic capability distribution across extracted MCP tools.}
+\label{tab:semantic-full-capabilities}
+\begin{tabular}{lr}
+\toprule
+Capability & Tools \\
+\midrule
+Unknown / benign utility & 160 \\
+Browser automation & 157 \\
+Network access & 124 \\
+Cloud or SaaS operation & 100 \\
+Database access & 93 \\
+Code repository operation & 91 \\
+Filesystem access & 74 \\
+Credential or secret handling & 30 \\
+Shell or process execution & 28 \\
+\bottomrule
+\end{tabular}
+\end{table}

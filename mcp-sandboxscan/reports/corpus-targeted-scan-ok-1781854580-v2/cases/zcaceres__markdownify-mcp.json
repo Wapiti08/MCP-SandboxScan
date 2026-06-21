@@ -1,0 +1,1024 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 360
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {}
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "mcp-markdownify-server",
+              "version": "0.1.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Audio to Markdown"
+                },
+                "description": "Convert an audio file to markdown, including transcription if possible",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the audio file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "audio-to-markdown"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Bing Search to Markdown"
+                },
+                "description": "Convert a Bing search results page to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "url": {
+                      "description": "URL of the Bing search results page",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "bing-search-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "DOCX to Markdown"
+                },
+                "description": "Convert a DOCX file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the DOCX file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "docx-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Markdown File"
+                },
+                "description": "Get a markdown file by absolute file path",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path to file of markdown'd text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "get-markdown-file"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Git Repo to Markdown"
+                },
+                "description": "Convert a git repository into a single markdown document containing the file tree and source code. Supports GitHub URLs and shorthand (e.g. 'owner/repo').",
+                "inputSchema": {
+                  "properties": {
+                    "branch": {
+                      "description": "Branch, tag, or commit to use (default: repo default branch)",
+                      "type": "string"
+                    },
+                    "compress": {
+                      "description": "Use Tree-sitter compression to reduce output size (~70% reduction). Default: false",
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "description": "Git repository URL or GitHub shorthand (e.g. 'https://github.com/owner/repo' or 'owner/repo')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "git-repo-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Image to Markdown"
+                },
+                "description": "Convert an image to markdown, including metadata and description",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the image file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "image-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "PDF to Markdown"
+                },
+                "description": "Convert a PDF file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the PDF file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "pdf-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "PPTX to Markdown"
+                },
+                "description": "Convert a PPTX file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the PPTX file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "pptx-to-markdown"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Webpage to Markdown"
+                },
+                "description": "Convert a webpage to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "url": {
+                      "description": "URL of the webpage to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "webpage-to-markdown"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "XLSX to Markdown"
+                },
+                "description": "Convert an XLSX file to markdown",
+                "inputSchema": {
+                  "properties": {
+                    "filepath": {
+                      "description": "Absolute path of the XLSX file to convert",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "filepath"
+                  ],
+                  "type": "object"
+                },
+                "name": "xlsx-to-markdown"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "YouTube to Markdown"
+                },
+                "description": "Convert a YouTube video to markdown, including transcript if available",
+                "inputSchema": {
+                  "properties": {
+                    "url": {
+                      "description": "URL of the YouTube video",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "type": "object"
+                },
+                "name": "youtube-to-markdown"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+            },
+            "name": "get-markdown-file"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Required file is not a Markdown file.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+            },
+            "name": "audio-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+            },
+            "name": "docx-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "url": "MCP_INPUT_CANARY_zcaceres__markdownify_mcp"
+            },
+            "name": "git-repo-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Invalid repository URL or shorthand: MCP_INPUT_CANARY_zcaceres__markdownify_mcp. Use a GitHub URL (https://github.com/owner/repo) or shorthand (owner/repo).",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+            },
+            "name": "pdf-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+            },
+            "name": "pptx-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+            },
+            "name": "xlsx-to-markdown"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+          },
+          "name": "get-markdown-file"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get-markdown-file",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Required file is not a Markdown file.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get-markdown-file"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+          },
+          "name": "audio-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "audio-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "audio-to-markdown"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+          },
+          "name": "docx-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "docx-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "docx-to-markdown"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "url": "MCP_INPUT_CANARY_zcaceres__markdownify_mcp"
+          },
+          "name": "git-repo-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "git-repo-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Invalid repository URL or shorthand: MCP_INPUT_CANARY_zcaceres__markdownify_mcp. Use a GitHub URL (https://github.com/owner/repo) or shorthand (owner/repo).",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "git-repo-to-markdown"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+          },
+          "name": "pdf-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "pdf-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "pdf-to-markdown"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+          },
+          "name": "pptx-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "pptx-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "pptx-to-markdown"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "filepath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+          },
+          "name": "xlsx-to-markdown"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "xlsx-to-markdown",
+      "evidence": {
+        "response": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\".",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "xlsx-to-markdown"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 40
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt",
+      "evidence": {
+        "content_len": 41,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "git-repo-to-markdown:$.arguments.url",
+      "evidence": {
+        "content_len": 42,
+        "path": "$.arguments.url",
+        "source_id": "ToolInput: git-repo-to-markdown $.arguments.url",
+        "tool": "git-repo-to-markdown"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Required file is not a Markdown file."
+        },
+        "text_len": 44
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+        },
+        "text_len": 405
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+        },
+        "text_len": 405
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Invalid repository URL or shorthand: MCP_INPUT_CANARY_zcaceres__markdownify_mcp. Use a GitHub URL (https://github.com/owner/repo) or shorthand (owner/repo)."
+        },
+        "text_len": 163
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+        },
+        "text_len": 405
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[5].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+        },
+        "text_len": 405
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[6].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+        },
+        "text_len": 405
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_zcaceres__markdownify_mcp",
+        "source_id": "ToolInput: git-repo-to-markdown $.arguments.url"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_zcaceres__markdownify_mcp"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/zcaceres__markdownify_mcp.txt",
+      "content": "MCP_FILE_CANARY_zcaceres__markdownify_mcp"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "git-repo-to-markdown",
+      "path": "$.arguments.url",
+      "content": "MCP_INPUT_CANARY_zcaceres__markdownify_mcp"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "Error: Required file is not a Markdown file."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "Error: Invalid repository URL or shorthand: MCP_INPUT_CANARY_zcaceres__markdownify_mcp. Use a GitHub URL (https://github.com/owner/repo) or shorthand (owner/repo)."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[4].result.content[0].text",
+      "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[5].result.content[0].text",
+      "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[6].result.content[0].text",
+      "value": "Error: Error processing to Markdown: markitdown executable not found (looked up \"markitdown\"). Set MARKITDOWN_PATH to its absolute location, install it on PATH (e.g. `pipx install \"markitdown[pdf]\"`), or run setup in the project root (/Users/zhuoran/Projects/MCP-SandboxScan/mcp-sandboxscan/corpus/clones/zcaceres__markdownify-mcp): python3 -m venv .venv && .venv/bin/pip install \"markitdown[pdf]>=0.1.5\"."
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "ToolInput: git-repo-to-markdown $.arguments.url",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_zcaceres__markdownify_mcp",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 3,
+    "num_sinks": 7,
+    "num_flows": 1,
+    "has_external_to_prompt_flow": true
+  }
+}

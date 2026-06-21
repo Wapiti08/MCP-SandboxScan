@@ -1,0 +1,723 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 589
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "experimental": {},
+              "tools": {
+                "listChanged": false
+              }
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "salesforce-mcp",
+              "version": "0.2.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Executes a SOQL query against Salesforce.\n\nTOKEN OPTIMIZATION GUIDELINES:\n- Always SELECT only the fields you need (never SELECT *)\n- Use LIMIT to restrict results (start with LIMIT 10, increase if needed)\n- Use WHERE clauses to filter data server-side\n- Default output is CSV format (most token-efficient)\n- Use format='json' only when you need nested data structure\n- You can always run additional queries if you need more data\n\nExample efficient query: SELECT Id, Name FROM Account WHERE IsActive = true LIMIT 20",
+                "inputSchema": {
+                  "properties": {
+                    "format": {
+                      "default": "csv",
+                      "description": "Output format: 'csv' (default, most compact), 'compact' (JSON no whitespace), 'json' (full JSON)",
+                      "enum": [
+                        "csv",
+                        "compact",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "query": {
+                      "description": "The SOQL query to execute. Always include LIMIT clause and select only needed fields.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "run_soql_query"
+              },
+              {
+                "description": "Executes a SOSL search against Salesforce.\n\nTOKEN OPTIMIZATION: Use RETURNING clause to limit fields and objects.\nExample: FIND {searchterm} RETURNING Account(Id, Name), Contact(Id, Name) LIMIT 10",
+                "inputSchema": {
+                  "properties": {
+                    "format": {
+                      "default": "csv",
+                      "description": "Output format: 'csv' (default), 'compact', 'json'",
+                      "enum": [
+                        "csv",
+                        "compact",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "search": {
+                      "description": "The SOSL search to execute. Use RETURNING to specify fields and LIMIT for result count.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "search"
+                  ],
+                  "type": "object"
+                },
+                "name": "run_sosl_search"
+              },
+              {
+                "description": "Retrieves field names and types for a Salesforce object. Use this to discover available fields before writing SOQL queries.\n\nOutput is CSV format: name,label,type,updateable",
+                "inputSchema": {
+                  "properties": {
+                    "object_name": {
+                      "description": "The Salesforce object API name (e.g., 'Account', 'Contact', 'Store__c')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_object_fields"
+              },
+              {
+                "description": "Retrieves a specific record by ID. Returns all fields - prefer SOQL with specific fields for token efficiency.",
+                "inputSchema": {
+                  "properties": {
+                    "format": {
+                      "default": "compact",
+                      "description": "Output format: 'compact' (default), 'json'",
+                      "enum": [
+                        "compact",
+                        "json"
+                      ],
+                      "type": "string"
+                    },
+                    "object_name": {
+                      "description": "The Salesforce object API name (e.g., 'Account', 'Contact')",
+                      "type": "string"
+                    },
+                    "record_id": {
+                      "description": "The 15 or 18 character Salesforce record ID",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "record_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_record"
+              },
+              {
+                "description": "Creates a new record",
+                "inputSchema": {
+                  "properties": {
+                    "data": {
+                      "additionalProperties": true,
+                      "description": "The data for the new record",
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "object_name": {
+                      "description": "The name of the Salesforce object (e.g., 'Account', 'Contact')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "data"
+                  ],
+                  "type": "object"
+                },
+                "name": "create_record"
+              },
+              {
+                "description": "Updates an existing record",
+                "inputSchema": {
+                  "properties": {
+                    "data": {
+                      "additionalProperties": true,
+                      "description": "The updated data for the record",
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "object_name": {
+                      "description": "The name of the Salesforce object (e.g., 'Account', 'Contact')",
+                      "type": "string"
+                    },
+                    "record_id": {
+                      "description": "The ID of the record to update",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "record_id",
+                    "data"
+                  ],
+                  "type": "object"
+                },
+                "name": "update_record"
+              },
+              {
+                "description": "Deletes a record",
+                "inputSchema": {
+                  "properties": {
+                    "object_name": {
+                      "description": "The name of the Salesforce object (e.g., 'Account', 'Contact')",
+                      "type": "string"
+                    },
+                    "record_id": {
+                      "description": "The ID of the record to delete",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "record_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "delete_record"
+              },
+              {
+                "description": "Executes a Tooling API request",
+                "inputSchema": {
+                  "properties": {
+                    "action": {
+                      "description": "The Tooling API endpoint to call (e.g., 'sobjects/ApexClass')",
+                      "type": "string"
+                    },
+                    "data": {
+                      "additionalProperties": true,
+                      "description": "Data for POST/PATCH requests",
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "method": {
+                      "default": "GET",
+                      "description": "The HTTP method (default: 'GET')",
+                      "enum": [
+                        "GET",
+                        "POST",
+                        "PATCH",
+                        "DELETE"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "tooling_execute"
+              },
+              {
+                "description": "Executes an Apex REST request",
+                "inputSchema": {
+                  "properties": {
+                    "action": {
+                      "description": "The Apex REST endpoint to call (e.g., '/MyApexClass')",
+                      "type": "string"
+                    },
+                    "data": {
+                      "additionalProperties": true,
+                      "description": "Data for POST/PATCH requests",
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "method": {
+                      "default": "GET",
+                      "description": "The HTTP method (default: 'GET')",
+                      "enum": [
+                        "GET",
+                        "POST",
+                        "PATCH",
+                        "DELETE"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "apex_execute"
+              },
+              {
+                "description": "Makes a direct REST API call to Salesforce",
+                "inputSchema": {
+                  "properties": {
+                    "data": {
+                      "additionalProperties": true,
+                      "description": "Data for POST/PATCH requests",
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "method": {
+                      "default": "GET",
+                      "description": "The HTTP method (default: 'GET')",
+                      "enum": [
+                        "GET",
+                        "POST",
+                        "PATCH",
+                        "DELETE"
+                      ],
+                      "type": "string"
+                    },
+                    "params": {
+                      "additionalProperties": true,
+                      "description": "Query parameters for the request",
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "path": {
+                      "description": "The path of the REST API endpoint (e.g., 'sobjects/Account/describe')",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "restful"
+              },
+              {
+                "description": "Retrieves a list of all available Salesforce SObjects (standard and custom).",
+                "inputSchema": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "list_sobjects"
+              },
+              {
+                "description": "Creates multiple records of a specified SObject type in bulk.",
+                "inputSchema": {
+                  "properties": {
+                    "data": {
+                      "description": "A list of records to create. Each record is a dictionary of field names and values.",
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "object_name": {
+                      "description": "The API name of the Salesforce SObject (e.g., 'Account', 'MyCustomObject__c').",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "data"
+                  ],
+                  "type": "object"
+                },
+                "name": "bulk_create_records"
+              },
+              {
+                "description": "Updates multiple records of a specified SObject type in bulk. Each record must have an 'Id' field.",
+                "inputSchema": {
+                  "properties": {
+                    "data": {
+                      "description": "A list of records to update. Each record is a dictionary of field names and values, and *must* include an 'Id' field.",
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "Id": {
+                            "description": "The ID of the record to update.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "Id"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "object_name": {
+                      "description": "The API name of the Salesforce SObject (e.g., 'Account', 'MyCustomObject__c').",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "data"
+                  ],
+                  "type": "object"
+                },
+                "name": "bulk_update_records"
+              },
+              {
+                "description": "Deletes multiple records of a specified SObject type in bulk, given their IDs.",
+                "inputSchema": {
+                  "properties": {
+                    "object_name": {
+                      "description": "The API name of the Salesforce SObject (e.g., 'Account', 'MyCustomObject__c').",
+                      "type": "string"
+                    },
+                    "record_ids": {
+                      "description": "A list of record IDs (strings) to delete.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "object_name",
+                    "record_ids"
+                  ],
+                  "type": "object"
+                },
+                "name": "bulk_delete_records"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "object_name": "MCP_INPUT_CANARY_smn2gnt__MCP_Salesforce",
+              "record_id": "MCP_INPUT_CANARY_smn2gnt__MCP_Salesforce"
+            },
+            "name": "get_record"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Salesforce connection not established.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "list_sobjects"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Salesforce connection not established.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "object_name": "MCP_INPUT_CANARY_smn2gnt__MCP_Salesforce",
+            "record_id": "MCP_INPUT_CANARY_smn2gnt__MCP_Salesforce"
+          },
+          "name": "get_record"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_record",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Salesforce connection not established.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get_record"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "list_sobjects"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list_sobjects",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Salesforce connection not established.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "list_sobjects"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 38
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/smn2gnt__MCP_Salesforce.txt",
+      "evidence": {
+        "content_len": 39,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/smn2gnt__MCP_Salesforce.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get_record:$.arguments.object_name",
+      "evidence": {
+        "content_len": 40,
+        "path": "$.arguments.object_name",
+        "source_id": "ToolInput: get_record $.arguments.object_name",
+        "tool": "get_record"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get_record:$.arguments.record_id",
+      "evidence": {
+        "content_len": 40,
+        "path": "$.arguments.record_id",
+        "source_id": "ToolInput: get_record $.arguments.record_id",
+        "tool": "get_record"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Salesforce connection not established."
+        },
+        "text_len": 38
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Salesforce connection not established."
+        },
+        "text_len": 38
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_smn2gnt__MCP_Salesforce"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/smn2gnt__MCP_Salesforce.txt",
+      "content": "MCP_FILE_CANARY_smn2gnt__MCP_Salesforce"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get_record",
+      "path": "$.arguments.object_name",
+      "content": "MCP_INPUT_CANARY_smn2gnt__MCP_Salesforce"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get_record",
+      "path": "$.arguments.record_id",
+      "content": "MCP_INPUT_CANARY_smn2gnt__MCP_Salesforce"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "Salesforce connection not established."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "Salesforce connection not established."
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 4,
+    "num_sinks": 2,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

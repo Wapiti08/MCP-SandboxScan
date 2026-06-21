@@ -1,0 +1,1053 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 430
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "resources": {},
+              "tools": {}
+            },
+            "protocolVersion": "2025-03-26",
+            "serverInfo": {
+              "name": "n8n-documentation-mcp",
+              "version": "2.59.0"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Tools Documentation"
+                },
+                "description": "Get documentation for n8n MCP tools. Call without parameters for quick start guide. Use topic parameter to get documentation for specific tools. Use depth='full' for comprehensive documentation.",
+                "inputSchema": {
+                  "properties": {
+                    "depth": {
+                      "default": "essentials",
+                      "description": "Level of detail. \"essentials\" (default) for quick reference, \"full\" for comprehensive docs.",
+                      "enum": [
+                        "essentials",
+                        "full"
+                      ],
+                      "type": "string"
+                    },
+                    "topic": {
+                      "description": "Tool name (e.g., \"search_nodes\") or \"overview\" for general guide. Leave empty for quick reference.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "tools_documentation"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Search Nodes"
+                },
+                "description": "Search n8n nodes by keyword with optional real-world examples. Pass query as string. Example: query=\"webhook\" or query=\"database\". Returns max 20 results. Use includeExamples=true to get top 2 template configs per node.",
+                "inputSchema": {
+                  "properties": {
+                    "includeExamples": {
+                      "default": false,
+                      "description": "Include top 2 real-world configuration examples from popular templates (default: false)",
+                      "type": "boolean"
+                    },
+                    "includeOperations": {
+                      "default": false,
+                      "description": "Include resource/operation tree per node. Adds ~100-300 tokens per result but saves a get_node round-trip.",
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Max results (default 20)",
+                      "type": "number"
+                    },
+                    "mode": {
+                      "default": "OR",
+                      "description": "OR=any word, AND=all words, FUZZY=typo-tolerant",
+                      "enum": [
+                        "OR",
+                        "AND",
+                        "FUZZY"
+                      ],
+                      "type": "string"
+                    },
+                    "query": {
+                      "description": "Search terms. Use quotes for exact phrase.",
+                      "type": "string"
+                    },
+                    "source": {
+                      "default": "all",
+                      "description": "Filter by node source: all=everything (default), core=n8n base nodes, community=community nodes, verified=verified community nodes only",
+                      "enum": [
+                        "all",
+                        "core",
+                        "community",
+                        "verified"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "search_nodes"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Get Node Info"
+                },
+                "description": "Get node info with progressive detail levels and multiple modes. Detail: minimal (~200 tokens), standard (~1-2K, default), full (~3-8K). Modes: info (default), docs (markdown documentation), search_properties (find properties), versions/compare/breaking/migrations (version info). Use format='docs' for readable documentation, mode='search_properties' with propertyQuery for finding specific fields.",
+                "inputSchema": {
+                  "properties": {
+                    "detail": {
+                      "default": "standard",
+                      "description": "Information detail level. standard=essential properties (recommended), full=everything",
+                      "enum": [
+                        "minimal",
+                        "standard",
+                        "full"
+                      ],
+                      "type": "string"
+                    },
+                    "fromVersion": {
+                      "description": "Source version for compare/breaking/migrations modes (e.g., \"1.0\")",
+                      "type": "string"
+                    },
+                    "includeExamples": {
+                      "default": false,
+                      "description": "Include real-world configuration examples from templates. Only applies to mode=info with detail=standard. Adds ~200-400 tokens per example.",
+                      "type": "boolean"
+                    },
+                    "includeTypeInfo": {
+                      "default": false,
+                      "description": "Include type structure metadata (type category, JS type, validation rules). Only applies to mode=info. Adds ~80-120 tokens per property.",
+                      "type": "boolean"
+                    },
+                    "maxPropertyResults": {
+                      "default": 20,
+                      "description": "For mode=search_properties: max results (default 20)",
+                      "type": "number"
+                    },
+                    "mode": {
+                      "default": "info",
+                      "description": "Operation mode. info=node schema, docs=readable markdown documentation, search_properties=find specific properties, versions/compare/breaking/migrations=version info",
+                      "enum": [
+                        "info",
+                        "docs",
+                        "search_properties",
+                        "versions",
+                        "compare",
+                        "breaking",
+                        "migrations"
+                      ],
+                      "type": "string"
+                    },
+                    "nodeType": {
+                      "description": "Full node type: \"nodes-base.httpRequest\" or \"nodes-langchain.agent\"",
+                      "type": "string"
+                    },
+                    "propertyQuery": {
+                      "description": "For mode=search_properties: search term to find properties (e.g., \"auth\", \"header\", \"body\")",
+                      "type": "string"
+                    },
+                    "toVersion": {
+                      "description": "Target version for compare mode (e.g., \"2.0\"). Defaults to latest if omitted.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeType"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_node"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Validate Node Config"
+                },
+                "description": "Validate n8n node configuration. Use mode='full' for comprehensive validation with errors/warnings/suggestions, mode='minimal' for quick required fields check. Example: nodeType=\"nodes-base.slack\", config={resource:\"channel\",operation:\"create\"}",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "config": {
+                      "description": "Configuration as object. For simple nodes use {}. For complex nodes include fields like {resource:\"channel\",operation:\"create\"}",
+                      "type": "object"
+                    },
+                    "mode": {
+                      "default": "full",
+                      "description": "Validation mode. full=comprehensive validation with errors/warnings/suggestions, minimal=quick required fields check only. Default is \"full\"",
+                      "enum": [
+                        "full",
+                        "minimal"
+                      ],
+                      "type": "string"
+                    },
+                    "nodeType": {
+                      "description": "Node type as string. Example: \"nodes-base.slack\"",
+                      "type": "string"
+                    },
+                    "profile": {
+                      "default": "ai-friendly",
+                      "description": "Profile for mode=full: \"minimal\", \"runtime\", \"ai-friendly\", or \"strict\". Default is \"ai-friendly\"",
+                      "enum": [
+                        "strict",
+                        "runtime",
+                        "ai-friendly",
+                        "minimal"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeType",
+                    "config"
+                  ],
+                  "type": "object"
+                },
+                "name": "validate_node",
+                "outputSchema": {
+                  "properties": {
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "items": {
+                        "properties": {
+                          "fix": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "property": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "missingRequiredFields": {
+                      "description": "Only present in mode=minimal",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "nodeType": {
+                      "type": "string"
+                    },
+                    "suggestions": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "summary": {
+                      "properties": {
+                        "errorCount": {
+                          "type": "number"
+                        },
+                        "hasErrors": {
+                          "type": "boolean"
+                        },
+                        "suggestionCount": {
+                          "type": "number"
+                        },
+                        "warningCount": {
+                          "type": "number"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "valid": {
+                      "type": "boolean"
+                    },
+                    "warnings": {
+                      "items": {
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          },
+                          "property": {
+                            "type": "string"
+                          },
+                          "suggestion": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "workflowNodeType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeType",
+                    "displayName",
+                    "valid"
+                  ],
+                  "type": "object"
+                }
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Get Template"
+                },
+                "description": "Get template by ID. Use mode to control response size: nodes_only (minimal), structure (nodes+connections), full (complete workflow).",
+                "inputSchema": {
+                  "properties": {
+                    "mode": {
+                      "default": "full",
+                      "description": "Response detail level. nodes_only: just node list, structure: nodes+connections, full: complete workflow JSON.",
+                      "enum": [
+                        "nodes_only",
+                        "structure",
+                        "full"
+                      ],
+                      "type": "string"
+                    },
+                    "templateId": {
+                      "description": "The template ID to retrieve",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "templateId"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_template"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Search Templates"
+                },
+                "description": "Search templates with multiple modes. Use searchMode='keyword' for text search, 'by_nodes' to find templates using specific nodes, 'by_task' for curated task-based templates, 'by_metadata' for filtering by complexity/setup time/services, 'patterns' for lightweight workflow pattern summaries mined from 2700+ templates.",
+                "inputSchema": {
+                  "properties": {
+                    "category": {
+                      "description": "For searchMode=by_metadata: filter by category (e.g., \"automation\", \"integration\")",
+                      "type": "string"
+                    },
+                    "complexity": {
+                      "description": "For searchMode=by_metadata: filter by complexity level",
+                      "enum": [
+                        "simple",
+                        "medium",
+                        "complex"
+                      ],
+                      "type": "string"
+                    },
+                    "fields": {
+                      "description": "For searchMode=keyword: fields to include in response. Default: all fields.",
+                      "items": {
+                        "enum": [
+                          "id",
+                          "name",
+                          "description",
+                          "author",
+                          "nodes",
+                          "views",
+                          "created",
+                          "url",
+                          "metadata"
+                        ],
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "Maximum number of results. Default 20.",
+                      "maximum": 100,
+                      "minimum": 1,
+                      "type": "number"
+                    },
+                    "maxSetupMinutes": {
+                      "description": "For searchMode=by_metadata: maximum setup time in minutes",
+                      "maximum": 480,
+                      "minimum": 5,
+                      "type": "number"
+                    },
+                    "minSetupMinutes": {
+                      "description": "For searchMode=by_metadata: minimum setup time in minutes",
+                      "maximum": 480,
+                      "minimum": 5,
+                      "type": "number"
+                    },
+                    "nodeTypes": {
+                      "description": "For searchMode=by_nodes: array of node types (e.g., [\"n8n-nodes-base.httpRequest\", \"n8n-nodes-base.slack\"])",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "description": "Pagination offset. Default 0.",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "query": {
+                      "description": "For searchMode=keyword: search keyword (e.g., \"chatbot\")",
+                      "type": "string"
+                    },
+                    "requiredService": {
+                      "description": "For searchMode=by_metadata: filter by required service (e.g., \"openai\", \"slack\")",
+                      "type": "string"
+                    },
+                    "searchMode": {
+                      "default": "keyword",
+                      "description": "Search mode. keyword=text search (default), by_nodes=find by node types, by_task=curated task templates, by_metadata=filter by complexity/services, patterns=lightweight workflow pattern summaries",
+                      "enum": [
+                        "keyword",
+                        "by_nodes",
+                        "by_task",
+                        "by_metadata",
+                        "patterns"
+                      ],
+                      "type": "string"
+                    },
+                    "targetAudience": {
+                      "description": "For searchMode=by_metadata: filter by target audience (e.g., \"developers\", \"marketers\")",
+                      "type": "string"
+                    },
+                    "task": {
+                      "description": "For searchMode=by_task: the type of task. For searchMode=patterns: optional category filter (omit for overview of all categories).",
+                      "enum": [
+                        "ai_automation",
+                        "data_sync",
+                        "webhook_processing",
+                        "email_automation",
+                        "slack_integration",
+                        "data_transformation",
+                        "file_processing",
+                        "scheduling",
+                        "api_integration",
+                        "database_operations"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "search_templates"
+              },
+              {
+                "annotations": {
+                  "idempotentHint": true,
+                  "readOnlyHint": true,
+                  "title": "Validate Workflow"
+                },
+                "description": "Full workflow validation: structure, connections, expressions, AI tools. Returns errors/warnings/fixes. Essential before deploy.",
+                "inputSchema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "options": {
+                      "description": "Optional validation settings",
+                      "properties": {
+                        "profile": {
+                          "default": "runtime",
+                          "description": "Validation profile for node validation. Default \"runtime\".",
+                          "enum": [
+                            "minimal",
+                            "runtime",
+                            "ai-friendly",
+                            "strict"
+                          ],
+                          "type": "string"
+                        },
+                        "validateConnections": {
+                          "default": true,
+                          "description": "Validate node connections and flow. Default true.",
+                          "type": "boolean"
+                        },
+                        "validateExpressions": {
+                          "default": true,
+                          "description": "Validate n8n expressions syntax and references. Default true.",
+                          "type": "boolean"
+                        },
+                        "validateNodes": {
+                          "default": true,
+                          "description": "Validate individual node configurations. Default true.",
+                          "type": "boolean"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "workflow": {
+                      "description": "The complete workflow JSON to validate. Must include nodes array and connections object.",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "workflow"
+                  ],
+                  "type": "object"
+                },
+                "name": "validate_workflow",
+                "outputSchema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "properties": {
+                          "details": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "node": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "suggestions": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "summary": {
+                      "properties": {
+                        "enabledNodes": {
+                          "type": "number"
+                        },
+                        "errorCount": {
+                          "type": "number"
+                        },
+                        "expressionsValidated": {
+                          "type": "number"
+                        },
+                        "invalidConnections": {
+                          "type": "number"
+                        },
+                        "totalNodes": {
+                          "type": "number"
+                        },
+                        "triggerNodes": {
+                          "type": "number"
+                        },
+                        "validConnections": {
+                          "type": "number"
+                        },
+                        "warningCount": {
+                          "type": "number"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "valid": {
+                      "type": "boolean"
+                    },
+                    "warnings": {
+                      "items": {
+                        "properties": {
+                          "details": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "node": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "valid",
+                    "summary"
+                  ],
+                  "type": "object"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "nodeType": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp"
+            },
+            "name": "get_node"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error executing tool get_node: Node MCP_INPUT_CANARY_czlonkowski__n8n_mcp not found\n\nNote: The requested resource or category was not found. Please check the available options.\n\n[Diagnostic] Received arg types: {nodeType: string}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "query": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp"
+            },
+            "name": "search_nodes"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"query\": \"MCP_INPUT_CANARY_czlonkowski__n8n_mcp\",\n  \"results\": [],\n  \"totalCount\": 0,\n  \"mode\": \"OR\"\n}",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "templateId": 1.0
+            },
+            "name": "get_template"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"error\": \"Template 1 not found\",\n  \"tip\": \"Use list_templates, list_node_templates or search_templates to find available templates\"\n}",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "nodeType": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp"
+          },
+          "name": "get_node"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_node",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error executing tool get_node: Node MCP_INPUT_CANARY_czlonkowski__n8n_mcp not found\n\nNote: The requested resource or category was not found. Please check the available options.\n\n[Diagnostic] Received arg types: {nodeType: string}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get_node"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "query": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp"
+          },
+          "name": "search_nodes"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "search_nodes",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"query\": \"MCP_INPUT_CANARY_czlonkowski__n8n_mcp\",\n  \"results\": [],\n  \"totalCount\": 0,\n  \"mode\": \"OR\"\n}",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "search_nodes"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "templateId": 1.0
+          },
+          "name": "get_template"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_template",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"error\": \"Template 1 not found\",\n  \"tip\": \"Use list_templates, list_node_templates or search_templates to find available templates\"\n}",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get_template"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 35
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/czlonkowski__n8n_mcp.txt",
+      "evidence": {
+        "content_len": 36,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/czlonkowski__n8n_mcp.txt"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "get_node:$.arguments.nodeType",
+      "evidence": {
+        "content_len": 37,
+        "path": "$.arguments.nodeType",
+        "source_id": "ToolInput: get_node $.arguments.nodeType",
+        "tool": "get_node"
+      }
+    },
+    {
+      "kind": "tool-input-observed",
+      "actor": "scanner",
+      "target": "search_nodes:$.arguments.query",
+      "evidence": {
+        "content_len": 37,
+        "path": "$.arguments.query",
+        "source_id": "ToolInput: search_nodes $.arguments.query",
+        "tool": "search_nodes"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error executing tool get_node: Node MCP_INPUT_CANARY_czlonkowski__n8n_mcp not found\n\nNote: The requested resource or category was not found. Please check the available options.\n\n[Diagnostic] Received arg types: {nodeType: string}"
+        },
+        "text_len": 229
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"query\": \"MCP_INPUT_CANARY_czlonkowski__n8n_mcp\",\n  \"results\": [],\n  \"totalCount\": 0,\n  \"mode\": \"OR\"\n}"
+        },
+        "text_len": 106
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"error\": \"Template 1 not found\",\n  \"tip\": \"Use list_templates, list_node_templates or search_templates to find available templates\"\n}"
+        },
+        "text_len": 137
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp",
+        "source_id": "ToolInput: get_node $.arguments.nodeType"
+      }
+    },
+    {
+      "kind": "flow-detected",
+      "actor": "scanner",
+      "target": "McpToolResultText",
+      "evidence": {
+        "confidence": "high",
+        "sink_type": "McpToolResultText",
+        "snippet": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp",
+        "source_id": "ToolInput: search_nodes $.arguments.query"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_czlonkowski__n8n_mcp"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/czlonkowski__n8n_mcp.txt",
+      "content": "MCP_FILE_CANARY_czlonkowski__n8n_mcp"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "get_node",
+      "path": "$.arguments.nodeType",
+      "content": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp"
+    },
+    {
+      "type": "ToolInput",
+      "tool": "search_nodes",
+      "path": "$.arguments.query",
+      "content": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "Error executing tool get_node: Node MCP_INPUT_CANARY_czlonkowski__n8n_mcp not found\n\nNote: The requested resource or category was not found. Please check the available options.\n\n[Diagnostic] Received arg types: {nodeType: string}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "{\n  \"query\": \"MCP_INPUT_CANARY_czlonkowski__n8n_mcp\",\n  \"results\": [],\n  \"totalCount\": 0,\n  \"mode\": \"OR\"\n}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "{\n  \"error\": \"Template 1 not found\",\n  \"tip\": \"Use list_templates, list_node_templates or search_templates to find available templates\"\n}"
+    }
+  ],
+  "flows": [
+    {
+      "source_id": "ToolInput: get_node $.arguments.nodeType",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp",
+      "confidence": "high"
+    },
+    {
+      "source_id": "ToolInput: search_nodes $.arguments.query",
+      "sink_type": "McpToolResultText",
+      "snippet": "MCP_INPUT_CANARY_czlonkowski__n8n_mcp",
+      "confidence": "high"
+    }
+  ],
+  "summary": {
+    "num_sources": 4,
+    "num_sinks": 3,
+    "num_flows": 2,
+    "has_external_to_prompt_flow": true
+  }
+}

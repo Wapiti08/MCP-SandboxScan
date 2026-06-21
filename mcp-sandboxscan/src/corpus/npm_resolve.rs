@@ -83,7 +83,10 @@ pub fn plan_npm_package(root: &Path) -> Result<NpmPackagePlan> {
     }
 
     let (_, package_dir, pkg) = best.ok_or_else(|| {
-        anyhow::anyhow!("no runnable npm workspace/package found under {}", root.display())
+        anyhow::anyhow!(
+            "no runnable npm workspace/package found under {}",
+            root.display()
+        )
     })?;
 
     let install_dir = if workspace_package_dirs(root, &root_pkg)?.is_empty() {
@@ -105,8 +108,7 @@ pub fn plan_npm_package(root: &Path) -> Result<NpmPackagePlan> {
 }
 
 fn read_package_json(path: &Path) -> Result<Value> {
-    let raw = fs::read_to_string(path)
-        .with_context(|| format!("read {}", path.display()))?;
+    let raw = fs::read_to_string(path).with_context(|| format!("read {}", path.display()))?;
     serde_json::from_str(&raw).with_context(|| format!("parse {}", path.display()))
 }
 
@@ -183,7 +185,8 @@ fn score_npm_package(dir: &Path, pkg: &Value) -> i32 {
     if pkg.get("bin").is_some() {
         score += 10;
     }
-    if pkg.get("scripts")
+    if pkg
+        .get("scripts")
         .and_then(|s| s.get("start:stdio"))
         .is_some()
     {
@@ -201,7 +204,8 @@ fn score_npm_package(dir: &Path, pkg: &Value) -> i32 {
     if pkg.get("mcpName").is_some() {
         score += 5;
     }
-    if pkg.get("dependencies")
+    if pkg
+        .get("dependencies")
         .or(pkg.get("devDependencies"))
         .and_then(|deps| deps.get("@modelcontextprotocol/sdk"))
         .is_some()
@@ -210,7 +214,9 @@ fn score_npm_package(dir: &Path, pkg: &Value) -> i32 {
     }
 
     // Penalize test-only or meta packages.
-    if dir_name == "scripts" || dir_name == "docs" || name.ends_with("-cli") && !name.contains("mcp")
+    if dir_name == "scripts"
+        || dir_name == "docs"
+        || name.ends_with("-cli") && !name.contains("mcp")
     {
         score -= 20;
     }
@@ -285,17 +291,13 @@ fn npm_build_args(install_dir: &Path, package_dir: &Path) -> String {
             "cd '{install}' && npm install --no-fund --no-audit && cd '{package}' && npm run build --if-present"
         )
     };
-    serde_json::to_string(&["-c", script.as_str()]).unwrap_or_else(|_| {
-        r#"["-c", "npm install --no-fund --no-audit"]"#.to_string()
-    })
+    serde_json::to_string(&["-c", script.as_str()])
+        .unwrap_or_else(|_| r#"["-c", "npm install --no-fund --no-audit"]"#.to_string())
 }
 
 fn npm_stdio_run_args(pkg: &Value, run_args: &[String]) -> Vec<String> {
     let mut args = run_args.to_vec();
-    if args
-        .iter()
-        .any(|a| a == "stdio" || a == "--stdio")
-    {
+    if args.iter().any(|a| a == "stdio" || a == "--stdio") {
         return args;
     }
 
@@ -351,10 +353,7 @@ mod tests {
             return;
         }
         let plan = plan_npm_package(&root).expect("plan servers monorepo");
-        assert!(plan
-            .package_dir
-            .to_string_lossy()
-            .contains("everything"));
+        assert!(plan.package_dir.to_string_lossy().contains("everything"));
         assert_eq!(plan.run_command, "node");
         assert!(plan.run_args.iter().any(|a| a.contains("index.js")));
     }

@@ -31,6 +31,7 @@ pub enum MonitorEventKind {
     McpToolResult,
     McpResourceRead,
     McpPromptGet,
+    ToolInputObserved,
     SinkObserved,
     FlowDetected,
 }
@@ -116,6 +117,21 @@ pub fn source_inventory_events(sources: &[TaintSource]) -> Vec<MonitorEvent> {
                     "protocol": protocol,
                     "host": host,
                     "port": port
+                }),
+            },
+            TaintSource::ToolInput {
+                tool,
+                path,
+                content,
+            } => MonitorEvent {
+                kind: MonitorEventKind::ToolInputObserved,
+                actor: "scanner".to_string(),
+                target: Some(format!("{tool}:{path}")),
+                evidence: json!({
+                    "source_id": source.short_id(),
+                    "content_len": content.len(),
+                    "tool": tool,
+                    "path": path
                 }),
             },
         })

@@ -1,0 +1,1159 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 274
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "tools": {}
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "mcpvault",
+              "version": "0.11.4"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "description": "Read a note from the Obsidian vault",
+                "inputSchema": {
+                  "properties": {
+                    "path": {
+                      "description": "Path to the note relative to vault root",
+                      "type": "string"
+                    },
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_note"
+              },
+              {
+                "description": "Write a note to the Obsidian vault",
+                "inputSchema": {
+                  "properties": {
+                    "content": {
+                      "description": "Content of the note",
+                      "type": "string"
+                    },
+                    "frontmatter": {
+                      "description": "Frontmatter object (optional)",
+                      "type": "object"
+                    },
+                    "mode": {
+                      "default": "overwrite",
+                      "description": "Write mode: 'overwrite' (default), 'append', or 'prepend'",
+                      "enum": [
+                        "overwrite",
+                        "append",
+                        "prepend"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "Path to the note relative to vault root",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "content"
+                  ],
+                  "type": "object"
+                },
+                "name": "write_note"
+              },
+              {
+                "description": "Efficiently update part of a note by replacing a specific string. This is more efficient than rewriting the entire note for small changes.",
+                "inputSchema": {
+                  "properties": {
+                    "newString": {
+                      "description": "The new string to insert in place of oldString",
+                      "type": "string"
+                    },
+                    "oldString": {
+                      "description": "The exact string to replace. Must match exactly including whitespace and line breaks.",
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "Path to the note relative to vault root",
+                      "type": "string"
+                    },
+                    "replaceAll": {
+                      "default": false,
+                      "description": "If true, replace all occurrences. If false (default), the operation will fail if multiple matches are found to prevent unintended replacements.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "oldString",
+                    "newString"
+                  ],
+                  "type": "object"
+                },
+                "name": "patch_note"
+              },
+              {
+                "description": "List files and directories in the vault (includes non-note filenames, while read/write tools remain note-only)",
+                "inputSchema": {
+                  "properties": {
+                    "path": {
+                      "default": "/",
+                      "description": "Path relative to vault root (default: '/')",
+                      "type": "string"
+                    },
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list_directory"
+              },
+              {
+                "description": "Delete a note from the Obsidian vault (requires confirmation). Supports permanent delete, vault trash, or system trash.",
+                "inputSchema": {
+                  "properties": {
+                    "confirmPath": {
+                      "description": "Confirmation: must exactly match the path parameter to proceed with deletion",
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "Path to the note relative to vault root",
+                      "type": "string"
+                    },
+                    "trashMode": {
+                      "default": "none",
+                      "description": "Deletion mode: 'none' = permanent delete (default), 'local' = move to .trash inside vault, 'system' = move to OS trash",
+                      "enum": [
+                        "none",
+                        "local",
+                        "system"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "confirmPath"
+                  ],
+                  "type": "object"
+                },
+                "name": "delete_note"
+              },
+              {
+                "description": "Search for notes in the vault by content or frontmatter",
+                "inputSchema": {
+                  "properties": {
+                    "caseSensitive": {
+                      "default": false,
+                      "description": "Case sensitive search (default: false)",
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "default": 5,
+                      "description": "Maximum number of results (default: 5, max: 20)",
+                      "type": "number"
+                    },
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    },
+                    "query": {
+                      "description": "Search query text",
+                      "type": "string"
+                    },
+                    "searchContent": {
+                      "default": true,
+                      "description": "Search in note content (default: true)",
+                      "type": "boolean"
+                    },
+                    "searchFrontmatter": {
+                      "default": false,
+                      "description": "Search in frontmatter (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "search_notes"
+              },
+              {
+                "description": "Move or rename a note in the vault",
+                "inputSchema": {
+                  "properties": {
+                    "newPath": {
+                      "description": "New path for the note",
+                      "type": "string"
+                    },
+                    "oldPath": {
+                      "description": "Current path of the note",
+                      "type": "string"
+                    },
+                    "overwrite": {
+                      "default": false,
+                      "description": "Allow overwriting existing file (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "oldPath",
+                    "newPath"
+                  ],
+                  "type": "object"
+                },
+                "name": "move_note"
+              },
+              {
+                "description": "Move or rename any file in the vault (binary-safe, file-only, requires confirmation)",
+                "inputSchema": {
+                  "properties": {
+                    "confirmNewPath": {
+                      "description": "Confirmation: must exactly match newPath",
+                      "type": "string"
+                    },
+                    "confirmOldPath": {
+                      "description": "Confirmation: must exactly match oldPath",
+                      "type": "string"
+                    },
+                    "newPath": {
+                      "description": "New path for the file",
+                      "type": "string"
+                    },
+                    "oldPath": {
+                      "description": "Current path of the file",
+                      "type": "string"
+                    },
+                    "overwrite": {
+                      "default": false,
+                      "description": "Allow overwriting existing file (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "oldPath",
+                    "newPath",
+                    "confirmOldPath",
+                    "confirmNewPath"
+                  ],
+                  "type": "object"
+                },
+                "name": "move_file"
+              },
+              {
+                "description": "Read multiple notes in a batch (max 10 files)",
+                "inputSchema": {
+                  "properties": {
+                    "includeContent": {
+                      "default": true,
+                      "description": "Include note content (default: true)",
+                      "type": "boolean"
+                    },
+                    "includeFrontmatter": {
+                      "default": true,
+                      "description": "Include frontmatter (default: true)",
+                      "type": "boolean"
+                    },
+                    "paths": {
+                      "description": "Array of note paths to read",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 10,
+                      "type": "array"
+                    },
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "paths"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_multiple_notes"
+              },
+              {
+                "description": "Update frontmatter of a note without changing content",
+                "inputSchema": {
+                  "properties": {
+                    "frontmatter": {
+                      "description": "Frontmatter object to update",
+                      "type": "object"
+                    },
+                    "merge": {
+                      "default": true,
+                      "description": "Merge with existing frontmatter (default: true)",
+                      "type": "boolean"
+                    },
+                    "path": {
+                      "description": "Path to the note",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "frontmatter"
+                  ],
+                  "type": "object"
+                },
+                "name": "update_frontmatter"
+              },
+              {
+                "description": "Get metadata for notes without reading full content",
+                "inputSchema": {
+                  "properties": {
+                    "paths": {
+                      "description": "Array of note paths to get info for",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "paths"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_notes_info"
+              },
+              {
+                "description": "Extract frontmatter from a note without reading the content",
+                "inputSchema": {
+                  "properties": {
+                    "path": {
+                      "description": "Path to the note relative to vault root",
+                      "type": "string"
+                    },
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_frontmatter"
+              },
+              {
+                "description": "Add, remove, or list tags in a note",
+                "inputSchema": {
+                  "properties": {
+                    "operation": {
+                      "description": "Operation to perform: 'add', 'remove', or 'list'",
+                      "enum": [
+                        "add",
+                        "remove",
+                        "list"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "Path to the note relative to vault root",
+                      "type": "string"
+                    },
+                    "tags": {
+                      "description": "Array of tags (required for 'add' and 'remove' operations)",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "operation"
+                  ],
+                  "type": "object"
+                },
+                "name": "manage_tags"
+              },
+              {
+                "description": "Get vault statistics including total notes, folders, size, and recently modified files. Useful for understanding vault scope before batch operations.",
+                "inputSchema": {
+                  "properties": {
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    },
+                    "recentCount": {
+                      "default": 5,
+                      "description": "Number of recently modified files to return (default: 5, max: 20)",
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "get_vault_stats"
+              },
+              {
+                "description": "List all tags across the vault with occurrence counts. Returns both frontmatter tags and inline #hashtags, deduplicated and sorted by frequency. Useful for discovering existing tags before creating or organizing notes.",
+                "inputSchema": {
+                  "properties": {
+                    "prettyPrint": {
+                      "default": false,
+                      "description": "Format JSON response with indentation (default: false)",
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "list_all_tags"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "paths": []
+            },
+            "name": "get_notes_info"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "[]",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+            },
+            "name": "get_frontmatter"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "get_vault_stats"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"notes\":32,\"folders\":21,\"size\":137594,\"recent\":[{\"path\":\"website/src/emails/issues/2026-03-20-v0.10.0.md\",\"modified\":1781813686747},{\"path\":\"website/src/emails/issues/2026-03-24-v0.11.0.md\",\"modified\":1781813686747},{\"path\":\"website/public/robots.txt\",\"modified\":1781813686744},{\"path\":\"website/public/site.webmanifest\",\"modified\":1781813686744},{\"path\":\"website/public/skill.md\",\"modified\":1781813686744}]}",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "paths": []
+            },
+            "name": "read_multiple_notes"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"ok\":[],\"err\":[]}",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "list_all_tags"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "[{\"tag\":\"x\",\"count\":3},{\"tag\":\"n\",\"count\":1}]",
+                "type": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "confirmNewPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+              "confirmOldPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+              "newPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+              "oldPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+            },
+            "name": "move_file"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"success\": false,\n  \"oldPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"newPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"message\": \"Source file not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files.\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {
+              "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+            },
+            "name": "read_note"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "paths": []
+          },
+          "name": "get_notes_info"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_notes_info",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "[]",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get_notes_info"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+          },
+          "name": "get_frontmatter"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_frontmatter",
+      "evidence": {
+        "response": {
+          "id": 4,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "get_frontmatter"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "get_vault_stats"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_vault_stats",
+      "evidence": {
+        "response": {
+          "id": 5,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"notes\":32,\"folders\":21,\"size\":137594,\"recent\":[{\"path\":\"website/src/emails/issues/2026-03-20-v0.10.0.md\",\"modified\":1781813686747},{\"path\":\"website/src/emails/issues/2026-03-24-v0.11.0.md\",\"modified\":1781813686747},{\"path\":\"website/public/robots.txt\",\"modified\":1781813686744},{\"path\":\"website/public/site.webmanifest\",\"modified\":1781813686744},{\"path\":\"website/public/skill.md\",\"modified\":1781813686744}]}",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "get_vault_stats"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "paths": []
+          },
+          "name": "read_multiple_notes"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "read_multiple_notes",
+      "evidence": {
+        "response": {
+          "id": 6,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"ok\":[],\"err\":[]}",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "read_multiple_notes"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "list_all_tags"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "list_all_tags",
+      "evidence": {
+        "response": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "[{\"tag\":\"x\",\"count\":3},{\"tag\":\"n\",\"count\":1}]",
+                "type": "text"
+              }
+            ]
+          }
+        },
+        "tool_name": "list_all_tags"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "confirmNewPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+            "confirmOldPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+            "newPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+            "oldPath": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+          },
+          "name": "move_file"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "move_file",
+      "evidence": {
+        "response": {
+          "id": 8,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\n  \"success\": false,\n  \"oldPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"newPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"message\": \"Source file not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files.\"\n}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "move_file"
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+          },
+          "name": "read_note"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "read_note",
+      "evidence": {
+        "response": {
+          "id": 9,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling.",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        },
+        "tool_name": "read_note"
+      }
+    },
+    {
+      "kind": "env-read",
+      "actor": "scanner",
+      "target": "MCP_SANDBOXSCAN_CANARY",
+      "evidence": {
+        "source_id": "EnvVar: MCP_SANDBOXSCAN_CANARY",
+        "value_len": 34
+      }
+    },
+    {
+      "kind": "file-read",
+      "actor": "scanner",
+      "target": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+      "evidence": {
+        "content_len": 35,
+        "source_id": "FileRead: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[0].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "[]"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[1].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling."
+        },
+        "text_len": 192
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[2].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"notes\":32,\"folders\":21,\"size\":137594,\"recent\":[{\"path\":\"website/src/emails/issues/2026-03-20-v0.10.0.md\",\"modified\":1781813686747},{\"path\":\"website/src/emails/issues/2026-03-24-v0.11.0.md\",\"modified\":1781813686747},{\"path\":\"website/public/robots.txt\",\"modified\":1781813686744},{\"path\":\"website/public/site.webmanifest\",\"modified\":1781813686744},{\"path\":\"website/public/skill.md\",\"modified\":1781813686744}]}"
+        },
+        "text_len": 408
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[3].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\"ok\":[],\"err\":[]}"
+        },
+        "text_len": 18
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[4].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "[{\"tag\":\"x\",\"count\":3},{\"tag\":\"n\",\"count\":1}]"
+        },
+        "text_len": 45
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[5].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "{\n  \"success\": false,\n  \"oldPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"newPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"message\": \"Source file not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files.\"\n}"
+        },
+        "text_len": 431
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.exploration_results[6].result.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling."
+        },
+        "text_len": 192
+      }
+    }
+  ],
+  "sources": [
+    {
+      "type": "EnvVar",
+      "key": "MCP_SANDBOXSCAN_CANARY",
+      "value": "MCP_ENV_CANARY_bitbonsai__mcpvault"
+    },
+    {
+      "type": "FileRead",
+      "path": "/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt",
+      "content": "MCP_FILE_CANARY_bitbonsai__mcpvault"
+    }
+  ],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[0].result.content[0].text",
+      "value": "[]"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[1].result.content[0].text",
+      "value": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling."
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[2].result.content[0].text",
+      "value": "{\"notes\":32,\"folders\":21,\"size\":137594,\"recent\":[{\"path\":\"website/src/emails/issues/2026-03-20-v0.10.0.md\",\"modified\":1781813686747},{\"path\":\"website/src/emails/issues/2026-03-24-v0.11.0.md\",\"modified\":1781813686747},{\"path\":\"website/public/robots.txt\",\"modified\":1781813686744},{\"path\":\"website/public/site.webmanifest\",\"modified\":1781813686744},{\"path\":\"website/public/skill.md\",\"modified\":1781813686744}]}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[3].result.content[0].text",
+      "value": "{\"ok\":[],\"err\":[]}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[4].result.content[0].text",
+      "value": "[{\"tag\":\"x\",\"count\":3},{\"tag\":\"n\",\"count\":1}]"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[5].result.content[0].text",
+      "value": "{\n  \"success\": false,\n  \"oldPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"newPath\": \"/var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt\",\n  \"message\": \"Source file not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files.\"\n}"
+    },
+    {
+      "type": "McpToolResultText",
+      "path": "$.exploration_results[6].result.content[0].text",
+      "value": "Error: File not found: /var/folders/kc/c74q_vx95dx4__wm8dtz6q540000gn/T/mcp-sandboxscan-canaries/bitbonsai__mcpvault.txt. Use list_directory to see available files, or check the path spelling."
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 2,
+    "num_sinks": 7,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}
