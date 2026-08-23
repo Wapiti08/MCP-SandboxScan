@@ -1,0 +1,12 @@
+[workspace]
+members = ["mcp-sandboxscan"]
+exclude = [
+    "mcp-sandboxscan/external/*",
+    "mcp-sandboxscan/fixtures/*",
+]
+resolver = "3"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = "symbols"

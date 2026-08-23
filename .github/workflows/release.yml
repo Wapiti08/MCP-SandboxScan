@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Require tag to match Cargo package version
+        shell: bash
+        run: |
+          package_version=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "mcp-sandboxscan") | .version')
+          test "${GITHUB_REF_NAME}" = "v${package_version}"
+
+  build-binaries:
+    needs: verify-version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            archive: tar
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            archive: tar
+          - os: macos-15
+            target: aarch64-apple-darwin
+            archive: tar
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            archive: zip
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Rust target
+        run: rustup target add ${{ matrix.target }}
+      - name: Build
+        run: cargo build --locked --release --bin mcp-sandboxscan --target ${{ matrix.target }}
+      - name: Package Unix binary
+        if: matrix.archive == 'tar'
+        shell: bash
+        run: |
+          archive="mcp-sandboxscan-${GITHUB_REF_NAME}-${{ matrix.target }}"
+          mkdir -p "${archive}/benchmark" "${archive}/examples" "${archive}/schema"
+          cp "target/${{ matrix.target }}/release/mcp-sandboxscan" "${archive}/"
+          cp LICENSE README.md THREAT_MODEL.md BENCHMARK.md CHANGELOG.md RELEASE_NOTES.md "${archive}/"
+          cp examples/minimal.sh "${archive}/examples/"
+          cp mcp-sandboxscan/fixtures/tool_return_secret_tool/tool.wasm "${archive}/examples/tool.wasm"
+          cp mcp-sandboxscan/reports/bench-smoke-test/summary.md mcp-sandboxscan/reports/bench-smoke-test/summary.json "${archive}/benchmark/"
+          cp schema/telemetry.schema.json schema/README.md "${archive}/schema/"
+          tar -czf "${archive}.tar.gz" "${archive}"
+      - name: Package Windows binary
+        if: matrix.archive == 'zip'
+        shell: pwsh
+        run: |
+          $archive = "mcp-sandboxscan-$env:GITHUB_REF_NAME-${{ matrix.target }}"
+          New-Item -ItemType Directory -Path $archive
+          New-Item -ItemType Directory -Path "$archive/benchmark", "$archive/examples", "$archive/schema"
+          Copy-Item "target/${{ matrix.target }}/release/mcp-sandboxscan.exe" "$archive/"
+          Copy-Item LICENSE, README.md, THREAT_MODEL.md, BENCHMARK.md, CHANGELOG.md, RELEASE_NOTES.md "$archive/"
+          Copy-Item examples/minimal.sh "$archive/examples/"
+          Copy-Item mcp-sandboxscan/fixtures/tool_return_secret_tool/tool.wasm "$archive/examples/tool.wasm"
+          Copy-Item mcp-sandboxscan/reports/bench-smoke-test/summary.md, mcp-sandboxscan/reports/bench-smoke-test/summary.json "$archive/benchmark/"
+          Copy-Item schema/telemetry.schema.json, schema/README.md "$archive/schema/"
+          Compress-Archive -Path $archive -DestinationPath "$archive.zip"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mcp-sandboxscan-${{ matrix.target }}
+          path: mcp-sandboxscan-${{ github.ref_name }}-${{ matrix.target }}.*
+          if-no-files-found: error
+
+  publish-image:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Normalize image name
+        id: image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - uses: docker/metadata-action@v6
+        id: metadata
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=ref,event=tag
+            type=sha
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          build-args: |
+            VERSION=${{ github.ref_name }}
+            REVISION=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  create-release:
+    needs: [build-binaries, publish-image]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: mcp-sandboxscan-*
+          path: dist
+          merge-multiple: true
+      - name: Create checksums
+        working-directory: dist
+        run: sha256sum * > SHA256SUMS
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release create "${GITHUB_REF_NAME}"
+          dist/*
+          --verify-tag
+          --prerelease
+          --title "MCP-SandboxScan ${GITHUB_REF_NAME}"
+          --notes-file RELEASE_NOTES.md

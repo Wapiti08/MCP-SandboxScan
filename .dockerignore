@@ -1,0 +1,14 @@
+.git
+.github
+**/.DS_Store
+**/target
+**/.venv
+**/node_modules
+mcp-sandboxscan/case_studies
+mcp-sandboxscan/corpus
+mcp-sandboxscan/data
+mcp-sandboxscan/demo
+mcp-sandboxscan/external
+mcp-sandboxscan/fixtures
+mcp-sandboxscan/reports
+mcp-sandboxscan/scripts

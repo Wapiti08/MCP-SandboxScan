@@ -4,7 +4,8 @@
 */target/
 **/target/
 **/*.rs.bk
-Cargo.lock
+**/Cargo.lock
+!/Cargo.lock
 **/data
 external/
 **/.venv/
@@ -19,3 +20,5 @@ docs/
 corpus/clones/
 clones
 manifests
+.DS_Store
+**/.DS_Store

@@ -3,6 +3,57 @@ A dynamic security analysis framework for MCP tools and servers, combining WASM/
 
 MCP-SandboxScan executes or interacts with MCP implementations, collects runtime and protocol evidence, and detects potentially unsafe flows from external inputs—including environment variables, files, and network responses—to LLM-visible outputs.
 
+> `v0.1.0-alpha.1` is an early preview. Its CLI and JSON contracts may change, and
+> native MCP subjects require additional OS- or VM-level isolation. Read the
+> [threat model](THREAT_MODEL.md) before analyzing untrusted code.
+
+## Quick start
+
+Build the scanner from the repository root (Rust `1.93` or newer):
+
+```bash
+cargo build --locked --release
+./target/release/mcp-sandboxscan --version
+./examples/minimal.sh > report.json
+jq '.summary' report.json
+```
+
+The minimal example scans a checked-in WASM fixture and should report one observed
+environment-to-tool-result flow. The report conforms to
+[`schema/telemetry.schema.json`](schema/telemetry.schema.json). Reports may contain
+secret values and captured protocol payloads; handle them as sensitive artifacts.
+
+### Release binaries
+
+Download the archive for your platform from
+[GitHub Releases](https://github.com/Wapiti08/MCP-SandboxScan/releases/tag/v0.1.0-alpha.1),
+then verify it against the attached `SHA256SUMS` file. Archives are published for
+Linux x86_64, macOS x86_64/arm64, and Windows x86_64. Each archive also contains the
+versioned schema, documentation, and a self-contained minimal WASM example:
+
+```bash
+./mcp-sandboxscan --version
+./examples/minimal.sh | jq '.summary'
+```
+
+### Docker image
+
+The release workflow publishes Linux amd64/arm64 images to GHCR:
+
+```bash
+docker pull ghcr.io/wapiti08/mcp-sandboxscan:v0.1.0-alpha.1
+
+docker run --rm \
+  -v "$PWD/mcp-sandboxscan/fixtures/tool_return_secret_tool:/work:ro" \
+  ghcr.io/wapiti08/mcp-sandboxscan:v0.1.0-alpha.1 \
+  --wasm /work/tool.wasm \
+  --env DEMO_SECRET=EXAMPLE_ONLY_0123456789abcdef
+```
+
+See the [benchmark](BENCHMARK.md), [changelog](CHANGELOG.md), and
+[release notes](RELEASE_NOTES.md) for this version. Maintainers can follow the
+[release guide](RELEASING.md) to publish and verify all artifacts.
+
 ## Features
 
 - WASM/WASI execution for sandbox-compatible MCP-like tools.
@@ -240,10 +291,10 @@ cargo test xxx
 
 ## Run
 ```bash
-cargo run --bin mcp-sandboxscan -- \
-  --wasm ./fixtures/evil_prompt_tool/tool.wasm \
-  --env USER_INPUT=hello \
-  --env API_KEY=secret
+# From the repository root
+cargo run --locked --release --bin mcp-sandboxscan -- \
+  --wasm mcp-sandboxscan/fixtures/tool_return_secret_tool/tool.wasm \
+  --env DEMO_SECRET=EXAMPLE_ONLY_0123456789abcdef
 ```
 
 ## Scanning Real MCP Servers (Corpus)

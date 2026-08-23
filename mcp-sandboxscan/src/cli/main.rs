@@ -13,7 +13,7 @@ use crate::scan::dynamic::run_dynamic_scan;
 
 // define CLI arguments
 #[derive(Parser, Debug)]
-#[command(name = "mcp-sandboxscan")]
+#[command(name = "mcp-sandboxscan", version)]
 #[command(about = "MCP-SandboxScan: WASM sandbox + dynamic taint-style flow detection", long_about = None)]
 pub struct Args {
     /// path to target WASM module

@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wapiti08/MCP-SandboxScan/blob/v0.1.0-alpha.1/schema/telemetry.schema.json",
+  "title": "MCP-SandboxScan telemetry report",
+  "description": "Schema for the ScanReport JSON emitted by mcp-sandboxscan v0.1.0-alpha.1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["exec", "events", "sources", "sinks", "flows", "summary"],
+  "properties": {
+    "exec": { "$ref": "#/$defs/executionEvidence" },
+    "mcp_transcript": { "$ref": "#/$defs/mcpTranscript" },
+    "events": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/monitorEvent" }
+    },
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/taintSource" }
+    },
+    "sinks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/promptSink" }
+    },
+    "flows": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/flowMatch" }
+    },
+    "summary": { "$ref": "#/$defs/summary" }
+  },
+  "$defs": {
+    "executionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend", "stdout", "stderr", "exit_code", "duration_ms"],
+      "properties": {
+        "backend": { "enum": ["wasm", "native-stdio"] },
+        "stdout": { "type": "string" },
+        "stderr": { "type": "string" },
+        "exit_code": { "type": ["integer", "null"] },
+        "duration_ms": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "mcpTranscript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["events"],
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/mcpEvent" }
+        }
+      }
+    },
+    "mcpEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["direction", "method", "payload"],
+      "properties": {
+        "direction": { "enum": ["client-to-server", "server-to-client"] },
+        "method": { "type": ["string", "null"] },
+        "payload": {}
+      }
+    },
+    "monitorEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "actor", "target", "evidence"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "capability-granted",
+            "env-read",
+            "file-read",
+            "file-write",
+            "network-request",
+            "network-connect-attempt",
+            "network-connect-allowed",
+            "network-connect-denied",
+            "process-spawn",
+            "mcp-initialize",
+            "mcp-tools-list",
+            "mcp-tool-call",
+            "mcp-tool-result",
+            "mcp-resource-read",
+            "mcp-prompt-get",
+            "tool-input-observed",
+            "sink-observed",
+            "flow-detected"
+          ]
+        },
+        "actor": { "type": "string" },
+        "target": { "type": ["string", "null"] },
+        "evidence": {}
+      }
+    },
+    "taintSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "path", "content"],
+          "properties": {
+            "type": { "const": "FileRead" },
+            "path": { "type": "string" },
+            "content": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "key", "value"],
+          "properties": {
+            "type": { "const": "EnvVar" },
+            "key": { "type": "string" },
+            "value": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "url", "content"],
+          "properties": {
+            "type": { "const": "HttpFetch" },
+            "url": { "type": "string" },
+            "content": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "host", "port", "protocol", "content"],
+          "properties": {
+            "type": { "const": "NetworkConnect" },
+            "host": { "type": "string" },
+            "port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+            "protocol": { "type": "string" },
+            "content": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "tool", "path", "content"],
+          "properties": {
+            "type": { "const": "ToolInput" },
+            "tool": { "type": "string" },
+            "path": { "type": "string" },
+            "content": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "promptSink": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "line"],
+          "properties": {
+            "type": { "const": "StdoutPrompt" },
+            "line": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "key", "value"],
+          "properties": {
+            "type": { "const": "JsonPrompt" },
+            "key": { "type": "string" },
+            "value": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "path", "value"],
+          "properties": {
+            "type": { "const": "ToolReturnLeaf" },
+            "path": { "type": "string" },
+            "value": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "path", "value"],
+          "properties": {
+            "type": { "const": "McpToolResultText" },
+            "path": { "type": "string" },
+            "value": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "flowMatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "sink_type", "snippet", "confidence"],
+      "properties": {
+        "source_id": { "type": "string" },
+        "sink_type": {
+          "enum": ["StdoutPrompt", "JsonPrompt", "ToolReturnLeaf", "McpToolResultText"]
+        },
+        "snippet": { "type": "string" },
+        "confidence": { "enum": ["high", "medium"] }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["num_sources", "num_sinks", "num_flows", "has_external_to_prompt_flow"],
+      "properties": {
+        "num_sources": { "type": "integer", "minimum": 0 },
+        "num_sinks": { "type": "integer", "minimum": 0 },
+        "num_flows": { "type": "integer", "minimum": 0 },
+        "has_external_to_prompt_flow": { "type": "boolean" }
+      }
+    }
+  }
+}

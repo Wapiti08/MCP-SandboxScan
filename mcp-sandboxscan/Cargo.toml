@@ -1,7 +1,13 @@
 [package]
 name = "mcp-sandboxscan"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 edition = "2024"
+rust-version = "1.93"
+description = "Dynamic security analysis for MCP tools and servers"
+license = "MIT"
+repository = "https://github.com/Wapiti08/MCP-SandboxScan"
+readme = "../README.md"
+default-run = "mcp-sandboxscan"
 
 [[bin]]
 name = "bench"
@@ -31,4 +37,4 @@ wasmtime = "45.0.0"
 wasmtime-wasi = "45.0.0"
 wasi-common = "45.0.0"
 cap-std = "4.0.0"
-toml="1.1.2+spec-1.1.0"
+toml = "1.1.2"

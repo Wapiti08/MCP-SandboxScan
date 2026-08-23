@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Show toolchain
+        run: rustc --version && cargo --version
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Build release binary
+        run: cargo build --workspace --locked --release --bin mcp-sandboxscan
+      - name: Smoke test release output
+        shell: bash
+        run: |
+          ./target/release/mcp-sandboxscan --version | grep -F "0.1.0-alpha.1"
+          ./examples/minimal.sh | jq -e '.summary.num_flows == 1 and .summary.has_external_to_prompt_flow == true'
+          jq empty schema/telemetry.schema.json
+      - name: Run environment-independent core tests
+        shell: bash
+        run: |
+          cargo test --locked --lib taint::
+          cargo test --locked --lib scan::
+          cargo test --locked --lib eval::
+          cargo test --locked --lib subject::
+          cargo test --locked --lib mcp::explore::tests::
+          cargo test --locked --lib sandbox::wasi::preview1::tests::records_wasi_capability_grants
