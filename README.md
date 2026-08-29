@@ -1,4 +1,7 @@
 # MCP-SandboxScan
+
+This work has been accepted at Conference on Software Supply Chain Offensive Research and Ecosystem Defenses (SCORED '26). Please check the paper at [SandScope: A Behavioral Audit Layer for MCP Tools in LLM Agent Supply Chains](https://arxiv.org/pdf/2601.01241).
+
 A dynamic security analysis framework for MCP tools and servers, combining WASM/WASI sandboxed execution, native MCP protocol monitoring, and source-to-sink data-flow detection.
 
 MCP-SandboxScan executes or interacts with MCP implementations, collects runtime and protocol evidence, and detects potentially unsafe flows from external inputs—including environment variables, files, and network responses—to LLM-visible outputs.
