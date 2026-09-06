@@ -1,0 +1,207 @@
+{
+  "cases": [
+    {
+      "repo_id": "microsoft/playwright-mcp",
+      "manifest": "mcp-sandboxscan/corpus/manifests/microsoft__playwright-mcp.toml",
+      "tool": "browser_navigate",
+      "arguments": {
+        "url": "http://127.0.0.1:18080/controlled"
+      },
+      "environment": {},
+      "run_args_append": [
+        "--browser",
+        "chrome",
+        "--executable-path",
+        "/usr/bin/chromium",
+        "--headless",
+        "--no-sandbox"
+      ],
+      "expected_ports": [18080],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "GLips/Figma-Context-MCP",
+      "manifest": "mcp-sandboxscan/corpus/manifests/GLips__Figma-Context-MCP.toml",
+      "tool": "get_figma_data",
+      "arguments": {
+        "fileKey": "abc123"
+      },
+      "environment": {
+        "FIGMA_API_KEY": "DUMMY_FIGMA_CANARY"
+      },
+      "expected_ports": [443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "designcomputer/mysql_mcp_server",
+      "manifest": "mcp-sandboxscan/corpus/manifests/designcomputer__mysql_mcp_server.toml",
+      "tool": "get_schema_info",
+      "arguments": {},
+      "environment": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "sandbox",
+        "MYSQL_PASSWORD": "DUMMY_MYSQL_CANARY",
+        "MYSQL_DATABASE": "sandbox",
+        "MYSQL_USE_PURE": "true"
+      },
+      "prepare_commands": [
+        {
+          "command": ".venv/bin/pip",
+          "args": ["install", "mcp<2", "python-dotenv", "-q"]
+        }
+      ],
+      "expected_ports": [3306],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "Flux159/mcp-server-kubernetes",
+      "manifest": "mcp-sandboxscan/corpus/manifests/Flux159__mcp-server-kubernetes.toml",
+      "tool": "kubectl_get",
+      "arguments": {
+        "resourceType": "namespaces"
+      },
+      "environment": {
+        "KUBECONFIG": "/workspace/mcp-sandboxscan/experiments/controlled_kubeconfig.yaml"
+      },
+      "expected_ports": [16443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "strowk/mcp-k8s-go",
+      "manifest": "mcp-sandboxscan/corpus/manifests/strowk__mcp-k8s-go.toml",
+      "tool": "list-k8s-namespaces",
+      "arguments": {},
+      "environment": {
+        "KUBECONFIG": "/workspace/mcp-sandboxscan/experiments/controlled_kubeconfig.yaml"
+      },
+      "expected_ports": [16443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "smn2gnt/MCP-Salesforce",
+      "manifest": "mcp-sandboxscan/corpus/manifests/smn2gnt__MCP-Salesforce.toml",
+      "tool": "list_sobjects",
+      "arguments": {},
+      "environment": {
+        "SALESFORCE_ACCESS_TOKEN": "DUMMY_SALESFORCE_CANARY",
+        "SALESFORCE_INSTANCE_URL": "https://login.salesforce.com"
+      },
+      "prepare_commands": [
+        {
+          "command": ".venv/bin/pip",
+          "args": ["install", "mcp<2", "-q"]
+        }
+      ],
+      "expected_ports": [443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "tsmztech/mcp-server-salesforce",
+      "manifest": "mcp-sandboxscan/corpus/manifests/tsmztech__mcp-server-salesforce.toml",
+      "tool": "salesforce_describe_object",
+      "arguments": {
+        "objectName": "Account"
+      },
+      "environment": {
+        "SALESFORCE_CONNECTION_TYPE": "OAuth_2.0_Client_Credentials",
+        "SALESFORCE_CLIENT_ID": "DUMMY_CLIENT_CANARY",
+        "SALESFORCE_CLIENT_SECRET": "DUMMY_SECRET_CANARY",
+        "SALESFORCE_INSTANCE_URL": "https://login.salesforce.com"
+      },
+      "expected_ports": [443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-bitbucket",
+      "manifest": "mcp-sandboxscan/corpus/manifests/aashari__mcp-server-atlassian-bitbucket.toml",
+      "tool": "bb_get",
+      "arguments": {
+        "path": "/workspaces",
+        "outputFormat": "json"
+      },
+      "environment": {
+        "ATLASSIAN_BITBUCKET_USERNAME": "sandbox-user",
+        "ATLASSIAN_BITBUCKET_APP_PASSWORD": "DUMMY_BITBUCKET_CANARY",
+        "BITBUCKET_DEFAULT_WORKSPACE": "sandbox-workspace"
+      },
+      "expected_ports": [443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "aashari/boilerplate-mcp-server",
+      "manifest": "mcp-sandboxscan/corpus/manifests/aashari__boilerplate-mcp-server.toml",
+      "tool": "ip_get_details",
+      "arguments": {
+        "ipAddress": "8.8.8.8",
+        "useHttps": false,
+        "outputFormat": "json"
+      },
+      "environment": {},
+      "expected_ports": [80],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-jira",
+      "manifest": "mcp-sandboxscan/corpus/manifests/aashari__mcp-server-atlassian-jira.toml",
+      "tool": "jira_get",
+      "arguments": {
+        "path": "/rest/api/3/myself",
+        "outputFormat": "json"
+      },
+      "environment": {
+        "ATLASSIAN_SITE_NAME": "controlled",
+        "ATLASSIAN_USER_EMAIL": "sandbox@example.invalid",
+        "ATLASSIAN_API_TOKEN": "DUMMY_JIRA_CANARY"
+      },
+      "expected_ports": [443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "aashari/mcp-server-atlassian-confluence",
+      "manifest": "mcp-sandboxscan/corpus/manifests/aashari__mcp-server-atlassian-confluence.toml",
+      "tool": "conf_get",
+      "arguments": {
+        "path": "/wiki/api/v2/spaces",
+        "queryParams": {
+          "limit": "1"
+        },
+        "outputFormat": "json"
+      },
+      "environment": {
+        "ATLASSIAN_SITE_NAME": "controlled",
+        "ATLASSIAN_USER_EMAIL": "sandbox@example.invalid",
+        "ATLASSIAN_API_TOKEN": "DUMMY_CONFLUENCE_CANARY"
+      },
+      "expected_ports": [443],
+      "expected": "network_attempt"
+    },
+    {
+      "repo_id": "czlonkowski/n8n-mcp",
+      "manifest": "mcp-sandboxscan/corpus/manifests/czlonkowski__n8n-mcp.toml",
+      "tool": "get_node",
+      "arguments": {
+        "nodeType": "nodes-base.httpRequest"
+      },
+      "expected": "classifier_review",
+      "exclusion_reason": "Selected tool queries bundled metadata; zero-network results support classifier adjudication."
+    },
+    {
+      "repo_id": "mobile-next/mobile-mcp",
+      "manifest": "mcp-sandboxscan/corpus/manifests/mobile-next__mobile-mcp.toml",
+      "tool": "mobile_list_available_devices",
+      "arguments": {},
+      "expected_ports": [80, 443],
+      "expected": "precondition_failure",
+      "exclusion_reason": "No controlled mobile device is available; the call records the precondition outcome."
+    },
+    {
+      "repo_id": "hoangsonww/GitIntel-MCP-Server",
+      "manifest": "mcp-sandboxscan/corpus/manifests/hoangsonww__GitIntel-MCP-Server.toml",
+      "tool": "hotspots",
+      "arguments": {},
+      "expected": "classifier_review",
+      "exclusion_reason": "The selected tool performs local Git analysis; zero-network results support classifier adjudication."
+    }
+  ]
+}

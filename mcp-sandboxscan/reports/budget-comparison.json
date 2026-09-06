@@ -1,0 +1,55 @@
+{
+  "experiment": "shallow-vs-targeted-scan-budget",
+  "corpus": {
+    "repositories": 35,
+    "source": "corpus/repos-scan-ok-1781854580.json",
+    "repository_list_sha256": "c9e962db8072c9037f0cd52c4b51fa2052eb9242ed1f33e0298e38fc8497933a"
+  },
+  "common_configuration": {
+    "build_timeout_seconds": 300,
+    "mcp_timeout_seconds": 90,
+    "mcp_timeout_scope": "per launch attempt; covers process startup, initialize, tools/list, and all tools/call requests",
+    "max_stdio_launch_variants": 3,
+    "max_output_bytes": 512000,
+    "environment": "Docker Desktop, Linux arm64, Node.js 22, Go 1.24, Rust 1.93",
+    "isolation": "workspace read-only; repository sources and build outputs stored in a dedicated Docker volume"
+  },
+  "shallow": {
+    "max_tool_calls": 1,
+    "successful_repositories": 28,
+    "failed_repositories": 7,
+    "success_rate": 0.8,
+    "completed_tool_calls": 28,
+    "unique_called_tools": 28,
+    "repositories_with_flows": 0,
+    "total_flows": 0,
+    "repositories_with_network_events": 5,
+    "network_connect_attempt_events": 6,
+    "timeout_failures": 0,
+    "scan_ms_p50": 173,
+    "scan_ms_p95": 1219,
+    "report": "budget-shallow-final/corpus_summary.json"
+  },
+  "targeted": {
+    "max_tool_calls": 8,
+    "successful_repositories": 27,
+    "failed_repositories": 8,
+    "success_rate": 0.7714285714285715,
+    "completed_tool_calls": 116,
+    "unique_called_tools": 115,
+    "repositories_with_flows": 10,
+    "total_flows": 48,
+    "repositories_with_network_events": 6,
+    "network_connect_attempt_events": 40,
+    "timeout_failures": 1,
+    "scan_ms_p50": 308,
+    "scan_ms_p95": 4394,
+    "report": "budget-targeted-final/corpus_summary.json"
+  },
+  "notes": [
+    "The targeted run reused dependency artifacts created during the shallow run, so build-time values must not be compared between modes.",
+    "The targeted mode changes both tool selection and call budget and also injects canaries; differences must not be attributed solely to the number of calls.",
+    "Seven repositories failed in both modes because their MCP processes closed stdout before returning a JSON response.",
+    "One additional targeted repository, 21st-dev/magic-mcp, exhausted the 90-second deadline for all three launch variants."
+  ]
+}

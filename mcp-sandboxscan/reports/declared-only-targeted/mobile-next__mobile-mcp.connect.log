@@ -1,0 +1,9 @@
+385   connect(21, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+385   connect(21, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+385   connect(21, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.65.7")}, 16) = -1 ENETUNREACH (Network is unreachable)
+385   connect(21, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.65.7")}, 16) = -1 ENETUNREACH (Network is unreachable)
+377   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=389, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+377   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=395, si_uid=0, si_status=127, si_utime=0, si_stime=0} ---
+377   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=396, si_uid=0, si_status=127, si_utime=0, si_stime=0} ---
+399   connect(4, {sa_family=AF_UNIX, sun_path="/var/run/usbmuxd"}, 19) = -1 ENOENT (No such file or directory)
+377   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=397, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---

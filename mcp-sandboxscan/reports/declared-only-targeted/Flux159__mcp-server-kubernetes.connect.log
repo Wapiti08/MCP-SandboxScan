@@ -1,0 +1,110 @@
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+198   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+202   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+197   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+202   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+200   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+197   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+198   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+197   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+195   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+204   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=195, si_uid=0} ---
+203   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+199   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+199   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+199   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+199   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+187   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=195, si_uid=0, si_status=1, si_utime=2 /* 0.02 s */, si_stime=1 /* 0.01 s */} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+223   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+219   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+225   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+225   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+223   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+222   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+223   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+224   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+219   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+217   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+226   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+219   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+223   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+224   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+221   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+221   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=217, si_uid=0} ---
+221   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+220   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+222   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+222   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+222   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+209   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=217, si_uid=0, si_status=1, si_utime=2 /* 0.02 s */, si_stime=1 /* 0.01 s */} ---
+242   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+245   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+246   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+243   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+242   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+247   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+246   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+244   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+248   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+246   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+246   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+248   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+247   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+245   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+246   --- SIGURG {si_signo=SIGURG, si_code=SI_TKILL, si_pid=239, si_uid=0} ---
+239   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+239   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+241   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+241   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+249   connect(6, {sa_family=AF_INET, sin_port=htons(16443), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
+231   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=239, si_uid=0, si_status=1, si_utime=2 /* 0.02 s */, si_stime=2 /* 0.02 s */} ---

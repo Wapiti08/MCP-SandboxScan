@@ -1,0 +1,4188 @@
+{
+  "exec": {
+    "backend": "native-stdio",
+    "stdout": "",
+    "stderr": "",
+    "exit_code": null,
+    "duration_ms": 671
+  },
+  "mcp_transcript": {
+    "events": [
+      {
+        "direction": "client-to-server",
+        "method": "initialize",
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "method": "initialize",
+          "params": {
+            "capabilities": {},
+            "clientInfo": {
+              "name": "mcp-sandboxscan",
+              "version": "0.1.0"
+            },
+            "protocolVersion": "2025-06-18"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 1,
+          "jsonrpc": "2.0",
+          "result": {
+            "capabilities": {
+              "logging": {},
+              "prompts": {},
+              "resources": {},
+              "tools": {}
+            },
+            "protocolVersion": "2025-06-18",
+            "serverInfo": {
+              "name": "desktop-commander",
+              "version": "0.2.42"
+            }
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "notifications/initialized",
+        "payload": {
+          "jsonrpc": "2.0",
+          "method": "notifications/initialized"
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/list",
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "method": "tools/list",
+          "params": {}
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 2,
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "_meta": {
+                  "openai/outputTemplate": "ui://desktop-commander/config-editor",
+                  "openai/widgetAccessible": true,
+                  "ui": {
+                    "resourceUri": "ui://desktop-commander/config-editor"
+                  },
+                  "ui/resourceUri": "ui://desktop-commander/config-editor"
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Configuration"
+                },
+                "description": "\n                        Get the complete server configuration as JSON. Config includes fields for:\n                        - blockedCommands (array of blocked shell commands)\n                        - defaultShell (shell to use for commands)\n                        - allowedDirectories (paths the server can access)\n                        - fileReadLineLimit (max lines for read_file, default 1000)\n                        - fileWriteLineLimit (max lines per write_file call, default 50)\n                        - telemetryEnabled (boolean for telemetry opt-in/out)\n                        - currentClient (information about the currently connected MCP client)\n                        - clientHistory (history of all clients that have connected)\n                        - version (version of the DesktopCommander)\n                        - systemInfo (operating system and environment details)\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "get_config"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Set Configuration Value"
+                },
+                "description": "\n                        Set a specific configuration value by key.\n                        \n                        WARNING: Should be used in a separate chat from file operations and \n                        command execution to prevent security issues.\n                        \n                        Config keys include:\n                        - blockedCommands (array)\n                        - defaultShell (string)\n                        - allowedDirectories (array of paths)\n                        - fileReadLineLimit (number, max lines for read_file)\n                        - fileWriteLineLimit (number, max lines per write_file call)\n                        - telemetryEnabled (boolean)\n                        \n                        IMPORTANT: Setting allowedDirectories to an empty array ([]) allows full access \n                        to the entire file system, regardless of the operating system.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "origin": {
+                      "enum": [
+                        "ui",
+                        "llm"
+                      ],
+                      "type": "string"
+                    },
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "value"
+                  ],
+                  "type": "object"
+                },
+                "name": "set_config_value"
+              },
+              {
+                "_meta": {
+                  "openai/outputTemplate": "ui://desktop-commander/file-preview",
+                  "openai/widgetAccessible": true,
+                  "ui": {
+                    "resourceUri": "ui://desktop-commander/file-preview"
+                  },
+                  "ui/resourceUri": "ui://desktop-commander/file-preview"
+                },
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": true,
+                  "title": "Read File or URL"
+                },
+                "description": "\n                        Read contents from files and URLs.\n                        Read PDF files and extract content as markdown and images.\n                        \n                        Prefer this over 'execute_command' with cat/type for viewing files.\n                        \n                        Supports partial file reading with:\n                        - 'offset' (start line, default: 0)\n                          * Positive: Start from line N (0-based indexing)\n                          * Negative: Read last N lines from end (tail behavior)\n                        - 'length' (max lines to read, default: configurable via 'fileReadLineLimit' setting, initially 1000)\n                          * Used with positive offsets for range reading\n                          * Ignored when offset is negative (reads all requested tail lines)\n                        \n                        Examples:\n                        - offset: 0, length: 10     → First 10 lines\n                        - offset: 100, length: 5    → Lines 100-104\n                        - offset: -20               → Last 20 lines  \n                        - offset: -5, length: 10    → Last 5 lines (length ignored)\n                        \n                        Performance optimizations:\n                        - Large files with negative offsets use reverse reading for efficiency\n                        - Large files with deep positive offsets use byte estimation\n                        - Small files use fast readline streaming\n                        \n                        When reading from the file system, only works within allowed directories.\n                        Can fetch content from URLs when isUrl parameter is set to true\n                        (URLs are always read in full regardless of offset/length).\n                        \n                        FORMAT HANDLING (by extension):\n                        - Text: Uses offset/length for line-based pagination\n                        - Excel (.xlsx, .xls, .xlsm): Returns JSON 2D array\n                          * sheet: \"Sheet1\" (name) or \"0\" (index as string, 0-based)\n                          * range: ALWAYS use FROM:TO format (e.g., \"A1:D100\", \"C1:C1\", \"B2:B50\")\n                          * offset/length work as row pagination (optional fallback)\n                        - Images (PNG, JPEG, GIF, WebP): Base64 encoded viewable content\n                        - PDF: Extracts text content as markdown with page structure\n                          * offset/length work as page pagination (0-based)\n                          * Includes embedded images when available\n                        - DOCX (.docx): Two modes depending on parameters:\n                          * DEFAULT (no offset/length): Returns a text-bearing outline — shows paragraphs with text,\n                            tables with cell content, styles, image refs. Skips shapes/drawings/SVG noise.\n                            Each element shows its body index [0], [1], etc.\n                          * WITH offset/length: Returns raw pretty-printed XML with line pagination.\n                            Use this to drill into specific sections or see the actual XML for editing.\n                          * EDITING WORKFLOW: 1) read_file to get outline, 2) read_file with offset/length\n                            to see raw XML around what you want to edit, 3) edit_block with old_string/new_string\n                            using XML fragments copied from the read output.\n                          * IMPORTANT: offset MUST be non-zero to get raw XML (use offset=1 to start from line 1).\n                            offset=0 always returns the outline regardless of length.\n                          * For BULK changes (translation, mass replacements): use start_process with Python\n                            zipfile module to find/replace all <w:t> elements at once.\n\n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "isUrl": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "length": {
+                      "default": 1000,
+                      "type": "number"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "type": "number"
+                    },
+                    "options": {
+                      "additionalProperties": {},
+                      "type": "object"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "range": {
+                      "type": "string"
+                    },
+                    "sheet": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_file"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Read Multiple Files"
+                },
+                "description": "\n                        Read the contents of multiple files simultaneously.\n                        \n                        Each file's content is returned with its path as a reference.\n                        Handles text files normally and renders images as viewable content.\n                        Recognized image types: PNG, JPEG, GIF, WebP.\n                        \n                        Failed reads for individual files won't stop the entire operation.\n                        Only works within allowed directories.\n                        \n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "paths": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "paths"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_multiple_files"
+              },
+              {
+                "_meta": {
+                  "openai/outputTemplate": "ui://desktop-commander/file-preview",
+                  "openai/widgetAccessible": true,
+                  "ui": {
+                    "resourceUri": "ui://desktop-commander/file-preview"
+                  },
+                  "ui/resourceUri": "ui://desktop-commander/file-preview"
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Write File"
+                },
+                "description": "\n                        Write or append to file contents.\n\n                        IMPORTANT: DO NOT use this tool to create PDF files. Use 'write_pdf' for all PDF creation tasks.\n                        DO NOT use this tool to edit DOCX files. Use 'edit_block' with old_string/new_string instead.\n                        To CREATE a new DOCX, use write_file with .docx extension — text content with markdown headings (#, ##, ###) is converted to styled DOCX paragraphs.\n\n                        CHUNKING IS STANDARD PRACTICE: Always write files in chunks of 25-30 lines maximum.\n                        This is the normal, recommended way to write files - not an emergency measure.\n\n                        STANDARD PROCESS FOR ANY FILE:\n                        1. FIRST → write_file(filePath, firstChunk, {mode: 'rewrite'})  [≤30 lines]\n                        2. THEN → write_file(filePath, secondChunk, {mode: 'append'})   [≤30 lines]\n                        3. CONTINUE → write_file(filePath, nextChunk, {mode: 'append'}) [≤30 lines]\n\n                        ALWAYS CHUNK PROACTIVELY - don't wait for performance warnings!\n\n                        WHEN TO CHUNK (always be proactive):\n                        1. Any file expected to be longer than 25-30 lines\n                        2. When writing multiple files in sequence\n                        3. When creating documentation, code files, or configuration files\n\n                        HANDLING CONTINUATION (\"Continue\" prompts):\n                        If user asks to \"Continue\" after an incomplete operation:\n                        1. Read the file to see what was successfully written\n                        2. Continue writing ONLY the remaining content using {mode: 'append'}\n                        3. Keep chunks to 25-30 lines each\n\n                        FORMAT HANDLING (by extension):\n                        - Text files: String content\n                        - Excel (.xlsx, .xls, .xlsm): JSON 2D array or {\"SheetName\": [[...]]}\n                          Example: '[[\"Name\",\"Age\"],[\"Alice\",30]]'\n\n                        Files over 50 lines will generate performance notes but are still written successfully.\n                        Only works within allowed directories.\n\n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "content": {
+                      "type": "string"
+                    },
+                    "mode": {
+                      "default": "rewrite",
+                      "enum": [
+                        "rewrite",
+                        "append"
+                      ],
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "content"
+                  ],
+                  "type": "object"
+                },
+                "name": "write_file"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Write/Modify PDF"
+                },
+                "description": "\n                        Create a new PDF file or modify an existing one.\n\n                        THIS IS THE ONLY TOOL FOR CREATING AND MODIFYING PDF FILES.\n\n                        RULES ABOUT FILENAMES:\n                        - When creating a new PDF, 'outputPath' MUST be provided and MUST use a new unique filename (e.g., \"result_01.pdf\", \"analysis_2025_01.pdf\", etc.).\n\n                        MODES:\n                        1. CREATE NEW PDF:\n                           - Pass a markdown string as 'content'.\n                           write_pdf(path=\"doc.pdf\", content=\"# Title\\n\\nBody text...\")\n\n                        2. MODIFY EXISTING PDF:\n                           - Pass array of operations as 'content'.\n                           - NEVER overwrite the original file.\n                           - ALWAYS provide a new filename in 'outputPath'.\n                           - After modifying, show original file path and new file path to user.\n\n                           write_pdf(path=\"doc.pdf\", content=[\n                               { type: \"delete\", pageIndexes: [0, 2] },\n                               { type: \"insert\", pageIndex: 1, markdown: \"# New Page\" }\n                           ])\n\n                        OPERATIONS:\n                        - delete: Remove pages by 0-based index.\n                          { type: \"delete\", pageIndexes: [0, 1, 5] }\n\n                        - insert: Add pages at a specific 0-based index.\n                          { type: \"insert\", pageIndex: 0, markdown: \"...\" }\n                          { type: \"insert\", pageIndex: 5, sourcePdfPath: \"/path/to/source.pdf\" }\n\n                        PAGE BREAKS:\n                        To force a page break, use this HTML element:\n                        <div style=\"page-break-before: always;\"></div>\n                        \n                        Example:\n                        \"# Page 1\\n\\n<div style=\\\"page-break-before: always;\\\"></div>\\n\\n# Page 2\"\n\n                        ADVANCED STYLING:\n                        HTML/CSS and inline SVG are supported for:\n                        - Text styling: colors, sizes, alignment, highlights\n                        - Boxes: borders, backgrounds, padding, rounded corners\n                        - SVG graphics: charts, diagrams, icons, shapes\n                        - Images: <img src=\"/absolute/path/image.jpg\" width=\"300\" /> or ![alt](/path/image.jpg)\n\n                        Supports standard markdown features including headers, lists, code blocks, tables, and basic formatting.\n\n                        Only works within allowed directories.\n\n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "content": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "items": {
+                            "anyOf": [
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "markdown": {
+                                    "type": "string"
+                                  },
+                                  "pageIndex": {
+                                    "type": "number"
+                                  },
+                                  "pdfOptions": {
+                                    "additionalProperties": true,
+                                    "properties": {},
+                                    "type": "object"
+                                  },
+                                  "sourcePdfPath": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "const": "insert",
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "pageIndex"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "pageIndexes": {
+                                    "items": {
+                                      "type": "number"
+                                    },
+                                    "type": "array"
+                                  },
+                                  "type": {
+                                    "const": "delete",
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "pageIndexes"
+                                ],
+                                "type": "object"
+                              }
+                            ]
+                          },
+                          "type": "array"
+                        }
+                      ]
+                    },
+                    "options": {
+                      "additionalProperties": true,
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "outputPath": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "content"
+                  ],
+                  "type": "object"
+                },
+                "name": "write_pdf"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "readOnlyHint": false,
+                  "title": "Create Directory"
+                },
+                "description": "\n                        Create a new directory or ensure a directory exists.\n                        \n                        Can create multiple nested directories in one operation.\n                        Only works within allowed directories.\n                        \n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "create_directory"
+              },
+              {
+                "_meta": {
+                  "openai/outputTemplate": "ui://desktop-commander/file-preview",
+                  "openai/widgetAccessible": true,
+                  "ui": {
+                    "resourceUri": "ui://desktop-commander/file-preview"
+                  },
+                  "ui/resourceUri": "ui://desktop-commander/file-preview"
+                },
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "List Directory Contents"
+                },
+                "description": "\n                        Get a detailed listing of all files and directories in a specified path.\n                        \n                        Use this instead of 'execute_command' with ls/dir commands.\n                        Results distinguish between files and directories with [FILE] and [DIR] prefixes.\n                        \n                        Supports recursive listing with the 'depth' parameter (default: 2):\n                        - depth=1: Only direct contents of the directory\n                        - depth=2: Contents plus one level of subdirectories\n                        - depth=3+: Multiple levels deep\n                        \n                        CONTEXT OVERFLOW PROTECTION:\n                        - Top-level directory shows ALL items\n                        - Nested directories are limited to 100 items maximum per directory\n                        - When a nested directory has more than 100 items, you'll see a warning like:\n                          [WARNING] node_modules: 500 items hidden (showing first 100 of 600 total)\n                        - This prevents overwhelming the context with large directories like node_modules\n                        \n                        Results show full relative paths from the root directory being listed.\n                        Example output with depth=2:\n                        [DIR] src\n                        [FILE] src/index.ts\n                        [DIR] src/tools\n                        [FILE] src/tools/filesystem.ts\n                        \n                        If a directory cannot be accessed, it will show [DENIED] instead.\n                        If a path does not exist, it will show [NOT_FOUND] instead.\n                        Only works within allowed directories.\n                        \n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "depth": {
+                      "default": 2,
+                      "type": "number"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "list_directory"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Move/Rename File"
+                },
+                "description": "\n                        Move or rename files and directories.\n                        \n                        Can move files between directories and rename them in a single operation.\n                        Both source and destination must be within allowed directories.\n                        \n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "destination": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "destination"
+                  ],
+                  "type": "object"
+                },
+                "name": "move_file"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Start Search"
+                },
+                "description": "\n                        Start a streaming search that can return results progressively.\n                        \n                        SEARCH STRATEGY GUIDE:\n                        Choose the right search type based on what the user is looking for:\n                        \n                        USE searchType=\"files\" WHEN:\n                        - User asks for specific files: \"find package.json\", \"locate config files\"\n                        - Pattern looks like a filename: \"*.js\", \"README.md\", \"test-*.tsx\" \n                        - User wants to find files by name/extension: \"all TypeScript files\", \"Python scripts\"\n                        - Looking for configuration/setup files: \".env\", \"dockerfile\", \"tsconfig.json\"\n                        \n                        USE searchType=\"content\" WHEN:\n                        - User asks about code/logic: \"authentication logic\", \"error handling\", \"API calls\"\n                        - Looking for functions/variables: \"getUserData function\", \"useState hook\"\n                        - Searching for text/comments: \"TODO items\", \"FIXME comments\", \"documentation\"\n                        - Finding patterns in code: \"console.log statements\", \"import statements\"\n                        - User describes functionality: \"components that handle login\", \"files with database queries\"\n                        \n                        WHEN UNSURE OR USER REQUEST IS AMBIGUOUS:\n                        Run TWO searches in parallel - one for files and one for content:\n                        \n                        Example approach for ambiguous queries like \"find authentication stuff\":\n                        1. Start file search: searchType=\"files\", pattern=\"auth\"\n                        2. Simultaneously start content search: searchType=\"content\", pattern=\"authentication\"  \n                        3. Present combined results: \"Found 3 auth-related files and 8 files containing authentication code\"\n                        \n                        SEARCH TYPES:\n                        - searchType=\"files\": Find files by name (pattern matches file names)\n                        - searchType=\"content\": Search inside files for text patterns\n                        \n                        PATTERN MATCHING MODES:\n                        - Default (literalSearch=false): Patterns are treated as regular expressions\n                        - Literal (literalSearch=true): Patterns are treated as exact strings\n                        \n                        WHEN TO USE literalSearch=true:\n                        Use literal search when searching for code patterns with special characters:\n                        - Function calls with parentheses and quotes\n                        - Array access with brackets\n                        - Object methods with dots and parentheses\n                        - File paths with backslashes\n                        - Any pattern containing: . * + ? ^ $ { } [ ] | \\ ( )\n                        \n                        IMPORTANT PARAMETERS:\n                        - pattern: What to search for (file names OR content text)\n                        - literalSearch: Use exact string matching instead of regex (default: false)\n                        - filePattern: Optional filter to limit search to specific file types (e.g., \"*.js\", \"package.json\")\n                        - ignoreCase: Case-insensitive search (default: true). Works for both file names and content.\n                        - earlyTermination: Stop search early when exact filename match is found (optional: defaults to true for file searches, false for content searches)\n                        \n                        DECISION EXAMPLES:\n                        - \"find package.json\" → searchType=\"files\", pattern=\"package.json\" (specific file)\n                        - \"find authentication components\" → searchType=\"content\", pattern=\"authentication\" (looking for functionality)\n                        - \"locate all React components\" → searchType=\"files\", pattern=\"*.tsx\" or \"*.jsx\" (file pattern)\n                        - \"find TODO comments\" → searchType=\"content\", pattern=\"TODO\" (text in files)\n                        - \"show me login files\" → AMBIGUOUS → run both: files with \"login\" AND content with \"login\"\n                        - \"find config\" → AMBIGUOUS → run both: config files AND files containing config code\n                        \n                        COMPREHENSIVE SEARCH EXAMPLES:\n                        - Find package.json files: searchType=\"files\", pattern=\"package.json\"\n                        - Find all JS files: searchType=\"files\", pattern=\"*.js\"\n                        - Search for TODO in code: searchType=\"content\", pattern=\"TODO\", filePattern=\"*.js|*.ts\"\n                        - Search for exact code: searchType=\"content\", pattern=\"toast.error('test')\", literalSearch=true\n                        - Ambiguous request \"find auth stuff\": Run two searches:\n                          1. searchType=\"files\", pattern=\"auth\"\n                          2. searchType=\"content\", pattern=\"authentication\"\n                        \n                        PRO TIP: When user requests are ambiguous about whether they want files or content,\n                        run both searches concurrently and combine results for comprehensive coverage.\n                        \n                        Unlike regular search tools, this starts a background search process and returns\n                        immediately with a session ID. Use get_more_search_results to get results as they\n                        come in, and stop_search to stop the search early if needed.\n                        \n                        Perfect for large directories where you want to see results immediately and\n                        have the option to cancel if the search takes too long or you find what you need.\n                        \n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "contextLines": {
+                      "default": 5,
+                      "type": "number"
+                    },
+                    "earlyTermination": {
+                      "type": "boolean"
+                    },
+                    "filePattern": {
+                      "type": "string"
+                    },
+                    "ignoreCase": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "includeHidden": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "literalSearch": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "maxResults": {
+                      "type": "number"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "pattern": {
+                      "type": "string"
+                    },
+                    "searchType": {
+                      "default": "files",
+                      "enum": [
+                        "files",
+                        "content"
+                      ],
+                      "type": "string"
+                    },
+                    "timeout_ms": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "pattern"
+                  ],
+                  "type": "object"
+                },
+                "name": "start_search"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Search Results"
+                },
+                "description": "\n                        Get more results from an active search with offset-based pagination.\n                        \n                        Supports partial result reading with:\n                        - 'offset' (start result index, default: 0)\n                          * Positive: Start from result N (0-based indexing)\n                          * Negative: Read last N results from end (tail behavior)\n                        - 'length' (max results to read, default: 100)\n                          * Used with positive offsets for range reading\n                          * Ignored when offset is negative (reads all requested tail results)\n                        \n                        Examples:\n                        - offset: 0, length: 100     → First 100 results\n                        - offset: 200, length: 50    → Results 200-249\n                        - offset: -20                → Last 20 results\n                        - offset: -5, length: 10     → Last 5 results (length ignored)\n                        \n                        Returns only results in the specified range, along with search status.\n                        Works like read_process_output - call this repeatedly to get progressive\n                        results from a search started with start_search.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "length": {
+                      "default": 100,
+                      "type": "number"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "type": "number"
+                    },
+                    "sessionId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sessionId"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_more_search_results"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": false,
+                  "readOnlyHint": false,
+                  "title": "Stop Search"
+                },
+                "description": "\n                        Stop an active search.\n                        \n                        Stops the background search process gracefully. Use this when you've found\n                        what you need or if a search is taking too long. Similar to force_terminate\n                        for terminal processes.\n                        \n                        The search will still be available for reading final results until it's\n                        automatically cleaned up after 5 minutes.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "sessionId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sessionId"
+                  ],
+                  "type": "object"
+                },
+                "name": "stop_search"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "List Active Searches"
+                },
+                "description": "\n                        List all active searches.\n                        \n                        Shows search IDs, search types, patterns, status, and runtime.\n                        Similar to list_sessions for terminal processes. Useful for managing\n                        multiple concurrent searches.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "list_searches"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get File Information"
+                },
+                "description": "\n                        Retrieve detailed metadata about a file or directory including:\n                        - size\n                        - creation time\n                        - last modified time\n                        - permissions\n                        - type\n                        - lineCount (for text files)\n                        - lastLine (zero-indexed number of last line, for text files)\n                        - appendPosition (line number for appending, for text files)\n                        - sheets (for Excel files - array of {name, rowCount, colCount})\n\n                        Only works within allowed directories.\n                        \n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_file_info"
+              },
+              {
+                "_meta": {
+                  "openai/outputTemplate": "ui://desktop-commander/file-preview",
+                  "openai/widgetAccessible": true,
+                  "ui": {
+                    "resourceUri": "ui://desktop-commander/file-preview"
+                  },
+                  "ui/resourceUri": "ui://desktop-commander/file-preview"
+                },
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Edit Block"
+                },
+                "description": "\n                        Apply surgical edits to files.\n\n                        BEST PRACTICE: Make multiple small, focused edits rather than one large edit.\n                        Each edit_block call should change only what needs to be changed - include just enough\n                        context to uniquely identify the text being modified.\n\n                        FORMAT HANDLING (by extension):\n\n                        EXCEL FILES (.xlsx, .xls, .xlsm) - Range Update mode:\n                        Takes:\n                        - file_path: Path to the Excel file\n                        - range: ALWAYS use FROM:TO format - \"SheetName!A1:C10\" or \"SheetName!C1:C1\"\n                        - content: 2D array, e.g., [[\"H1\",\"H2\"],[\"R1\",\"R2\"]]\n\n                        TEXT FILES - Find/Replace mode:\n                        Takes:\n                        - file_path: Path to the file to edit\n                        - old_string: Text to replace\n                        - new_string: Replacement text\n                        - expected_replacements: Optional number of replacements (default: 1)\n\n                        DOCX FILES (.docx) - XML Find/Replace mode:\n                        Takes same parameters as text files (old_string, new_string, expected_replacements).\n                        Operates on the pretty-printed XML inside the DOCX — the same XML you see from\n                        read_file with offset/length. Copy XML fragments from read output as old_string.\n                        After editing, the XML is repacked into a valid DOCX.\n                        Also searches headers/footers if not found in document body.\n                        Examples:\n                        - Replace text: old_string=\"<w:t>Old Text</w:t>\" new_string=\"<w:t>New Text</w:t>\"\n                        - Change style: old_string='<w:pStyle w:val=\"Normal\"/>' new_string='<w:pStyle w:val=\"Heading1\"/>'\n                        - Add content: include surrounding XML context in old_string, add new elements in new_string\n\n                        By default, replaces only ONE occurrence of the search text.\n                        To replace multiple occurrences, provide expected_replacements with\n                        the exact number of matches expected.\n\n                        UNIQUENESS REQUIREMENT: When expected_replacements=1 (default), include the minimal\n                        amount of context necessary (typically 1-3 lines) before and after the change point,\n                        with exact whitespace and indentation.\n\n                        When editing multiple sections, make separate edit_block calls for each distinct change\n                        rather than one large replacement.\n\n                        When a close but non-exact match is found, a character-level diff is shown in the format:\n                        common_prefix{-removed-}{+added+}common_suffix to help you identify what's different.\n\n                        Similar to write_file, there is a configurable line limit (fileWriteLineLimit) that warns\n                        if the edited file exceeds this limit. If this happens, consider breaking your edits into\n                        smaller, more focused changes.\n\n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "content": {},
+                    "expected_replacements": {
+                      "default": 1,
+                      "type": "number"
+                    },
+                    "file_path": {
+                      "type": "string"
+                    },
+                    "new_string": {
+                      "type": "string"
+                    },
+                    "old_string": {
+                      "type": "string"
+                    },
+                    "options": {
+                      "additionalProperties": {},
+                      "type": "object"
+                    },
+                    "range": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file_path"
+                  ],
+                  "type": "object"
+                },
+                "name": "edit_block"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": false,
+                  "title": "Start Terminal Process"
+                },
+                "description": "\n                        Start a new terminal process with intelligent state detection.\n                        \n                        PRIMARY TOOL FOR FILE ANALYSIS AND DATA PROCESSING\n                        This is the ONLY correct tool for analyzing local files (CSV, JSON, logs, etc.).\n                        The analysis tool CANNOT access local files and WILL FAIL - always use processes for file-based work.\n                        \n                        CRITICAL RULE: For ANY local file work, ALWAYS use this tool + interact_with_process, NEVER use analysis/REPL tool.\n                        \n                        Running on Linux (Docker). Default shell: bash.\n\n🐳 DOCKER CONTAINER ENVIRONMENT DETECTED:\nThis Desktop Commander instance is running inside a Docker container.\n\nAVAILABLE MOUNTED DIRECTORIES:\n- /results (read-write) - Mounted directory: results\n\nIMPORTANT: When users ask about files, FIRST check mounted directories above.\nFiles outside these paths will be lost when the container stops.\nAlways suggest using mounted directories for file operations.\n\nPATH TRANSLATION IN DOCKER:\nWhen users provide host paths, translate to container paths:\n\nWindows: \"C:\\projects\\data\\file.txt\" → \"/home/projects/data/file.txt\"\nLinux/Mac: \"/Users/john/projects/data/file.txt\" → \"/home/projects/data/file.txt\"\n\nRules: Remove drive letter/user prefix, keep full folder structure, mount to /home/\n\nNOTE: Desktop Commander Docker installer mounts host folders to /home/[folder-name].\nContainer: 6e1a4464a52a\n        \nLINUX-SPECIFIC NOTES:\n- Package managers vary by distro: apt, yum, dnf, pacman, zypper\n- Python 3 might be 'python3' command, not 'python'\n- Standard Unix shell tools available (grep, awk, sed, etc.)\n- File permissions and ownership important for many operations\n- Systemd services common on modern distributions\n                        \n                        REQUIRED WORKFLOW FOR LOCAL FILES:\n                        1. start_process(\"python3 -i\") - Start Python REPL for data analysis\n                        2. interact_with_process(pid, \"import pandas as pd, numpy as np\")\n                        3. interact_with_process(pid, \"df = pd.read_csv('/absolute/path/file.csv')\")\n                        4. interact_with_process(pid, \"print(df.describe())\")\n                        5. Continue analysis with pandas, matplotlib, seaborn, etc.\n                        \n                        COMMON FILE ANALYSIS PATTERNS:\n                        • start_process(\"python3 -i\") → Python REPL for data analysis (RECOMMENDED)\n                        • start_process(\"node -i\") → Node.js REPL for JSON processing\n                        • start_process(\"node:local\") → Node.js on MCP server (stateless, ES imports, all code in one call)\n                        • start_process(\"cut -d',' -f1 file.csv | sort | uniq -c\") → Quick CSV analysis\n                        • start_process(\"wc -l /path/file.csv\") → Line counting\n                        • start_process(\"head -10 /path/file.csv\") → File preview\n                        \n                        BINARY FILE SUPPORT:\n                        For PDF, Excel, Word, archives, databases, and other binary formats, use process tools with appropriate libraries or command-line utilities.\n                        \n                        INTERACTIVE PROCESSES FOR DATA ANALYSIS:\n                        For code/calculations, use in this priority order:\n                        1. start_process(\"python3 -i\") - Python REPL (preferred)\n                        2. start_process(\"node -i\") - Node.js REPL (when Python unavailable)\n                        3. start_process(\"node:local\") - Node.js fallback (when node -i fails)\n                        4. Use interact_with_process() to send commands\n                        5. Use read_process_output() to get responses\n                        When Python is unavailable, prefer Node.js over shell for calculations.\n                        Node.js: Always use ES import syntax (import x from 'y'), not require().\n\n                        SMART DETECTION:\n                        - Detects REPL prompts (>>>, >, $, etc.)\n                        - Identifies when process is waiting for input\n                        - Recognizes process completion vs timeout\n                        - Early exit prevents unnecessary waiting\n                        \n                        STATES DETECTED:\n                        Process waiting for input (shows prompt)\n                        Process finished execution\n                        Process running (use read_process_output)\n\n                        PERFORMANCE DEBUGGING (verbose_timing parameter):\n                        Set verbose_timing: true to get detailed timing information including:\n                        - Exit reason (early_exit_quick_pattern, early_exit_periodic_check, process_exit, timeout)\n                        - Total duration and time to first output\n                        - Complete timeline of all output events with timestamps\n                        - Which detection mechanism triggered early exit\n                        Use this to identify missed optimization opportunities and improve detection patterns.\n\n                        ALWAYS USE FOR: Local file analysis, CSV processing, data exploration, system commands\n                        NEVER USE ANALYSIS TOOL FOR: Local file access (analysis tool is browser-only and WILL FAIL)\n\n                        IMPORTANT: Always use absolute paths for reliability. Paths are automatically normalized regardless of slash direction. \n\n🐳 DOCKER: Prefer paths within mounted directories: /results.\nWhen users ask about file locations, check these mounted paths first. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "command": {
+                      "type": "string"
+                    },
+                    "shell": {
+                      "type": "string"
+                    },
+                    "timeout_ms": {
+                      "type": "number"
+                    },
+                    "verbose_timing": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "command",
+                    "timeout_ms"
+                  ],
+                  "type": "object"
+                },
+                "name": "start_process"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Read Process Output"
+                },
+                "description": "\n                        Read output from a running process with file-like pagination support.\n                        \n                        Supports partial output reading with offset and length parameters (like read_file):\n                        - 'offset' (start line, default: 0)\n                          * offset=0: Read NEW output since last read (default, like old behavior)\n                          * Positive: Read from absolute line position\n                          * Negative: Read last N lines from end (tail behavior)\n                        - 'length' (max lines to read, default: configurable via 'fileReadLineLimit' setting)\n                        \n                        Examples:\n                        - offset: 0, length: 100     → First 100 NEW lines since last read\n                        - offset: 0                  → All new lines (respects config limit)\n                        - offset: 500, length: 50    → Lines 500-549 (absolute position)\n                        - offset: -20                → Last 20 lines (tail)\n                        - offset: -50, length: 10    → Start 50 from end, read 10 lines\n                        \n                        OUTPUT PROTECTION:\n                        - Uses same fileReadLineLimit as read_file (default: 1000 lines)\n                        - Returns status like: [Reading 100 lines from line 0 (total: 5000 lines, 4900 remaining)]\n                        - Prevents context overflow from verbose processes\n                        \n                        SMART FEATURES:\n                        - For offset=0, waits up to timeout_ms for new output to arrive\n                        - Detects REPL prompts and process completion\n                        - Shows process state (waiting for input, finished, etc.)\n                        \n                        DETECTION STATES:\n                        Process waiting for input (ready for interact_with_process)\n                        Process finished execution\n                        Timeout reached (may still be running)\n\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "length": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    },
+                    "pid": {
+                      "type": "number"
+                    },
+                    "timeout_ms": {
+                      "type": "number"
+                    },
+                    "verbose_timing": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "pid"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_process_output"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": true,
+                  "readOnlyHint": false,
+                  "title": "Send Input to Process"
+                },
+                "description": "\n                        Send input to a running process and automatically receive the response.\n                        \n                        CRITICAL: THIS IS THE PRIMARY TOOL FOR ALL LOCAL FILE ANALYSIS\n                        For ANY local file analysis (CSV, JSON, data processing), ALWAYS use this instead of the analysis tool.\n                        The analysis tool CANNOT access local files and WILL FAIL - use processes for ALL file-based work.\n                        \n                        FILE ANALYSIS PRIORITY ORDER (MANDATORY):\n                        1. ALWAYS FIRST: Use this tool (start_process + interact_with_process) for local data analysis\n                        2. ALTERNATIVE: Use command-line tools (cut, awk, grep) for quick processing  \n                        3. NEVER EVER: Use analysis tool for local file access (IT WILL FAIL)\n                        \n                        REQUIRED INTERACTIVE WORKFLOW FOR FILE ANALYSIS:\n                        1. Start REPL: start_process(\"python3 -i\")\n                        2. Load libraries: interact_with_process(pid, \"import pandas as pd, numpy as np\")\n                        3. Read file: interact_with_process(pid, \"df = pd.read_csv('/absolute/path/file.csv')\")\n                        4. Analyze: interact_with_process(pid, \"print(df.describe())\")\n                        5. Continue: interact_with_process(pid, \"df.groupby('column').size()\")\n                        \n                        BINARY FILE PROCESSING WORKFLOWS:\n                        Use appropriate Python libraries (PyPDF2, pandas, docx2txt, etc.) or command-line tools for binary file analysis.\n                        \n                        SMART DETECTION:\n                        - Automatically waits for REPL prompt (>>>, >, etc.)\n                        - Detects errors and completion states\n                        - Early exit prevents timeout delays\n                        - Clean output formatting (removes prompts)\n                        \n                        SUPPORTED REPLs:\n                        - Python: python3 -i (RECOMMENDED for data analysis)\n                        - Node.js: node -i\n                        - R: R\n                        - Julia: julia\n                        - Shell: bash, zsh\n                        - Database: mysql, postgres\n                        \n                        PARAMETERS:\n                        - pid: Process ID from start_process\n                        - input: Code/command to execute\n                        - timeout_ms: Max wait (default: 8000ms)\n                        - wait_for_prompt: Auto-wait for response (default: true)\n                        - verbose_timing: Enable detailed performance telemetry (default: false)\n\n                        Returns execution result with status indicators.\n\n                        PERFORMANCE DEBUGGING (verbose_timing parameter):\n                        Set verbose_timing: true to get detailed timing information including:\n                        - Exit reason (early_exit_quick_pattern, early_exit_periodic_check, process_finished, timeout, no_wait)\n                        - Total duration and time to first output\n                        - Complete timeline of all output events with timestamps\n                        - Which detection mechanism triggered early exit\n                        Use this to identify slow interactions and optimize detection patterns.\n\n                        ALWAYS USE FOR: CSV analysis, JSON processing, file statistics, data visualization prep, ANY local file work\n                        NEVER USE ANALYSIS TOOL FOR: Local file access (it cannot read files from disk and WILL FAIL)\n\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    },
+                    "pid": {
+                      "type": "number"
+                    },
+                    "timeout_ms": {
+                      "type": "number"
+                    },
+                    "verbose_timing": {
+                      "type": "boolean"
+                    },
+                    "wait_for_prompt": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "pid",
+                    "input"
+                  ],
+                  "type": "object"
+                },
+                "name": "interact_with_process"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Force Terminate Process"
+                },
+                "description": "\n                        Force terminate a running terminal session.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "pid": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "pid"
+                  ],
+                  "type": "object"
+                },
+                "name": "force_terminate"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "List Terminal Sessions"
+                },
+                "description": "\n                        List all active terminal sessions.\n                        \n                        Shows session status including:\n                        - PID: Process identifier  \n                        - Blocked: Whether session is waiting for input\n                        - Runtime: How long the session has been running\n                        \n                        DEBUGGING REPLs:\n                        - \"Blocked: true\" often means REPL is waiting for input\n                        - Use this to verify sessions are running before sending input\n                        - Long runtime with blocked status may indicate stuck process\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "list_sessions"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "List Running Processes"
+                },
+                "description": "\n                        List all running processes.\n                        \n                        Returns process information including PID, command name, CPU usage, and memory usage.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "list_processes"
+              },
+              {
+                "annotations": {
+                  "destructiveHint": true,
+                  "openWorldHint": false,
+                  "readOnlyHint": false,
+                  "title": "Kill Process"
+                },
+                "description": "\n                        Terminate a running process by PID.\n\n                        Use with caution as this will forcefully terminate the specified process.\n\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "pid": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "pid"
+                  ],
+                  "type": "object"
+                },
+                "name": "kill_process"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Usage Statistics"
+                },
+                "description": "\n                        Get usage statistics for debugging and analysis.\n                        \n                        Returns summary of tool usage, success/failure rates, and performance metrics.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "get_usage_stats"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Recent Tool Calls"
+                },
+                "description": "\n                        Get recent tool call history with their arguments and outputs.\n                        Returns chronological list of tool calls made during this session.\n                        \n                        Useful for:\n                        - Onboarding new chats about work already done\n                        - Recovering context after chat history loss\n                        - Debugging tool call sequences\n                        \n                        Note: Does not track its own calls or other meta/query tools.\n                        History kept in memory (last 1000 calls, lost on restart).\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "maxResults": {
+                      "default": 50,
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "number"
+                    },
+                    "since": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "toolName": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": "get_recent_tool_calls"
+              },
+              {
+                "annotations": {
+                  "openWorldHint": true,
+                  "readOnlyHint": false,
+                  "title": "Give Feedback"
+                },
+                "description": "\n                        Open feedback form in browser to provide feedback about Desktop Commander.\n                        \n                        IMPORTANT: This tool simply opens the feedback form - no pre-filling available.\n                        The user will fill out the form manually in their browser.\n                        \n                        WORKFLOW:\n                        1. When user agrees to give feedback, just call this tool immediately\n                        2. No need to ask questions or collect information\n                        3. Tool opens form with only usage statistics pre-filled automatically:\n                           - tool_call_count: Number of commands they've made\n                           - days_using: How many days they've used Desktop Commander\n                           - platform: Their operating system (Mac/Windows/Linux)\n                           - client_id: Analytics identifier\n                        \n                        All survey questions will be answered directly in the form:\n                        - Job title and technical comfort level\n                        - Company URL for industry context\n                        - Other AI tools they use\n                        - Desktop Commander's biggest advantage\n                        - How they typically use it\n                        - Recommendation likelihood (0-10)\n                        - User study participation interest\n                        - Email and any additional feedback\n                        \n                        EXAMPLE INTERACTION:\n                        User: \"sure, I'll give feedback\"\n                        Claude: \"Perfect! Let me open the feedback form for you.\"\n                        [calls tool immediately]\n                        \n                        No parameters are needed - just call the tool to open the form.\n                        \n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object"
+                },
+                "name": "give_feedback_to_desktop_commander"
+              },
+              {
+                "annotations": {
+                  "readOnlyHint": true,
+                  "title": "Get Prompts"
+                },
+                "description": "\n                        Retrieve a specific Desktop Commander onboarding prompt by ID and execute it.\n                        \n                        SIMPLIFIED ONBOARDING V2: This tool only supports direct prompt retrieval.\n                        The onboarding system presents 5 options as a simple numbered list:\n                        \n                        1. Organize my Downloads folder (promptId: 'onb2_01')\n                        2. Explain a codebase or repository (promptId: 'onb2_02')\n                        3. Create organized knowledge base (promptId: 'onb2_03')\n                        4. Analyze a data file (promptId: 'onb2_04')\n                        5. Check system health and resources (promptId: 'onb2_05')\n                        \n                        USAGE:\n                        When user says \"1\", \"2\", \"3\", \"4\", or \"5\" from onboarding:\n                        - \"1\" → get_prompts(action='get_prompt', promptId='onb2_01')\n                        - \"2\" → get_prompts(action='get_prompt', promptId='onb2_02')\n                        - \"3\" → get_prompts(action='get_prompt', promptId='onb2_03')\n                        - \"4\" → get_prompts(action='get_prompt', promptId='onb2_04')\n                        - \"5\" → get_prompts(action='get_prompt', promptId='onb2_05')\n                        \n                        The prompt content will be injected and execution begins immediately.\n\n                        This command can be referenced as \"DC: ...\" or \"use Desktop Commander to ...\" in your instructions.",
+                "inputSchema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "get_prompt"
+                      ],
+                      "type": "string"
+                    },
+                    "promptId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "action",
+                    "promptId"
+                  ],
+                  "type": "object"
+                },
+                "name": "get_prompts"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "direction": "client-to-server",
+        "method": "tools/call",
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "method": "tools/call",
+          "params": {
+            "arguments": {},
+            "name": "get_config"
+          }
+        }
+      },
+      {
+        "direction": "server-to-client",
+        "method": null,
+        "payload": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Current configuration:\n{\n  \"blockedCommands\": [\n    \"mkfs\",\n    \"format\",\n    \"mount\",\n    \"umount\",\n    \"fdisk\",\n    \"dd\",\n    \"parted\",\n    \"diskpart\",\n    \"sudo\",\n    \"su\",\n    \"passwd\",\n    \"adduser\",\n    \"useradd\",\n    \"usermod\",\n    \"groupadd\",\n    \"chsh\",\n    \"visudo\",\n    \"shutdown\",\n    \"reboot\",\n    \"halt\",\n    \"poweroff\",\n    \"init\",\n    \"iptables\",\n    \"firewall\",\n    \"netsh\",\n    \"sfc\",\n    \"bcdedit\",\n    \"reg\",\n    \"net\",\n    \"sc\",\n    \"runas\",\n    \"cipher\",\n    \"takeown\"\n  ],\n  \"defaultShell\": \"/bin/sh\",\n  \"allowedDirectories\": [],\n  \"telemetryEnabled\": true,\n  \"fileWriteLineLimit\": 50,\n  \"fileReadLineLimit\": 1000,\n  \"pendingWelcomeOnboarding\": true,\n  \"version\": \"0.2.42\",\n  \"clientId\": \"ad34e724-776d-444c-a6c6-c7b8aee8634d\",\n  \"abTest_McpUiPreviews\": \"showMCPUi\",\n  \"currentClient\": {\n    \"name\": \"mcp-sandboxscan\",\n    \"version\": \"0.1.0\"\n  },\n  \"featureFlags\": {\n    \"user_surveys\": false,\n    \"onboarding_injection\": false,\n    \"welcome_page_enabled\": true,\n    \"welcome_page_excluded_clients\": [],\n    \"experiments\": {\n      \"OnboardingPreTool\": {\n        \"variants\": [\n          {\n            \"name\": \"showOnboardingPage\",\n            \"weight\": 100\n          }\n        ]\n      },\n      \"McpUiPreviews\": {\n        \"variants\": [\n          {\n            \"name\": \"showMCPUi\",\n            \"weight\": 100\n          }\n        ]\n      }\n    }\n  },\n  \"systemInfo\": {\n    \"platform\": \"linux\",\n    \"platformName\": \"Linux (Docker)\",\n    \"defaultShell\": \"bash\",\n    \"pathSeparator\": \"/\",\n    \"isWindows\": false,\n    \"isMacOS\": false,\n    \"isLinux\": true,\n    \"docker\": {\n      \"isContainer\": true,\n      \"containerType\": \"docker\",\n      \"orchestrator\": null,\n      \"isDocker\": true,\n      \"mountPoints\": [\n        {\n          \"hostPath\": \"virtiofs0\",\n          \"containerPath\": \"/results\",\n          \"type\": \"bind\",\n          \"readOnly\": false,\n          \"description\": \"Mounted directory: results\"\n        }\n      ],\n      \"containerEnvironment\": {\n        \"containerName\": \"6e1a4464a52a\"\n      }\n    },\n    \"isDXT\": false,\n    \"nodeInfo\": {\n      \"version\": \"22.23.2\",\n      \"path\": \"/usr/local/bin/node\"\n    },\n    \"pythonInfo\": {\n      \"available\": true,\n      \"command\": \"python3\",\n      \"version\": \"3.11.2\"\n    },\n    \"processInfo\": {\n      \"pid\": 3790,\n      \"arch\": \"arm64\",\n      \"platform\": \"linux\",\n      \"versions\": {\n        \"node\": \"22.23.2\",\n        \"acorn\": \"8.16.0\",\n        \"ada\": \"2.9.2\",\n        \"amaro\": \"1.1.8\",\n        \"ares\": \"1.34.6\",\n        \"brotli\": \"1.1.0\",\n        \"cjs_module_lexer\": \"2.2.0\",\n        \"cldr\": \"48.0\",\n        \"icu\": \"78.2\",\n        \"llhttp\": \"9.4.3\",\n        \"modules\": \"127\",\n        \"napi\": \"10\",\n        \"nbytes\": \"0.1.3\",\n        \"ncrypto\": \"0.0.1\",\n        \"nghttp2\": \"1.69.0\",\n        \"openssl\": \"3.5.7\",\n        \"simdjson\": \"4.5.0\",\n        \"simdutf\": \"6.4.2\",\n        \"sqlite\": \"3.51.3\",\n        \"tz\": \"2026a\",\n        \"undici\": \"6.28.0\",\n        \"unicode\": \"17.0\",\n        \"uv\": \"1.51.0\",\n        \"uvwasi\": \"0.0.23\",\n        \"v8\": \"12.4.254.21-node.56\",\n        \"zlib\": \"1.3.1-e00f703\",\n        \"zstd\": \"1.5.7\"\n      }\n    },\n    \"examplePaths\": {\n      \"home\": \"/home/username\",\n      \"temp\": \"/tmp\",\n      \"absolute\": \"/path/to/file.txt\",\n      \"accessible\": [\n        \"/results\"\n      ]\n    },\n    \"memory\": {\n      \"rss\": \"151.30 MB\",\n      \"heapTotal\": \"77.38 MB\",\n      \"heapUsed\": \"49.46 MB\",\n      \"external\": \"4.48 MB\",\n      \"arrayBuffers\": \"0.85 MB\"\n    }\n  }\n}",
+                "type": "text"
+              }
+            ],
+            "structuredContent": {
+              "config": {
+                "abTest_McpUiPreviews": "showMCPUi",
+                "allowedDirectories": [],
+                "blockedCommands": [
+                  "mkfs",
+                  "format",
+                  "mount",
+                  "umount",
+                  "fdisk",
+                  "dd",
+                  "parted",
+                  "diskpart",
+                  "sudo",
+                  "su",
+                  "passwd",
+                  "adduser",
+                  "useradd",
+                  "usermod",
+                  "groupadd",
+                  "chsh",
+                  "visudo",
+                  "shutdown",
+                  "reboot",
+                  "halt",
+                  "poweroff",
+                  "init",
+                  "iptables",
+                  "firewall",
+                  "netsh",
+                  "sfc",
+                  "bcdedit",
+                  "reg",
+                  "net",
+                  "sc",
+                  "runas",
+                  "cipher",
+                  "takeown"
+                ],
+                "clientId": "ad34e724-776d-444c-a6c6-c7b8aee8634d",
+                "currentClient": {
+                  "name": "mcp-sandboxscan",
+                  "version": "0.1.0"
+                },
+                "defaultShell": "/bin/sh",
+                "featureFlags": {
+                  "experiments": {
+                    "McpUiPreviews": {
+                      "variants": [
+                        {
+                          "name": "showMCPUi",
+                          "weight": 100
+                        }
+                      ]
+                    },
+                    "OnboardingPreTool": {
+                      "variants": [
+                        {
+                          "name": "showOnboardingPage",
+                          "weight": 100
+                        }
+                      ]
+                    }
+                  },
+                  "onboarding_injection": false,
+                  "user_surveys": false,
+                  "welcome_page_enabled": true,
+                  "welcome_page_excluded_clients": []
+                },
+                "fileReadLineLimit": 1000,
+                "fileWriteLineLimit": 50,
+                "pendingWelcomeOnboarding": true,
+                "systemInfo": {
+                  "defaultShell": "bash",
+                  "docker": {
+                    "containerEnvironment": {
+                      "containerName": "6e1a4464a52a"
+                    },
+                    "containerType": "docker",
+                    "isContainer": true,
+                    "isDocker": true,
+                    "mountPoints": [
+                      {
+                        "containerPath": "/results",
+                        "description": "Mounted directory: results",
+                        "hostPath": "virtiofs0",
+                        "readOnly": false,
+                        "type": "bind"
+                      }
+                    ],
+                    "orchestrator": null
+                  },
+                  "examplePaths": {
+                    "absolute": "/path/to/file.txt",
+                    "accessible": [
+                      "/results"
+                    ],
+                    "home": "/home/username",
+                    "temp": "/tmp"
+                  },
+                  "isDXT": false,
+                  "isLinux": true,
+                  "isMacOS": false,
+                  "isWindows": false,
+                  "memory": {
+                    "arrayBuffers": "0.85 MB",
+                    "external": "4.48 MB",
+                    "heapTotal": "77.38 MB",
+                    "heapUsed": "49.46 MB",
+                    "rss": "151.30 MB"
+                  },
+                  "nodeInfo": {
+                    "path": "/usr/local/bin/node",
+                    "version": "22.23.2"
+                  },
+                  "pathSeparator": "/",
+                  "platform": "linux",
+                  "platformName": "Linux (Docker)",
+                  "processInfo": {
+                    "arch": "arm64",
+                    "pid": 3790,
+                    "platform": "linux",
+                    "versions": {
+                      "acorn": "8.16.0",
+                      "ada": "2.9.2",
+                      "amaro": "1.1.8",
+                      "ares": "1.34.6",
+                      "brotli": "1.1.0",
+                      "cjs_module_lexer": "2.2.0",
+                      "cldr": "48.0",
+                      "icu": "78.2",
+                      "llhttp": "9.4.3",
+                      "modules": "127",
+                      "napi": "10",
+                      "nbytes": "0.1.3",
+                      "ncrypto": "0.0.1",
+                      "nghttp2": "1.69.0",
+                      "node": "22.23.2",
+                      "openssl": "3.5.7",
+                      "simdjson": "4.5.0",
+                      "simdutf": "6.4.2",
+                      "sqlite": "3.51.3",
+                      "tz": "2026a",
+                      "undici": "6.28.0",
+                      "unicode": "17.0",
+                      "uv": "1.51.0",
+                      "uvwasi": "0.0.23",
+                      "v8": "12.4.254.21-node.56",
+                      "zlib": "1.3.1-e00f703",
+                      "zstd": "1.5.7"
+                    }
+                  },
+                  "pythonInfo": {
+                    "available": true,
+                    "command": "python3",
+                    "version": "3.11.2"
+                  }
+                },
+                "telemetryEnabled": true,
+                "version": "0.2.42"
+              },
+              "entries": [
+                {
+                  "editable": true,
+                  "key": "blockedCommands",
+                  "value": [
+                    "mkfs",
+                    "format",
+                    "mount",
+                    "umount",
+                    "fdisk",
+                    "dd",
+                    "parted",
+                    "diskpart",
+                    "sudo",
+                    "su",
+                    "passwd",
+                    "adduser",
+                    "useradd",
+                    "usermod",
+                    "groupadd",
+                    "chsh",
+                    "visudo",
+                    "shutdown",
+                    "reboot",
+                    "halt",
+                    "poweroff",
+                    "init",
+                    "iptables",
+                    "firewall",
+                    "netsh",
+                    "sfc",
+                    "bcdedit",
+                    "reg",
+                    "net",
+                    "sc",
+                    "runas",
+                    "cipher",
+                    "takeown"
+                  ],
+                  "valueType": "array"
+                },
+                {
+                  "editable": true,
+                  "key": "allowedDirectories",
+                  "value": [],
+                  "valueType": "array"
+                },
+                {
+                  "editable": true,
+                  "key": "defaultShell",
+                  "value": "/bin/sh",
+                  "valueType": "string"
+                },
+                {
+                  "editable": true,
+                  "key": "telemetryEnabled",
+                  "value": true,
+                  "valueType": "boolean"
+                },
+                {
+                  "editable": true,
+                  "key": "fileReadLineLimit",
+                  "value": 1000,
+                  "valueType": "number"
+                },
+                {
+                  "editable": true,
+                  "key": "fileWriteLineLimit",
+                  "value": 50,
+                  "valueType": "number"
+                }
+              ],
+              "uiHints": {
+                "availableShells": [
+                  "bash",
+                  "/bin/sh",
+                  "/usr/bin/sh",
+                  "/bin/bash",
+                  "/usr/bin/bash",
+                  "/bin/rbash",
+                  "/usr/bin/rbash",
+                  "/bin/dash",
+                  "/usr/bin/dash"
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "mcp-initialize",
+      "actor": "mcp-client",
+      "target": "initialize",
+      "evidence": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "method": "initialize",
+        "params": {
+          "capabilities": {},
+          "clientInfo": {
+            "name": "mcp-sandboxscan",
+            "version": "0.1.0"
+          },
+          "protocolVersion": "2025-06-18"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tools-list",
+      "actor": "mcp-client",
+      "target": "tools/list",
+      "evidence": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "kind": "mcp-tool-call",
+      "actor": "mcp-client",
+      "target": "tools/call",
+      "evidence": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {},
+          "name": "get_config"
+        }
+      }
+    },
+    {
+      "kind": "mcp-tool-result",
+      "actor": "mcp-server",
+      "target": "get_config",
+      "evidence": {
+        "response": {
+          "id": 3,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "Current configuration:\n{\n  \"blockedCommands\": [\n    \"mkfs\",\n    \"format\",\n    \"mount\",\n    \"umount\",\n    \"fdisk\",\n    \"dd\",\n    \"parted\",\n    \"diskpart\",\n    \"sudo\",\n    \"su\",\n    \"passwd\",\n    \"adduser\",\n    \"useradd\",\n    \"usermod\",\n    \"groupadd\",\n    \"chsh\",\n    \"visudo\",\n    \"shutdown\",\n    \"reboot\",\n    \"halt\",\n    \"poweroff\",\n    \"init\",\n    \"iptables\",\n    \"firewall\",\n    \"netsh\",\n    \"sfc\",\n    \"bcdedit\",\n    \"reg\",\n    \"net\",\n    \"sc\",\n    \"runas\",\n    \"cipher\",\n    \"takeown\"\n  ],\n  \"defaultShell\": \"/bin/sh\",\n  \"allowedDirectories\": [],\n  \"telemetryEnabled\": true,\n  \"fileWriteLineLimit\": 50,\n  \"fileReadLineLimit\": 1000,\n  \"pendingWelcomeOnboarding\": true,\n  \"version\": \"0.2.42\",\n  \"clientId\": \"ad34e724-776d-444c-a6c6-c7b8aee8634d\",\n  \"abTest_McpUiPreviews\": \"showMCPUi\",\n  \"currentClient\": {\n    \"name\": \"mcp-sandboxscan\",\n    \"version\": \"0.1.0\"\n  },\n  \"featureFlags\": {\n    \"user_surveys\": false,\n    \"onboarding_injection\": false,\n    \"welcome_page_enabled\": true,\n    \"welcome_page_excluded_clients\": [],\n    \"experiments\": {\n      \"OnboardingPreTool\": {\n        \"variants\": [\n          {\n            \"name\": \"showOnboardingPage\",\n            \"weight\": 100\n          }\n        ]\n      },\n      \"McpUiPreviews\": {\n        \"variants\": [\n          {\n            \"name\": \"showMCPUi\",\n            \"weight\": 100\n          }\n        ]\n      }\n    }\n  },\n  \"systemInfo\": {\n    \"platform\": \"linux\",\n    \"platformName\": \"Linux (Docker)\",\n    \"defaultShell\": \"bash\",\n    \"pathSeparator\": \"/\",\n    \"isWindows\": false,\n    \"isMacOS\": false,\n    \"isLinux\": true,\n    \"docker\": {\n      \"isContainer\": true,\n      \"containerType\": \"docker\",\n      \"orchestrator\": null,\n      \"isDocker\": true,\n      \"mountPoints\": [\n        {\n          \"hostPath\": \"virtiofs0\",\n          \"containerPath\": \"/results\",\n          \"type\": \"bind\",\n          \"readOnly\": false,\n          \"description\": \"Mounted directory: results\"\n        }\n      ],\n      \"containerEnvironment\": {\n        \"containerName\": \"6e1a4464a52a\"\n      }\n    },\n    \"isDXT\": false,\n    \"nodeInfo\": {\n      \"version\": \"22.23.2\",\n      \"path\": \"/usr/local/bin/node\"\n    },\n    \"pythonInfo\": {\n      \"available\": true,\n      \"command\": \"python3\",\n      \"version\": \"3.11.2\"\n    },\n    \"processInfo\": {\n      \"pid\": 3790,\n      \"arch\": \"arm64\",\n      \"platform\": \"linux\",\n      \"versions\": {\n        \"node\": \"22.23.2\",\n        \"acorn\": \"8.16.0\",\n        \"ada\": \"2.9.2\",\n        \"amaro\": \"1.1.8\",\n        \"ares\": \"1.34.6\",\n        \"brotli\": \"1.1.0\",\n        \"cjs_module_lexer\": \"2.2.0\",\n        \"cldr\": \"48.0\",\n        \"icu\": \"78.2\",\n        \"llhttp\": \"9.4.3\",\n        \"modules\": \"127\",\n        \"napi\": \"10\",\n        \"nbytes\": \"0.1.3\",\n        \"ncrypto\": \"0.0.1\",\n        \"nghttp2\": \"1.69.0\",\n        \"openssl\": \"3.5.7\",\n        \"simdjson\": \"4.5.0\",\n        \"simdutf\": \"6.4.2\",\n        \"sqlite\": \"3.51.3\",\n        \"tz\": \"2026a\",\n        \"undici\": \"6.28.0\",\n        \"unicode\": \"17.0\",\n        \"uv\": \"1.51.0\",\n        \"uvwasi\": \"0.0.23\",\n        \"v8\": \"12.4.254.21-node.56\",\n        \"zlib\": \"1.3.1-e00f703\",\n        \"zstd\": \"1.5.7\"\n      }\n    },\n    \"examplePaths\": {\n      \"home\": \"/home/username\",\n      \"temp\": \"/tmp\",\n      \"absolute\": \"/path/to/file.txt\",\n      \"accessible\": [\n        \"/results\"\n      ]\n    },\n    \"memory\": {\n      \"rss\": \"151.30 MB\",\n      \"heapTotal\": \"77.38 MB\",\n      \"heapUsed\": \"49.46 MB\",\n      \"external\": \"4.48 MB\",\n      \"arrayBuffers\": \"0.85 MB\"\n    }\n  }\n}",
+                "type": "text"
+              }
+            ],
+            "structuredContent": {
+              "config": {
+                "abTest_McpUiPreviews": "showMCPUi",
+                "allowedDirectories": [],
+                "blockedCommands": [
+                  "mkfs",
+                  "format",
+                  "mount",
+                  "umount",
+                  "fdisk",
+                  "dd",
+                  "parted",
+                  "diskpart",
+                  "sudo",
+                  "su",
+                  "passwd",
+                  "adduser",
+                  "useradd",
+                  "usermod",
+                  "groupadd",
+                  "chsh",
+                  "visudo",
+                  "shutdown",
+                  "reboot",
+                  "halt",
+                  "poweroff",
+                  "init",
+                  "iptables",
+                  "firewall",
+                  "netsh",
+                  "sfc",
+                  "bcdedit",
+                  "reg",
+                  "net",
+                  "sc",
+                  "runas",
+                  "cipher",
+                  "takeown"
+                ],
+                "clientId": "ad34e724-776d-444c-a6c6-c7b8aee8634d",
+                "currentClient": {
+                  "name": "mcp-sandboxscan",
+                  "version": "0.1.0"
+                },
+                "defaultShell": "/bin/sh",
+                "featureFlags": {
+                  "experiments": {
+                    "McpUiPreviews": {
+                      "variants": [
+                        {
+                          "name": "showMCPUi",
+                          "weight": 100
+                        }
+                      ]
+                    },
+                    "OnboardingPreTool": {
+                      "variants": [
+                        {
+                          "name": "showOnboardingPage",
+                          "weight": 100
+                        }
+                      ]
+                    }
+                  },
+                  "onboarding_injection": false,
+                  "user_surveys": false,
+                  "welcome_page_enabled": true,
+                  "welcome_page_excluded_clients": []
+                },
+                "fileReadLineLimit": 1000,
+                "fileWriteLineLimit": 50,
+                "pendingWelcomeOnboarding": true,
+                "systemInfo": {
+                  "defaultShell": "bash",
+                  "docker": {
+                    "containerEnvironment": {
+                      "containerName": "6e1a4464a52a"
+                    },
+                    "containerType": "docker",
+                    "isContainer": true,
+                    "isDocker": true,
+                    "mountPoints": [
+                      {
+                        "containerPath": "/results",
+                        "description": "Mounted directory: results",
+                        "hostPath": "virtiofs0",
+                        "readOnly": false,
+                        "type": "bind"
+                      }
+                    ],
+                    "orchestrator": null
+                  },
+                  "examplePaths": {
+                    "absolute": "/path/to/file.txt",
+                    "accessible": [
+                      "/results"
+                    ],
+                    "home": "/home/username",
+                    "temp": "/tmp"
+                  },
+                  "isDXT": false,
+                  "isLinux": true,
+                  "isMacOS": false,
+                  "isWindows": false,
+                  "memory": {
+                    "arrayBuffers": "0.85 MB",
+                    "external": "4.48 MB",
+                    "heapTotal": "77.38 MB",
+                    "heapUsed": "49.46 MB",
+                    "rss": "151.30 MB"
+                  },
+                  "nodeInfo": {
+                    "path": "/usr/local/bin/node",
+                    "version": "22.23.2"
+                  },
+                  "pathSeparator": "/",
+                  "platform": "linux",
+                  "platformName": "Linux (Docker)",
+                  "processInfo": {
+                    "arch": "arm64",
+                    "pid": 3790,
+                    "platform": "linux",
+                    "versions": {
+                      "acorn": "8.16.0",
+                      "ada": "2.9.2",
+                      "amaro": "1.1.8",
+                      "ares": "1.34.6",
+                      "brotli": "1.1.0",
+                      "cjs_module_lexer": "2.2.0",
+                      "cldr": "48.0",
+                      "icu": "78.2",
+                      "llhttp": "9.4.3",
+                      "modules": "127",
+                      "napi": "10",
+                      "nbytes": "0.1.3",
+                      "ncrypto": "0.0.1",
+                      "nghttp2": "1.69.0",
+                      "node": "22.23.2",
+                      "openssl": "3.5.7",
+                      "simdjson": "4.5.0",
+                      "simdutf": "6.4.2",
+                      "sqlite": "3.51.3",
+                      "tz": "2026a",
+                      "undici": "6.28.0",
+                      "unicode": "17.0",
+                      "uv": "1.51.0",
+                      "uvwasi": "0.0.23",
+                      "v8": "12.4.254.21-node.56",
+                      "zlib": "1.3.1-e00f703",
+                      "zstd": "1.5.7"
+                    }
+                  },
+                  "pythonInfo": {
+                    "available": true,
+                    "command": "python3",
+                    "version": "3.11.2"
+                  }
+                },
+                "telemetryEnabled": true,
+                "version": "0.2.42"
+              },
+              "entries": [
+                {
+                  "editable": true,
+                  "key": "blockedCommands",
+                  "value": [
+                    "mkfs",
+                    "format",
+                    "mount",
+                    "umount",
+                    "fdisk",
+                    "dd",
+                    "parted",
+                    "diskpart",
+                    "sudo",
+                    "su",
+                    "passwd",
+                    "adduser",
+                    "useradd",
+                    "usermod",
+                    "groupadd",
+                    "chsh",
+                    "visudo",
+                    "shutdown",
+                    "reboot",
+                    "halt",
+                    "poweroff",
+                    "init",
+                    "iptables",
+                    "firewall",
+                    "netsh",
+                    "sfc",
+                    "bcdedit",
+                    "reg",
+                    "net",
+                    "sc",
+                    "runas",
+                    "cipher",
+                    "takeown"
+                  ],
+                  "valueType": "array"
+                },
+                {
+                  "editable": true,
+                  "key": "allowedDirectories",
+                  "value": [],
+                  "valueType": "array"
+                },
+                {
+                  "editable": true,
+                  "key": "defaultShell",
+                  "value": "/bin/sh",
+                  "valueType": "string"
+                },
+                {
+                  "editable": true,
+                  "key": "telemetryEnabled",
+                  "value": true,
+                  "valueType": "boolean"
+                },
+                {
+                  "editable": true,
+                  "key": "fileReadLineLimit",
+                  "value": 1000,
+                  "valueType": "number"
+                },
+                {
+                  "editable": true,
+                  "key": "fileWriteLineLimit",
+                  "value": 50,
+                  "valueType": "number"
+                }
+              ],
+              "uiHints": {
+                "availableShells": [
+                  "bash",
+                  "/bin/sh",
+                  "/usr/bin/sh",
+                  "/bin/bash",
+                  "/usr/bin/bash",
+                  "/bin/rbash",
+                  "/usr/bin/rbash",
+                  "/bin/dash",
+                  "/usr/bin/dash"
+                ]
+              }
+            }
+          }
+        },
+        "tool_name": "get_config"
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "mcp-tool-result",
+      "evidence": {
+        "sink": {
+          "path": "$.content[0].text",
+          "type": "McpToolResultText",
+          "value": "Current configuration:\n{\n  \"blockedCommands\": [\n    \"mkfs\",\n    \"format\",\n    \"mount\",\n    \"umount\",\n    \"fdisk\",\n    \"dd\",\n    \"parted\",\n    \"diskpart\",\n    \"sudo\",\n    \"su\",\n    \"passwd\",\n    \"adduser\",\n    \"useradd\",\n    \"usermod\",\n    \"groupadd\",\n    \"chsh\",\n    \"visudo\",\n    \"shutdown\",\n    \"reboot\",\n    \"halt\",\n    \"poweroff\",\n    \"init\",\n    \"iptables\",\n    \"firewall\",\n    \"netsh\",\n    \"sfc\",\n    \"bcdedit\",\n    \"reg\",\n    \"net\",\n    \"sc\",\n    \"runas\",\n    \"cipher\",\n    \"takeown\"\n  ],\n  \"defaultShell\": \"/bin/sh\",\n  \"allowedDirectories\": [],\n  \"telemetryEnabled\": true,\n  \"fileWriteLineLimit\": 50,\n  \"fileReadLineLimit\": 1000,\n  \"pendingWelcomeOnboarding\": true,\n  \"version\": \"0.2.42\",\n  \"clientId\": \"ad34e724-776d-444c-a6c6-c7b8aee8634d\",\n  \"abTest_McpUiPreviews\": \"showMCPUi\",\n  \"currentClient\": {\n    \"name\": \"mcp-sandboxscan\",\n    \"version\": \"0.1.0\"\n  },\n  \"featureFlags\": {\n    \"user_surveys\": false,\n    \"onboarding_injection\": false,\n    \"welcome_page_enabled\": true,\n    \"welcome_page_excluded_clients\": [],\n    \"experiments\": {\n      \"OnboardingPreTool\": {\n        \"variants\": [\n          {\n            \"name\": \"showOnboardingPage\",\n            \"weight\": 100\n          }\n        ]\n      },\n      \"McpUiPreviews\": {\n        \"variants\": [\n          {\n            \"name\": \"showMCPUi\",\n            \"weight\": 100\n          }\n        ]\n      }\n    }\n  },\n  \"systemInfo\": {\n    \"platform\": \"linux\",\n    \"platformName\": \"Linux (Docker)\",\n    \"defaultShell\": \"bash\",\n    \"pathSeparator\": \"/\",\n    \"isWindows\": false,\n    \"isMacOS\": false,\n    \"isLinux\": true,\n    \"docker\": {\n      \"isContainer\": true,\n      \"containerType\": \"docker\",\n      \"orchestrator\": null,\n      \"isDocker\": true,\n      \"mountPoints\": [\n        {\n          \"hostPath\": \"virtiofs0\",\n          \"containerPath\": \"/results\",\n          \"type\": \"bind\",\n          \"readOnly\": false,\n          \"description\": \"Mounted directory: results\"\n        }\n      ],\n      \"containerEnvironment\": {\n        \"containerName\": \"6e1a4464a52a\"\n      }\n    },\n    \"isDXT\": false,\n    \"nodeInfo\": {\n      \"version\": \"22.23.2\",\n      \"path\": \"/usr/local/bin/node\"\n    },\n    \"pythonInfo\": {\n      \"available\": true,\n      \"command\": \"python3\",\n      \"version\": \"3.11.2\"\n    },\n    \"processInfo\": {\n      \"pid\": 3790,\n      \"arch\": \"arm64\",\n      \"platform\": \"linux\",\n      \"versions\": {\n        \"node\": \"22.23.2\",\n        \"acorn\": \"8.16.0\",\n        \"ada\": \"2.9.2\",\n        \"amaro\": \"1.1.8\",\n        \"ares\": \"1.34.6\",\n        \"brotli\": \"1.1.0\",\n        \"cjs_module_lexer\": \"2.2.0\",\n        \"cldr\": \"48.0\",\n        \"icu\": \"78.2\",\n        \"llhttp\": \"9.4.3\",\n        \"modules\": \"127\",\n        \"napi\": \"10\",\n        \"nbytes\": \"0.1.3\",\n        \"ncrypto\": \"0.0.1\",\n        \"nghttp2\": \"1.69.0\",\n        \"openssl\": \"3.5.7\",\n        \"simdjson\": \"4.5.0\",\n        \"simdutf\": \"6.4.2\",\n        \"sqlite\": \"3.51.3\",\n        \"tz\": \"2026a\",\n        \"undici\": \"6.28.0\",\n        \"unicode\": \"17.0\",\n        \"uv\": \"1.51.0\",\n        \"uvwasi\": \"0.0.23\",\n        \"v8\": \"12.4.254.21-node.56\",\n        \"zlib\": \"1.3.1-e00f703\",\n        \"zstd\": \"1.5.7\"\n      }\n    },\n    \"examplePaths\": {\n      \"home\": \"/home/username\",\n      \"temp\": \"/tmp\",\n      \"absolute\": \"/path/to/file.txt\",\n      \"accessible\": [\n        \"/results\"\n      ]\n    },\n    \"memory\": {\n      \"rss\": \"151.30 MB\",\n      \"heapTotal\": \"77.38 MB\",\n      \"heapUsed\": \"49.46 MB\",\n      \"external\": \"4.48 MB\",\n      \"arrayBuffers\": \"0.85 MB\"\n    }\n  }\n}"
+        },
+        "text_len": 3444
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.abTest_McpUiPreviews",
+          "type": "ToolReturnLeaf",
+          "value": "showMCPUi"
+        },
+        "text_len": 9
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[0]",
+          "type": "ToolReturnLeaf",
+          "value": "mkfs"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[1]",
+          "type": "ToolReturnLeaf",
+          "value": "format"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[2]",
+          "type": "ToolReturnLeaf",
+          "value": "mount"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[3]",
+          "type": "ToolReturnLeaf",
+          "value": "umount"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[4]",
+          "type": "ToolReturnLeaf",
+          "value": "fdisk"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[5]",
+          "type": "ToolReturnLeaf",
+          "value": "dd"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[6]",
+          "type": "ToolReturnLeaf",
+          "value": "parted"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[7]",
+          "type": "ToolReturnLeaf",
+          "value": "diskpart"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[8]",
+          "type": "ToolReturnLeaf",
+          "value": "sudo"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[9]",
+          "type": "ToolReturnLeaf",
+          "value": "su"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[10]",
+          "type": "ToolReturnLeaf",
+          "value": "passwd"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[11]",
+          "type": "ToolReturnLeaf",
+          "value": "adduser"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[12]",
+          "type": "ToolReturnLeaf",
+          "value": "useradd"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[13]",
+          "type": "ToolReturnLeaf",
+          "value": "usermod"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[14]",
+          "type": "ToolReturnLeaf",
+          "value": "groupadd"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[15]",
+          "type": "ToolReturnLeaf",
+          "value": "chsh"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[16]",
+          "type": "ToolReturnLeaf",
+          "value": "visudo"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[17]",
+          "type": "ToolReturnLeaf",
+          "value": "shutdown"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[18]",
+          "type": "ToolReturnLeaf",
+          "value": "reboot"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[19]",
+          "type": "ToolReturnLeaf",
+          "value": "halt"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[20]",
+          "type": "ToolReturnLeaf",
+          "value": "poweroff"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[21]",
+          "type": "ToolReturnLeaf",
+          "value": "init"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[22]",
+          "type": "ToolReturnLeaf",
+          "value": "iptables"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[23]",
+          "type": "ToolReturnLeaf",
+          "value": "firewall"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[24]",
+          "type": "ToolReturnLeaf",
+          "value": "netsh"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[25]",
+          "type": "ToolReturnLeaf",
+          "value": "sfc"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[26]",
+          "type": "ToolReturnLeaf",
+          "value": "bcdedit"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[27]",
+          "type": "ToolReturnLeaf",
+          "value": "reg"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[28]",
+          "type": "ToolReturnLeaf",
+          "value": "net"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[29]",
+          "type": "ToolReturnLeaf",
+          "value": "sc"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[30]",
+          "type": "ToolReturnLeaf",
+          "value": "runas"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[31]",
+          "type": "ToolReturnLeaf",
+          "value": "cipher"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.blockedCommands[32]",
+          "type": "ToolReturnLeaf",
+          "value": "takeown"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.clientId",
+          "type": "ToolReturnLeaf",
+          "value": "ad34e724-776d-444c-a6c6-c7b8aee8634d"
+        },
+        "text_len": 36
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.currentClient.name",
+          "type": "ToolReturnLeaf",
+          "value": "mcp-sandboxscan"
+        },
+        "text_len": 15
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.currentClient.version",
+          "type": "ToolReturnLeaf",
+          "value": "0.1.0"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.defaultShell",
+          "type": "ToolReturnLeaf",
+          "value": "/bin/sh"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.featureFlags.experiments.McpUiPreviews.variants[0].name",
+          "type": "ToolReturnLeaf",
+          "value": "showMCPUi"
+        },
+        "text_len": 9
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.featureFlags.experiments.OnboardingPreTool.variants[0].name",
+          "type": "ToolReturnLeaf",
+          "value": "showOnboardingPage"
+        },
+        "text_len": 18
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.defaultShell",
+          "type": "ToolReturnLeaf",
+          "value": "bash"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.docker.containerEnvironment.containerName",
+          "type": "ToolReturnLeaf",
+          "value": "6e1a4464a52a"
+        },
+        "text_len": 12
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.docker.containerType",
+          "type": "ToolReturnLeaf",
+          "value": "docker"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].containerPath",
+          "type": "ToolReturnLeaf",
+          "value": "/results"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].description",
+          "type": "ToolReturnLeaf",
+          "value": "Mounted directory: results"
+        },
+        "text_len": 26
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].hostPath",
+          "type": "ToolReturnLeaf",
+          "value": "virtiofs0"
+        },
+        "text_len": 9
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].type",
+          "type": "ToolReturnLeaf",
+          "value": "bind"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.examplePaths.absolute",
+          "type": "ToolReturnLeaf",
+          "value": "/path/to/file.txt"
+        },
+        "text_len": 17
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.examplePaths.accessible[0]",
+          "type": "ToolReturnLeaf",
+          "value": "/results"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.examplePaths.home",
+          "type": "ToolReturnLeaf",
+          "value": "/home/username"
+        },
+        "text_len": 14
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.examplePaths.temp",
+          "type": "ToolReturnLeaf",
+          "value": "/tmp"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.memory.arrayBuffers",
+          "type": "ToolReturnLeaf",
+          "value": "0.85 MB"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.memory.external",
+          "type": "ToolReturnLeaf",
+          "value": "4.48 MB"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.memory.heapTotal",
+          "type": "ToolReturnLeaf",
+          "value": "77.38 MB"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.memory.heapUsed",
+          "type": "ToolReturnLeaf",
+          "value": "49.46 MB"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.memory.rss",
+          "type": "ToolReturnLeaf",
+          "value": "151.30 MB"
+        },
+        "text_len": 9
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.nodeInfo.path",
+          "type": "ToolReturnLeaf",
+          "value": "/usr/local/bin/node"
+        },
+        "text_len": 19
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.nodeInfo.version",
+          "type": "ToolReturnLeaf",
+          "value": "22.23.2"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.pathSeparator",
+          "type": "ToolReturnLeaf",
+          "value": "/"
+        },
+        "text_len": 1
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.platform",
+          "type": "ToolReturnLeaf",
+          "value": "linux"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.platformName",
+          "type": "ToolReturnLeaf",
+          "value": "Linux (Docker)"
+        },
+        "text_len": 14
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.arch",
+          "type": "ToolReturnLeaf",
+          "value": "arm64"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.platform",
+          "type": "ToolReturnLeaf",
+          "value": "linux"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.acorn",
+          "type": "ToolReturnLeaf",
+          "value": "8.16.0"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.ada",
+          "type": "ToolReturnLeaf",
+          "value": "2.9.2"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.amaro",
+          "type": "ToolReturnLeaf",
+          "value": "1.1.8"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.ares",
+          "type": "ToolReturnLeaf",
+          "value": "1.34.6"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.brotli",
+          "type": "ToolReturnLeaf",
+          "value": "1.1.0"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.cjs_module_lexer",
+          "type": "ToolReturnLeaf",
+          "value": "2.2.0"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.cldr",
+          "type": "ToolReturnLeaf",
+          "value": "48.0"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.icu",
+          "type": "ToolReturnLeaf",
+          "value": "78.2"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.llhttp",
+          "type": "ToolReturnLeaf",
+          "value": "9.4.3"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.modules",
+          "type": "ToolReturnLeaf",
+          "value": "127"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.napi",
+          "type": "ToolReturnLeaf",
+          "value": "10"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.nbytes",
+          "type": "ToolReturnLeaf",
+          "value": "0.1.3"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.ncrypto",
+          "type": "ToolReturnLeaf",
+          "value": "0.0.1"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.nghttp2",
+          "type": "ToolReturnLeaf",
+          "value": "1.69.0"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.node",
+          "type": "ToolReturnLeaf",
+          "value": "22.23.2"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.openssl",
+          "type": "ToolReturnLeaf",
+          "value": "3.5.7"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.simdjson",
+          "type": "ToolReturnLeaf",
+          "value": "4.5.0"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.simdutf",
+          "type": "ToolReturnLeaf",
+          "value": "6.4.2"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.sqlite",
+          "type": "ToolReturnLeaf",
+          "value": "3.51.3"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.tz",
+          "type": "ToolReturnLeaf",
+          "value": "2026a"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.undici",
+          "type": "ToolReturnLeaf",
+          "value": "6.28.0"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.unicode",
+          "type": "ToolReturnLeaf",
+          "value": "17.0"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.uv",
+          "type": "ToolReturnLeaf",
+          "value": "1.51.0"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.uvwasi",
+          "type": "ToolReturnLeaf",
+          "value": "0.0.23"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.v8",
+          "type": "ToolReturnLeaf",
+          "value": "12.4.254.21-node.56"
+        },
+        "text_len": 19
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.zlib",
+          "type": "ToolReturnLeaf",
+          "value": "1.3.1-e00f703"
+        },
+        "text_len": 13
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.processInfo.versions.zstd",
+          "type": "ToolReturnLeaf",
+          "value": "1.5.7"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.pythonInfo.command",
+          "type": "ToolReturnLeaf",
+          "value": "python3"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.systemInfo.pythonInfo.version",
+          "type": "ToolReturnLeaf",
+          "value": "3.11.2"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.config.version",
+          "type": "ToolReturnLeaf",
+          "value": "0.2.42"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].key",
+          "type": "ToolReturnLeaf",
+          "value": "blockedCommands"
+        },
+        "text_len": 15
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[0]",
+          "type": "ToolReturnLeaf",
+          "value": "mkfs"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[1]",
+          "type": "ToolReturnLeaf",
+          "value": "format"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[2]",
+          "type": "ToolReturnLeaf",
+          "value": "mount"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[3]",
+          "type": "ToolReturnLeaf",
+          "value": "umount"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[4]",
+          "type": "ToolReturnLeaf",
+          "value": "fdisk"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[5]",
+          "type": "ToolReturnLeaf",
+          "value": "dd"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[6]",
+          "type": "ToolReturnLeaf",
+          "value": "parted"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[7]",
+          "type": "ToolReturnLeaf",
+          "value": "diskpart"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[8]",
+          "type": "ToolReturnLeaf",
+          "value": "sudo"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[9]",
+          "type": "ToolReturnLeaf",
+          "value": "su"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[10]",
+          "type": "ToolReturnLeaf",
+          "value": "passwd"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[11]",
+          "type": "ToolReturnLeaf",
+          "value": "adduser"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[12]",
+          "type": "ToolReturnLeaf",
+          "value": "useradd"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[13]",
+          "type": "ToolReturnLeaf",
+          "value": "usermod"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[14]",
+          "type": "ToolReturnLeaf",
+          "value": "groupadd"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[15]",
+          "type": "ToolReturnLeaf",
+          "value": "chsh"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[16]",
+          "type": "ToolReturnLeaf",
+          "value": "visudo"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[17]",
+          "type": "ToolReturnLeaf",
+          "value": "shutdown"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[18]",
+          "type": "ToolReturnLeaf",
+          "value": "reboot"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[19]",
+          "type": "ToolReturnLeaf",
+          "value": "halt"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[20]",
+          "type": "ToolReturnLeaf",
+          "value": "poweroff"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[21]",
+          "type": "ToolReturnLeaf",
+          "value": "init"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[22]",
+          "type": "ToolReturnLeaf",
+          "value": "iptables"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[23]",
+          "type": "ToolReturnLeaf",
+          "value": "firewall"
+        },
+        "text_len": 8
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[24]",
+          "type": "ToolReturnLeaf",
+          "value": "netsh"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[25]",
+          "type": "ToolReturnLeaf",
+          "value": "sfc"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[26]",
+          "type": "ToolReturnLeaf",
+          "value": "bcdedit"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[27]",
+          "type": "ToolReturnLeaf",
+          "value": "reg"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[28]",
+          "type": "ToolReturnLeaf",
+          "value": "net"
+        },
+        "text_len": 3
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[29]",
+          "type": "ToolReturnLeaf",
+          "value": "sc"
+        },
+        "text_len": 2
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[30]",
+          "type": "ToolReturnLeaf",
+          "value": "runas"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[31]",
+          "type": "ToolReturnLeaf",
+          "value": "cipher"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].value[32]",
+          "type": "ToolReturnLeaf",
+          "value": "takeown"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[0].valueType",
+          "type": "ToolReturnLeaf",
+          "value": "array"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[1].key",
+          "type": "ToolReturnLeaf",
+          "value": "allowedDirectories"
+        },
+        "text_len": 18
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[1].valueType",
+          "type": "ToolReturnLeaf",
+          "value": "array"
+        },
+        "text_len": 5
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[2].key",
+          "type": "ToolReturnLeaf",
+          "value": "defaultShell"
+        },
+        "text_len": 12
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[2].value",
+          "type": "ToolReturnLeaf",
+          "value": "/bin/sh"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[2].valueType",
+          "type": "ToolReturnLeaf",
+          "value": "string"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[3].key",
+          "type": "ToolReturnLeaf",
+          "value": "telemetryEnabled"
+        },
+        "text_len": 16
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[3].valueType",
+          "type": "ToolReturnLeaf",
+          "value": "boolean"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[4].key",
+          "type": "ToolReturnLeaf",
+          "value": "fileReadLineLimit"
+        },
+        "text_len": 17
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[4].valueType",
+          "type": "ToolReturnLeaf",
+          "value": "number"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[5].key",
+          "type": "ToolReturnLeaf",
+          "value": "fileWriteLineLimit"
+        },
+        "text_len": 18
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.entries[5].valueType",
+          "type": "ToolReturnLeaf",
+          "value": "number"
+        },
+        "text_len": 6
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[0]",
+          "type": "ToolReturnLeaf",
+          "value": "bash"
+        },
+        "text_len": 4
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[1]",
+          "type": "ToolReturnLeaf",
+          "value": "/bin/sh"
+        },
+        "text_len": 7
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[2]",
+          "type": "ToolReturnLeaf",
+          "value": "/usr/bin/sh"
+        },
+        "text_len": 11
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[3]",
+          "type": "ToolReturnLeaf",
+          "value": "/bin/bash"
+        },
+        "text_len": 9
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[4]",
+          "type": "ToolReturnLeaf",
+          "value": "/usr/bin/bash"
+        },
+        "text_len": 13
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[5]",
+          "type": "ToolReturnLeaf",
+          "value": "/bin/rbash"
+        },
+        "text_len": 10
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[6]",
+          "type": "ToolReturnLeaf",
+          "value": "/usr/bin/rbash"
+        },
+        "text_len": 14
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[7]",
+          "type": "ToolReturnLeaf",
+          "value": "/bin/dash"
+        },
+        "text_len": 9
+      }
+    },
+    {
+      "kind": "sink-observed",
+      "actor": "scanner",
+      "target": "tool-return",
+      "evidence": {
+        "sink": {
+          "path": "$.structuredContent.uiHints.availableShells[8]",
+          "type": "ToolReturnLeaf",
+          "value": "/usr/bin/dash"
+        },
+        "text_len": 13
+      }
+    }
+  ],
+  "sources": [],
+  "sinks": [
+    {
+      "type": "McpToolResultText",
+      "path": "$.content[0].text",
+      "value": "Current configuration:\n{\n  \"blockedCommands\": [\n    \"mkfs\",\n    \"format\",\n    \"mount\",\n    \"umount\",\n    \"fdisk\",\n    \"dd\",\n    \"parted\",\n    \"diskpart\",\n    \"sudo\",\n    \"su\",\n    \"passwd\",\n    \"adduser\",\n    \"useradd\",\n    \"usermod\",\n    \"groupadd\",\n    \"chsh\",\n    \"visudo\",\n    \"shutdown\",\n    \"reboot\",\n    \"halt\",\n    \"poweroff\",\n    \"init\",\n    \"iptables\",\n    \"firewall\",\n    \"netsh\",\n    \"sfc\",\n    \"bcdedit\",\n    \"reg\",\n    \"net\",\n    \"sc\",\n    \"runas\",\n    \"cipher\",\n    \"takeown\"\n  ],\n  \"defaultShell\": \"/bin/sh\",\n  \"allowedDirectories\": [],\n  \"telemetryEnabled\": true,\n  \"fileWriteLineLimit\": 50,\n  \"fileReadLineLimit\": 1000,\n  \"pendingWelcomeOnboarding\": true,\n  \"version\": \"0.2.42\",\n  \"clientId\": \"ad34e724-776d-444c-a6c6-c7b8aee8634d\",\n  \"abTest_McpUiPreviews\": \"showMCPUi\",\n  \"currentClient\": {\n    \"name\": \"mcp-sandboxscan\",\n    \"version\": \"0.1.0\"\n  },\n  \"featureFlags\": {\n    \"user_surveys\": false,\n    \"onboarding_injection\": false,\n    \"welcome_page_enabled\": true,\n    \"welcome_page_excluded_clients\": [],\n    \"experiments\": {\n      \"OnboardingPreTool\": {\n        \"variants\": [\n          {\n            \"name\": \"showOnboardingPage\",\n            \"weight\": 100\n          }\n        ]\n      },\n      \"McpUiPreviews\": {\n        \"variants\": [\n          {\n            \"name\": \"showMCPUi\",\n            \"weight\": 100\n          }\n        ]\n      }\n    }\n  },\n  \"systemInfo\": {\n    \"platform\": \"linux\",\n    \"platformName\": \"Linux (Docker)\",\n    \"defaultShell\": \"bash\",\n    \"pathSeparator\": \"/\",\n    \"isWindows\": false,\n    \"isMacOS\": false,\n    \"isLinux\": true,\n    \"docker\": {\n      \"isContainer\": true,\n      \"containerType\": \"docker\",\n      \"orchestrator\": null,\n      \"isDocker\": true,\n      \"mountPoints\": [\n        {\n          \"hostPath\": \"virtiofs0\",\n          \"containerPath\": \"/results\",\n          \"type\": \"bind\",\n          \"readOnly\": false,\n          \"description\": \"Mounted directory: results\"\n        }\n      ],\n      \"containerEnvironment\": {\n        \"containerName\": \"6e1a4464a52a\"\n      }\n    },\n    \"isDXT\": false,\n    \"nodeInfo\": {\n      \"version\": \"22.23.2\",\n      \"path\": \"/usr/local/bin/node\"\n    },\n    \"pythonInfo\": {\n      \"available\": true,\n      \"command\": \"python3\",\n      \"version\": \"3.11.2\"\n    },\n    \"processInfo\": {\n      \"pid\": 3790,\n      \"arch\": \"arm64\",\n      \"platform\": \"linux\",\n      \"versions\": {\n        \"node\": \"22.23.2\",\n        \"acorn\": \"8.16.0\",\n        \"ada\": \"2.9.2\",\n        \"amaro\": \"1.1.8\",\n        \"ares\": \"1.34.6\",\n        \"brotli\": \"1.1.0\",\n        \"cjs_module_lexer\": \"2.2.0\",\n        \"cldr\": \"48.0\",\n        \"icu\": \"78.2\",\n        \"llhttp\": \"9.4.3\",\n        \"modules\": \"127\",\n        \"napi\": \"10\",\n        \"nbytes\": \"0.1.3\",\n        \"ncrypto\": \"0.0.1\",\n        \"nghttp2\": \"1.69.0\",\n        \"openssl\": \"3.5.7\",\n        \"simdjson\": \"4.5.0\",\n        \"simdutf\": \"6.4.2\",\n        \"sqlite\": \"3.51.3\",\n        \"tz\": \"2026a\",\n        \"undici\": \"6.28.0\",\n        \"unicode\": \"17.0\",\n        \"uv\": \"1.51.0\",\n        \"uvwasi\": \"0.0.23\",\n        \"v8\": \"12.4.254.21-node.56\",\n        \"zlib\": \"1.3.1-e00f703\",\n        \"zstd\": \"1.5.7\"\n      }\n    },\n    \"examplePaths\": {\n      \"home\": \"/home/username\",\n      \"temp\": \"/tmp\",\n      \"absolute\": \"/path/to/file.txt\",\n      \"accessible\": [\n        \"/results\"\n      ]\n    },\n    \"memory\": {\n      \"rss\": \"151.30 MB\",\n      \"heapTotal\": \"77.38 MB\",\n      \"heapUsed\": \"49.46 MB\",\n      \"external\": \"4.48 MB\",\n      \"arrayBuffers\": \"0.85 MB\"\n    }\n  }\n}"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.abTest_McpUiPreviews",
+      "value": "showMCPUi"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[0]",
+      "value": "mkfs"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[1]",
+      "value": "format"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[2]",
+      "value": "mount"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[3]",
+      "value": "umount"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[4]",
+      "value": "fdisk"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[5]",
+      "value": "dd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[6]",
+      "value": "parted"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[7]",
+      "value": "diskpart"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[8]",
+      "value": "sudo"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[9]",
+      "value": "su"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[10]",
+      "value": "passwd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[11]",
+      "value": "adduser"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[12]",
+      "value": "useradd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[13]",
+      "value": "usermod"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[14]",
+      "value": "groupadd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[15]",
+      "value": "chsh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[16]",
+      "value": "visudo"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[17]",
+      "value": "shutdown"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[18]",
+      "value": "reboot"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[19]",
+      "value": "halt"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[20]",
+      "value": "poweroff"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[21]",
+      "value": "init"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[22]",
+      "value": "iptables"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[23]",
+      "value": "firewall"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[24]",
+      "value": "netsh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[25]",
+      "value": "sfc"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[26]",
+      "value": "bcdedit"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[27]",
+      "value": "reg"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[28]",
+      "value": "net"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[29]",
+      "value": "sc"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[30]",
+      "value": "runas"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[31]",
+      "value": "cipher"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.blockedCommands[32]",
+      "value": "takeown"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.clientId",
+      "value": "ad34e724-776d-444c-a6c6-c7b8aee8634d"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.currentClient.name",
+      "value": "mcp-sandboxscan"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.currentClient.version",
+      "value": "0.1.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.defaultShell",
+      "value": "/bin/sh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.featureFlags.experiments.McpUiPreviews.variants[0].name",
+      "value": "showMCPUi"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.featureFlags.experiments.OnboardingPreTool.variants[0].name",
+      "value": "showOnboardingPage"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.defaultShell",
+      "value": "bash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.docker.containerEnvironment.containerName",
+      "value": "6e1a4464a52a"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.docker.containerType",
+      "value": "docker"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].containerPath",
+      "value": "/results"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].description",
+      "value": "Mounted directory: results"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].hostPath",
+      "value": "virtiofs0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.docker.mountPoints[0].type",
+      "value": "bind"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.examplePaths.absolute",
+      "value": "/path/to/file.txt"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.examplePaths.accessible[0]",
+      "value": "/results"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.examplePaths.home",
+      "value": "/home/username"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.examplePaths.temp",
+      "value": "/tmp"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.memory.arrayBuffers",
+      "value": "0.85 MB"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.memory.external",
+      "value": "4.48 MB"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.memory.heapTotal",
+      "value": "77.38 MB"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.memory.heapUsed",
+      "value": "49.46 MB"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.memory.rss",
+      "value": "151.30 MB"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.nodeInfo.path",
+      "value": "/usr/local/bin/node"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.nodeInfo.version",
+      "value": "22.23.2"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.pathSeparator",
+      "value": "/"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.platform",
+      "value": "linux"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.platformName",
+      "value": "Linux (Docker)"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.arch",
+      "value": "arm64"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.platform",
+      "value": "linux"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.acorn",
+      "value": "8.16.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.ada",
+      "value": "2.9.2"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.amaro",
+      "value": "1.1.8"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.ares",
+      "value": "1.34.6"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.brotli",
+      "value": "1.1.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.cjs_module_lexer",
+      "value": "2.2.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.cldr",
+      "value": "48.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.icu",
+      "value": "78.2"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.llhttp",
+      "value": "9.4.3"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.modules",
+      "value": "127"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.napi",
+      "value": "10"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.nbytes",
+      "value": "0.1.3"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.ncrypto",
+      "value": "0.0.1"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.nghttp2",
+      "value": "1.69.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.node",
+      "value": "22.23.2"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.openssl",
+      "value": "3.5.7"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.simdjson",
+      "value": "4.5.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.simdutf",
+      "value": "6.4.2"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.sqlite",
+      "value": "3.51.3"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.tz",
+      "value": "2026a"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.undici",
+      "value": "6.28.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.unicode",
+      "value": "17.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.uv",
+      "value": "1.51.0"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.uvwasi",
+      "value": "0.0.23"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.v8",
+      "value": "12.4.254.21-node.56"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.zlib",
+      "value": "1.3.1-e00f703"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.processInfo.versions.zstd",
+      "value": "1.5.7"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.pythonInfo.command",
+      "value": "python3"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.systemInfo.pythonInfo.version",
+      "value": "3.11.2"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.config.version",
+      "value": "0.2.42"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].key",
+      "value": "blockedCommands"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[0]",
+      "value": "mkfs"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[1]",
+      "value": "format"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[2]",
+      "value": "mount"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[3]",
+      "value": "umount"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[4]",
+      "value": "fdisk"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[5]",
+      "value": "dd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[6]",
+      "value": "parted"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[7]",
+      "value": "diskpart"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[8]",
+      "value": "sudo"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[9]",
+      "value": "su"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[10]",
+      "value": "passwd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[11]",
+      "value": "adduser"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[12]",
+      "value": "useradd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[13]",
+      "value": "usermod"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[14]",
+      "value": "groupadd"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[15]",
+      "value": "chsh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[16]",
+      "value": "visudo"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[17]",
+      "value": "shutdown"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[18]",
+      "value": "reboot"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[19]",
+      "value": "halt"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[20]",
+      "value": "poweroff"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[21]",
+      "value": "init"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[22]",
+      "value": "iptables"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[23]",
+      "value": "firewall"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[24]",
+      "value": "netsh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[25]",
+      "value": "sfc"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[26]",
+      "value": "bcdedit"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[27]",
+      "value": "reg"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[28]",
+      "value": "net"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[29]",
+      "value": "sc"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[30]",
+      "value": "runas"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[31]",
+      "value": "cipher"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].value[32]",
+      "value": "takeown"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[0].valueType",
+      "value": "array"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[1].key",
+      "value": "allowedDirectories"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[1].valueType",
+      "value": "array"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[2].key",
+      "value": "defaultShell"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[2].value",
+      "value": "/bin/sh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[2].valueType",
+      "value": "string"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[3].key",
+      "value": "telemetryEnabled"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[3].valueType",
+      "value": "boolean"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[4].key",
+      "value": "fileReadLineLimit"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[4].valueType",
+      "value": "number"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[5].key",
+      "value": "fileWriteLineLimit"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.entries[5].valueType",
+      "value": "number"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[0]",
+      "value": "bash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[1]",
+      "value": "/bin/sh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[2]",
+      "value": "/usr/bin/sh"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[3]",
+      "value": "/bin/bash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[4]",
+      "value": "/usr/bin/bash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[5]",
+      "value": "/bin/rbash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[6]",
+      "value": "/usr/bin/rbash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[7]",
+      "value": "/bin/dash"
+    },
+    {
+      "type": "ToolReturnLeaf",
+      "path": "$.structuredContent.uiHints.availableShells[8]",
+      "value": "/usr/bin/dash"
+    }
+  ],
+  "flows": [],
+  "summary": {
+    "num_sources": 0,
+    "num_sinks": 149,
+    "num_flows": 0,
+    "has_external_to_prompt_flow": false
+  }
+}

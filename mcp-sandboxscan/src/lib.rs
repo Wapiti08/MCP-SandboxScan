@@ -1,4 +1,5 @@
 pub mod adapter;
+pub mod attack;
 pub mod cli;
 pub mod collect;
 pub mod corpus;
@@ -11,4 +12,5 @@ pub mod scan;
 pub mod study;
 pub mod subject;
 pub mod taint;
+pub mod targeted_egress;
 pub mod util;

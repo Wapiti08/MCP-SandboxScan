@@ -1,0 +1,2 @@
+178   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=181, si_uid=0, si_status=255, si_utime=0, si_stime=0} ---
+180   connect(6, {sa_family=AF_INET, sin_port=htons(3306), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 EINPROGRESS (Operation now in progress)
