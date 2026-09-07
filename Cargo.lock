@@ -1201,7 +1201,7 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
- "cap-std 4.0.0",
+ "cap-std 4.0.3",
  "clap",
  "serde",
  "serde_json",
