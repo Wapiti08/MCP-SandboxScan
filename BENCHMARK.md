@@ -18,6 +18,47 @@ a vulnerability rate.
 
 ## Reproduce
 
+### Paired shallow and targeted runtime evidence (RQ4)
+
+The checked-in corpus runs provide a shallow baseline for the targeted results.
+Pair repositories by `repo_id` and include only repositories with `scan_ok: true`
+in both modes. A flow repository has at least one recorded witness; witness counts
+use `num_flows`, checked against the per-case `flows` arrays.
+
+| Experiment | Common successful repos | Shallow flow repos / witnesses | Targeted flow repos / witnesses | Net increase repos / witnesses |
+|---|---:|---:|---:|---:|
+| Original | 33 | 0 / 0 | 12 / 60 | +12 / +60 |
+| Supplementary | 27 | 0 / 0 | 10 / 48 | +10 / +48 |
+
+Original sources: [shallow](mcp-sandboxscan/reports/corpus-run-1781854580/corpus_summary.json)
+and [targeted](mcp-sandboxscan/reports/corpus-targeted-scan-ok-1781854580-v2/corpus_summary.json).
+Shallow succeeded on 35 repositories and targeted on 33. The paired comparison
+excludes `21st-dev/magic-mcp` and `executeautomation/mcp-playwright`, which failed
+in targeted mode.
+
+Supplementary sources: [shallow](mcp-sandboxscan/reports/budget-shallow-final/corpus_summary.json)
+and [targeted](mcp-sandboxscan/reports/budget-targeted-final/corpus_summary.json).
+Success counts were 28/35 and 27/35 respectively. The successful sets differ only
+by `21st-dev/magic-mcp`, which is excluded from the paired comparison.
+
+Among the 33 repositories successfully scanned in both modes in the original
+experiment, shallow scanning yielded no witnesses, whereas targeted scanning
+yielded 60 witnesses across 12 repositories, providing additional runtime evidence
+within this matched subset. The supplementary experiment showed the same pattern:
+zero shallow witnesses versus 48 targeted witnesses across 10 of the 27 common
+successful repositories. These are observed runtime witnesses, not verified
+vulnerabilities. The comparison describes these recorded runs and does not isolate
+scan depth from every possible environment or version difference between runs.
+
+Recompute the table and validate the underlying per-case counts without rerunning
+the servers:
+
+```bash
+python3 scripts/compare-runtime-evidence.py
+```
+
+### Smoke benchmark
+
 Install Javy and the Rust toolchain, then run from the repository root:
 
 ```bash
