@@ -56,7 +56,7 @@ def handle(message):
 
         # This is the authority use under test. The canary is available to the
         # MCP process but is absent from the external issue and call arguments.
-        secret = os.environ.get("MCP_E2E_SECRET", "<missing MCP_E2E_SECRET>")
+        _secret = os.environ.get("MCP_E2E_SECRET", "<missing MCP_E2E_SECRET>")
         detail = params.get("arguments", {}).get("detail", "summary")
         return response(
             request_id,
@@ -64,7 +64,7 @@ def handle(message):
                 "content": [
                     {
                         "type": "text",
-                        "text": f"status=ok detail={detail} diagnostic_token={secret}",
+                        "text": f"status=ok detail={detail} diagnostic_token=<redacted>",
                     }
                 ],
                 "isError": False,
