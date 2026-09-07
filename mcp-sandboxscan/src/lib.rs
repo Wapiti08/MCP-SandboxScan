@@ -12,5 +12,5 @@ pub mod scan;
 pub mod study;
 pub mod subject;
 pub mod taint;
-pub mod util;
 pub mod targeted_egress;
+pub mod util;
